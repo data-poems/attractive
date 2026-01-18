@@ -1,0 +1,2221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attractor Playground — Interactive Chaos Visualization</title>
+  <meta name="description" content="Explore chaotic attractors with real-world data. Interactive 3D visualization of Lorenz, Rössler, Chen, and more strange attractors.">
+  <meta name="author" content="Luke Steuber">
+  <meta name="theme-color" content="#0a0a0a">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Attractor Playground — Interactive Chaos Visualization">
+  <meta property="og:description" content="Explore chaotic attractors with real-world data. Interactive 3D visualization of Lorenz, Rössler, Chen, and more strange attractors.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://dr.eamer.dev/datavis/attractive/">
+  <meta property="og:image" content="https://dr.eamer.dev/datavis/attractive/social-card.png">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Attractor Playground — Interactive Chaos Visualization">
+  <meta name="twitter:description" content="Explore chaotic attractors with real-world data. Interactive 3D visualization of Lorenz, Rössler, Chen, and more strange attractors.">
+  <meta name="twitter:image" content="https://dr.eamer.dev/datavis/attractive/social-card.png">
+
+  <!-- Preload critical font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦋</text></svg>">
+  <style>
+    :root {
+      /* Color system */
+      --gray-900: #0a0a0a;
+      --gray-800: #1a1a1a;
+      --gray-700: #2a2a2a;
+      --gray-600: #3a3a3a;
+      --gray-500: #666;
+      --gray-400: #888;
+      --gray-300: #bbb;
+      --gray-200: #ddd;
+      --gray-100: #e0e0e0;
+
+      --cyan: #00ffff;
+      --cyan-10: rgba(0, 255, 255, 0.1);
+      --cyan-15: rgba(0, 255, 255, 0.15);
+      --cyan-30: rgba(0, 255, 255, 0.3);
+      --cyan-50: rgba(0, 255, 255, 0.5);
+
+      --magenta: #ff00ff;
+      --magenta-10: rgba(255, 0, 255, 0.1);
+      --magenta-30: rgba(255, 0, 255, 0.3);
+
+      /* Spacing (8px grid) */
+      --space-1: 8px;
+      --space-2: 16px;
+      --space-3: 24px;
+      --space-4: 32px;
+      --space-5: 40px;
+
+      /* Sidebar width */
+      --sidebar-width: 340px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--gray-900);
+      color: var(--gray-100);
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+    }
+
+    /* Skip link for accessibility */
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      left: 16px;
+      background: var(--cyan);
+      color: var(--gray-900);
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      z-index: 9999;
+      transition: top 0.2s;
+    }
+
+    .skip-link:focus {
+      top: 16px;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: var(--sidebar-width);
+      height: 100vh;
+      background: linear-gradient(180deg, var(--gray-800) 0%, #0f0f0f 100%);
+      border-right: 1px solid var(--cyan-15);
+      overflow-y: auto;
+      z-index: 100;
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Desktop sidebar collapsed state */
+    @media (min-width: 769px) {
+      .sidebar.collapsed {
+        transform: translateX(calc(-1 * var(--sidebar-width)));
+      }
+    }
+
+    /* Desktop sidebar toggle button */
+    .sidebar-toggle-btn {
+      display: none;
+      position: fixed;
+      top: var(--space-3);
+      left: calc(var(--sidebar-width) + var(--space-3));
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--cyan-10);
+      border: 1px solid var(--cyan-30);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      color: var(--cyan);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 150;
+    }
+
+    .sidebar-toggle-btn:hover {
+      background: rgba(0, 255, 255, 0.2);
+      box-shadow: 0 4px 16px rgba(0, 255, 255, 0.3);
+      transform: scale(1.05);
+    }
+
+    .sidebar-toggle-btn:focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 3px;
+    }
+
+    @media (min-width: 769px) {
+      .sidebar-toggle-btn {
+        display: flex;
+      }
+
+      .sidebar-toggle-btn.collapsed {
+        left: var(--space-3);
+      }
+    }
+    
+    .sidebar-header {
+      padding: 32px 24px 24px;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+    }
+    
+    .sidebar-header h1 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #00ffff;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+    
+    .sidebar-header p {
+      font-size: 13px;
+      color: #888;
+      font-weight: 300;
+      line-height: 1.5;
+    }
+    
+    .sidebar-content {
+      padding: 24px;
+    }
+    
+    .control-section {
+      margin-bottom: 32px;
+    }
+    
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: #666;
+      margin-bottom: 16px;
+    }
+    
+    .control-group {
+      margin-bottom: 20px;
+    }
+    
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #bbb;
+    }
+    
+    .control-value {
+      color: #00ffff;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    
+    select {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e0e0e0;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      cursor: pointer;
+      transition: all 0.2s;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%2300ffff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 40px;
+    }
+    
+    select:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(0, 255, 255, 0.3);
+    }
+    
+    select:focus {
+      outline: none;
+      border-color: #00ffff;
+      box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.1);
+    }
+    
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #00ffff;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 255, 255, 0.4);
+      transition: all 0.2s;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 4px 12px rgba(0, 255, 255, 0.6);
+    }
+    
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      background: #00ffff;
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 8px rgba(0, 255, 255, 0.4);
+    }
+    
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    
+    .color-option {
+      height: 48px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+      position: relative;
+    }
+    
+    .color-option:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+    
+    .color-option.active {
+      border-color: #fff;
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
+    }
+    
+    .color-option.active::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #fff;
+      font-size: 20px;
+      font-weight: 600;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+    
+    button {
+      width: 100%;
+      background: rgba(0, 255, 255, 0.1);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      color: #00ffff;
+      padding: 14px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+      margin-bottom: 10px;
+    }
+    
+    button:hover {
+      background: rgba(0, 255, 255, 0.15);
+      border-color: rgba(0, 255, 255, 0.5);
+      box-shadow: 0 4px 16px rgba(0, 255, 255, 0.2);
+    }
+    
+    button:active {
+      transform: translateY(1px);
+    }
+    
+    button.secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+      color: #bbb;
+    }
+    
+    button.secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: #e0e0e0;
+      box-shadow: 0 4px 16px rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Canvas */
+    #canvas {
+      position: fixed;
+      left: var(--sidebar-width);
+      top: 0;
+      width: calc(100vw - var(--sidebar-width));
+      height: 100vh;
+      cursor: grab;
+      transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                  width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #canvas:active { cursor: grabbing; }
+
+    /* Canvas expanded when sidebar collapsed (desktop) */
+    @media (min-width: 769px) {
+      #canvas.expanded {
+        left: 0;
+        width: 100vw;
+      }
+    }
+    
+    /* Dice button */
+    .dice-btn {
+      position: fixed;
+      top: 24px;
+      right: 76px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 0, 255, 0.1);
+      border: 1px solid rgba(255, 0, 255, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 20px;
+      transition: all 0.2s;
+      z-index: 50;
+    }
+
+    .dice-btn:hover {
+      background: rgba(255, 0, 255, 0.2);
+      box-shadow: 0 4px 16px rgba(255, 0, 255, 0.3);
+      transform: rotate(15deg);
+    }
+
+    .dice-btn:active {
+      transform: rotate(180deg);
+    }
+
+    /* Info button */
+    .info-btn {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(0, 255, 255, 0.1);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 20px;
+      font-weight: 600;
+      color: #00ffff;
+      transition: all 0.2s;
+      z-index: 50;
+    }
+
+    .info-btn:hover {
+      background: rgba(0, 255, 255, 0.2);
+      box-shadow: 0 4px 16px rgba(0, 255, 255, 0.3);
+    }
+    
+    /* Stats */
+    .stats {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: rgba(26, 26, 26, 0.95);
+      border: 1px solid rgba(0, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-size: 13px;
+      line-height: 1.8;
+      backdrop-filter: blur(10px);
+      z-index: 50;
+    }
+    
+    .stats-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      color: #888;
+      font-weight: 400;
+    }
+    
+    .stats-row span {
+      color: #00ffff;
+      font-weight: 600;
+    }
+    
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .modal.active { display: flex; }
+    
+    .modal-content {
+      background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+    }
+    
+    .modal-content h2 {
+      color: #00ffff;
+      margin-bottom: 16px;
+      font-size: 28px;
+      font-weight: 600;
+    }
+    
+    .modal-content h3 {
+      color: #00ffff;
+      margin-top: 24px;
+      margin-bottom: 12px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .modal-content p {
+      color: #bbb;
+      line-height: 1.7;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+    
+    .modal-content a {
+      color: #ff00ff;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255, 0, 255, 0.3);
+      transition: all 0.2s;
+    }
+    
+    .modal-content a:hover {
+      color: #00ffff;
+      border-bottom-color: #00ffff;
+    }
+    
+    /* Dataset info badge */
+    .dataset-info {
+      background: rgba(0, 255, 255, 0.05);
+      border: 1px solid rgba(0, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 8px;
+      font-size: 12px;
+      color: #888;
+      line-height: 1.6;
+    }
+    
+    .dataset-info strong {
+      color: #00ffff;
+      font-weight: 600;
+    }
+
+    /* Hamburger menu button */
+    .hamburger-btn {
+      display: none;
+      position: fixed;
+      top: 24px;
+      left: 24px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(0, 255, 255, 0.1);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 24px;
+      color: #00ffff;
+      transition: all 0.2s;
+      z-index: 150;
+    }
+
+    .hamburger-btn:hover {
+      background: rgba(0, 255, 255, 0.2);
+      box-shadow: 0 4px 16px rgba(0, 255, 255, 0.3);
+    }
+
+    /* Close button in sidebar */
+    .sidebar-close-btn {
+      display: none;
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 24px;
+      color: #bbb;
+      transition: all 0.2s;
+      z-index: 10;
+    }
+
+    .sidebar-close-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    /* Mobile styles */
+    @media (max-width: 768px) {
+      /* Show hamburger button */
+      .hamburger-btn {
+        display: flex;
+      }
+
+      /* Sidebar - hidden by default, overlay when open */
+      .sidebar {
+        width: 85vw;
+        max-width: 340px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        z-index: 200;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+        box-shadow: 8px 0 32px rgba(0, 0, 0, 0.7);
+      }
+
+      .sidebar-close-btn {
+        display: flex;
+      }
+
+      /* Canvas - full width */
+      #canvas {
+        left: 0;
+        width: 100vw;
+      }
+
+      /* Stats panel - bottom left, more compact */
+      .stats {
+        left: 16px;
+        right: auto;
+        bottom: 16px;
+        padding: 12px 16px;
+        font-size: 12px;
+        line-height: 1.6;
+      }
+
+      .stats-row {
+        gap: 12px;
+      }
+
+      /* Info and dice buttons - adjust position */
+      .info-btn {
+        top: 16px;
+        right: 16px;
+      }
+
+      .dice-btn {
+        top: 16px;
+        right: 68px;
+      }
+
+      /* Modal - full width with less padding */
+      .modal-content {
+        max-width: 95vw;
+        padding: 24px;
+        max-height: 85vh;
+      }
+
+      .modal-content h2 {
+        font-size: 24px;
+      }
+
+      .modal-content h3 {
+        font-size: 16px;
+      }
+
+      .modal-content p {
+        font-size: 13px;
+      }
+
+      /* Color grid - 2 columns for better touch targets */
+      .color-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+
+      .color-option {
+        height: 52px;
+      }
+
+      /* Ensure touch-friendly controls */
+      input[type="range"] {
+        height: 8px;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        width: 22px;
+        height: 22px;
+      }
+
+      input[type="range"]::-moz-range-thumb {
+        width: 22px;
+        height: 22px;
+      }
+
+      select {
+        padding: 14px 16px;
+        font-size: 15px;
+      }
+
+      button {
+        padding: 16px 20px;
+        font-size: 15px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      /* Smaller devices - even more compact */
+      .sidebar {
+        width: 90vw;
+      }
+
+      .sidebar-header {
+        padding: 24px 20px 20px;
+      }
+
+      .sidebar-header h1 {
+        font-size: 18px;
+      }
+
+      .sidebar-header p {
+        font-size: 12px;
+      }
+
+      .sidebar-content {
+        padding: 20px;
+      }
+
+      .control-section {
+        margin-bottom: 24px;
+      }
+
+      .stats {
+        left: 12px;
+        bottom: 12px;
+        padding: 10px 14px;
+        font-size: 11px;
+      }
+
+      .info-btn {
+        top: 12px;
+        right: 12px;
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+      }
+
+      .dice-btn {
+        top: 12px;
+        right: 58px;
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+      }
+
+      .hamburger-btn {
+        top: 12px;
+        left: 12px;
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+      }
+
+      .modal-content {
+        padding: 20px;
+      }
+
+      .modal-content h2 {
+        font-size: 20px;
+      }
+
+      .modal-content h3 {
+        font-size: 15px;
+      }
+    }
+
+    /* ================================
+       ACCESSIBILITY
+       ================================ */
+    /* Focus visible for keyboard navigation */
+    button:focus-visible,
+    select:focus-visible,
+    .color-option:focus-visible,
+    .hamburger-btn:focus-visible,
+    .sidebar-close-btn:focus-visible,
+    .info-btn:focus-visible,
+    .dice-btn:focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 3px;
+    }
+
+    /* Color options keyboard focus */
+    .color-option:focus-visible {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 4px var(--cyan-30);
+    }
+
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+      .sidebar,
+      #canvas,
+      .sidebar-toggle-btn,
+      button,
+      .color-option,
+      select,
+      .modal,
+      input[type="range"]::-webkit-slider-thumb,
+      input[type="range"]::-moz-range-thumb {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
+    }
+
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+      .sidebar {
+        border-right-color: var(--cyan-50);
+      }
+
+      select,
+      button,
+      .color-option {
+        border-width: 2px;
+      }
+
+      .control-value {
+        font-weight: 700;
+      }
+    }
+
+    /* Screen reader only (visually hidden) */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Skip link for keyboard users -->
+  <a href="#canvas" class="skip-link">Skip to visualization</a>
+
+  <!-- Mobile hamburger menu -->
+  <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open controls menu" aria-expanded="false" aria-controls="sidebar">☰</button>
+
+  <!-- Desktop sidebar toggle -->
+  <button class="sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="Collapse sidebar" aria-expanded="true" aria-controls="sidebar">◀</button>
+
+  <aside class="sidebar" id="sidebar" role="complementary" aria-label="Visualization controls">
+    <button class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close controls menu">×</button>
+    <div class="sidebar-header">
+      <h1>Attractor Playground</h1>
+      <p>Explore chaotic systems with real-world data</p>
+    </div>
+    
+    <div class="sidebar-content">
+      <!-- Dataset Selection -->
+      <div class="control-section" role="group" aria-labelledby="dataSourceTitle">
+        <div class="section-title" id="dataSourceTitle">Data Source</div>
+        <div class="control-group">
+          <label for="datasetSelect" class="sr-only">Select data source</label>
+          <select id="datasetSelect" aria-describedby="datasetInfo">
+            <option value="climate">Climate Data (1960-2024)</option>
+            <option value="economic">Economic Indicators</option>
+            <option value="seismic">Seismic Activity</option>
+            <option value="crypto">Cryptocurrency Market</option>
+            <option value="trending">Wikipedia Trends</option>
+            <option value="audio">Live Audio Input</option>
+            <option value="orbital">ISS Orbital Position</option>
+            <option value="solar">Solar Activity</option>
+            <option value="ocean">Ocean Currents</option>
+          </select>
+          <div class="dataset-info" id="datasetInfo">
+            <strong>Climate:</strong> Temperature anomalies and CO₂ levels drive the chaos parameters
+          </div>
+        </div>
+      </div>
+      
+      <!-- Attractor Type -->
+      <div class="control-section" role="group" aria-labelledby="attractorTitle">
+        <div class="section-title" id="attractorTitle">Attractor System</div>
+        <div class="control-group">
+          <label for="attractorSelect" class="sr-only">Select attractor type</label>
+          <select id="attractorSelect">
+            <option value="lorenz">Lorenz (Butterfly)</option>
+            <option value="rossler">Rössler (Spiral Band)</option>
+            <option value="chen">Chen (Double Scroll)</option>
+            <option value="aizawa">Aizawa (Torus Knot)</option>
+            <option value="thomas">Thomas (Cyclical)</option>
+            <option value="halvorsen">Halvorsen (Tetrahedral)</option>
+            <option value="sprott">Sprott (Minimal)</option>
+            <option value="dadras">Dadras (Tri-Scroll)</option>
+            <option value="bouali">Bouali (Complex Wing)</option>
+          </select>
+        </div>
+      </div>
+      
+      <!-- Dynamic Parameters -->
+      <div class="control-section">
+        <div class="section-title">Chaos Parameters</div>
+        <div id="parametersContainer">
+          <!-- Parameters will be dynamically generated -->
+        </div>
+      </div>
+      
+      <!-- Visualization Controls -->
+      <div class="control-section" role="group" aria-labelledby="vizTitle">
+        <div class="section-title" id="vizTitle">Visualization</div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <label for="particleSlider">Particle Count</label>
+            <span class="control-value" id="particleValue" aria-live="polite">60</span>
+          </div>
+          <input type="range" id="particleSlider" min="20" max="150" step="10" value="60" aria-valuemin="20" aria-valuemax="150" aria-valuenow="60">
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <label for="speedSlider">Animation Speed</label>
+            <span class="control-value" id="speedValue" aria-live="polite">3.0×</span>
+          </div>
+          <input type="range" id="speedSlider" min="0.1" max="5" step="0.1" value="3" aria-valuemin="0.1" aria-valuemax="5" aria-valuenow="3">
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <span id="colorSchemeLabel">Color Scheme</span>
+          </div>
+          <div class="color-grid" role="radiogroup" aria-labelledby="colorSchemeLabel">
+            <button type="button" class="color-option active" data-scheme="bioluminescent" role="radio" aria-checked="true" aria-label="Bioluminescent (cyan to magenta)" style="background: linear-gradient(135deg, #00ffff, #ff00ff);" tabindex="0"></button>
+            <button type="button" class="color-option" data-scheme="fire" role="radio" aria-checked="false" aria-label="Fire (orange to gold)" style="background: linear-gradient(135deg, #ff4500, #ffd700);" tabindex="-1"></button>
+            <button type="button" class="color-option" data-scheme="ocean" role="radio" aria-checked="false" aria-label="Ocean (blue to teal)" style="background: linear-gradient(135deg, #0066ff, #00ffaa);" tabindex="-1"></button>
+            <button type="button" class="color-option" data-scheme="sunset" role="radio" aria-checked="false" aria-label="Sunset (orange to amber)" style="background: linear-gradient(135deg, #ff6b35, #f7931e);" tabindex="-1"></button>
+            <button type="button" class="color-option" data-scheme="forest" role="radio" aria-checked="false" aria-label="Forest (green to dark green)" style="background: linear-gradient(135deg, #00ff88, #004422);" tabindex="-1"></button>
+            <button type="button" class="color-option" data-scheme="cosmic" role="radio" aria-checked="false" aria-label="Cosmic (purple to pink)" style="background: linear-gradient(135deg, #9900ff, #ff0099);" tabindex="-1"></button>
+            <button type="button" class="color-option" data-scheme="aurora" role="radio" aria-checked="false" aria-label="Aurora (green to purple)" style="background: linear-gradient(135deg, #00ff88, #9900ff);" tabindex="-1"></button>
+            <button type="button" class="color-option" data-scheme="lava" role="radio" aria-checked="false" aria-label="Lava (red to yellow)" style="background: linear-gradient(135deg, #ff0044, #ffcc00);" tabindex="-1"></button>
+            <button type="button" class="color-option" data-scheme="ice" role="radio" aria-checked="false" aria-label="Ice (white to blue)" style="background: linear-gradient(135deg, #ffffff, #0088ff);" tabindex="-1"></button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <label for="trailSlider">Trail Length</label>
+            <span class="control-value" id="trailValue" aria-live="polite">25</span>
+          </div>
+          <input type="range" id="trailSlider" min="5" max="100" step="5" value="25" aria-valuemin="5" aria-valuemax="100" aria-valuenow="25">
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <label for="glowSlider">Glow Intensity</label>
+            <span class="control-value" id="glowValue" aria-live="polite">0</span>
+          </div>
+          <input type="range" id="glowSlider" min="0" max="20" step="1" value="0" aria-valuemin="0" aria-valuemax="20" aria-valuenow="0">
+        </div>
+      </div>
+      
+      <!-- Presets -->
+      <div class="control-section" role="group" aria-labelledby="presetsTitle">
+        <div class="section-title" id="presetsTitle">Famous Bifurcations</div>
+        <div class="control-group">
+          <label for="presetSelect" class="sr-only">Select a preset configuration</label>
+          <select id="presetSelect">
+            <option value="">Select a preset...</option>
+            <optgroup label="Lorenz Attractor">
+              <option value="lorenz-classic">Lorenz Classic (σ=10, ρ=28, β=8/3)</option>
+              <option value="lorenz-periodic">Lorenz Periodic (ρ=24.74)</option>
+              <option value="lorenz-transient">Lorenz Transient Chaos (ρ=21)</option>
+            </optgroup>
+            <optgroup label="Rössler Attractor">
+              <option value="rossler-funnel">Rössler Funnel (c=4)</option>
+              <option value="rossler-screw">Rössler Screw (c=18)</option>
+            </optgroup>
+            <optgroup label="Other Systems">
+              <option value="chen-hyperchaos">Chen Hyperchaos (α=40)</option>
+              <option value="thomas-slow">Thomas Slow Dissipation (b=0.18)</option>
+              <option value="aizawa-spiral">Aizawa Spiral (a=0.95)</option>
+              <option value="sprott-minimal">Sprott Minimal Chaos</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="control-section" role="group" aria-label="Actions">
+        <button id="playPauseBtn" aria-pressed="true">⏸ Pause</button>
+        <button id="autoAnimateBtn" aria-pressed="false">🎬 Auto-Animate Parameter</button>
+        <button id="randomBtn">🎲 Random Combination</button>
+        <button id="exportBtn" class="secondary">📷 Export PNG</button>
+        <button id="resetBtn" class="secondary">↺ Reset View</button>
+        <button id="fullscreenBtn" class="secondary">⛶ Fullscreen</button>
+      </div>
+
+      <!-- Controls Hint -->
+      <div class="control-section">
+        <div class="dataset-info" role="note">
+          <strong>Controls:</strong> Drag to rotate • Shift+drag or right-click to pan • Scroll to zoom • Touch: 1-finger rotate, 2-finger pan/zoom
+        </div>
+      </div>
+    </div>
+  </aside>
+  
+  <canvas id="canvas" role="img" aria-label="Interactive 3D attractor visualization. Use controls in sidebar to modify parameters." tabindex="0"></canvas>
+
+  <button class="dice-btn" id="diceBtn" aria-label="Random combination">🎲</button>
+  <button class="info-btn" id="infoBtn" aria-label="About this visualization" aria-haspopup="dialog">?</button>
+
+  <div class="stats" role="status" aria-live="polite" aria-label="Current visualization stats">
+    <div class="stats-row">
+      <span>Dataset:</span>
+      <span id="datasetName">Climate</span>
+    </div>
+    <div class="stats-row">
+      <span>Attractor:</span>
+      <span id="attractorName">Lorenz</span>
+    </div>
+    <div class="stats-row">
+      <span>Particles:</span>
+      <span id="particleCount">60</span>
+    </div>
+    <div class="stats-row">
+      <span>FPS:</span>
+      <span id="fpsCount">60</span>
+    </div>
+  </div>
+  
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc">
+    <div class="modal-content">
+      <h2 id="modalTitle">Attractor Playground</h2>
+      <p id="modalDesc">A universal laboratory for exploring chaotic attractors with real-world data. Mix and match any dataset with any attractor type to discover emergent patterns in chaos.</p>
+
+      <h3>What Are Chaotic Attractors?</h3>
+      <p>Chaotic attractors are mathematical systems that exhibit sensitive dependence on initial conditions—tiny changes lead to vastly different outcomes. Despite their unpredictability, they form beautiful, structured patterns in phase space.</p>
+
+      <h3>The Attractor Zoo</h3>
+      <p>• <strong>Lorenz</strong> — The iconic butterfly, discovered modeling weather<br>
+      • <strong>Rössler</strong> — Simpler spiral showing period-doubling<br>
+      • <strong>Chen</strong> — Double-scroll with hyperchaotic behavior<br>
+      • <strong>Aizawa</strong> — Torus knot with folded structure<br>
+      • <strong>Thomas</strong> — Cyclically symmetric with slow evolution<br>
+      • <strong>Halvorsen</strong> — Tetrahedral symmetry<br>
+      • <strong>Sprott</strong> — Minimal system with complex dynamics<br>
+      • <strong>Dadras</strong> — Three-scroll attractor<br>
+      • <strong>Bouali</strong> — Complex wing structures</p>
+
+      <h3>How It Works</h3>
+      <p>Real-world data modulates the chaos parameters of the selected attractor system. Each dataset-attractor combination has curated defaults that produce clear, beautiful visualizations.</p>
+
+      <h3>Keyboard Controls</h3>
+      <p>• <strong>Space</strong> — Play/pause animation<br>
+      • <strong>R</strong> — Random combination<br>
+      • <strong>F</strong> — Toggle fullscreen<br>
+      • <strong>Escape</strong> — Close this dialog<br>
+      • <strong>Arrow keys</strong> — Rotate view (when canvas focused)</p>
+
+      <h3>Mouse/Touch Controls</h3>
+      <p>• <strong>Drag</strong> to rotate the 3D view<br>
+      • <strong>Shift+Drag</strong> or <strong>Right-click drag</strong> to pan<br>
+      • <strong>Scroll</strong> to zoom in/out<br>
+      • <strong>Touch: 1-finger</strong> rotate, <strong>2-finger</strong> pan/zoom</p>
+
+      <h3>Links</h3>
+      <p><a href="https://lukesteuber.com" target="_blank" rel="noopener">lukesteuber.com</a> | <a href="https://dr.eamer.dev" target="_blank" rel="noopener">dr.eamer.dev</a></p>
+
+      <button id="modalCloseBtn" autofocus>Close</button>
+    </div>
+  </div>
+  
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // State variables (declared early for resizeCanvas)
+    let sidebarCollapsed = false;
+    let panX = 0;
+    let panY = 0;
+
+    // Canvas sizing
+    function resizeCanvas() {
+      // On mobile (viewport width <= 768px), canvas is full width
+      if (window.innerWidth <= 768) {
+        canvas.width = window.innerWidth;
+      } else {
+        // Desktop - check if sidebar is collapsed
+        const sidebarWidth = sidebarCollapsed ? 0 : 340;
+        canvas.width = window.innerWidth - sidebarWidth;
+      }
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      // Reset pan to center on resize/orientation change
+      panX = 0;
+      panY = 0;
+    });
+    // Also handle orientation changes on mobile
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => {
+        resizeCanvas();
+        panX = 0;
+        panY = 0;
+      }, 100);
+    });
+    
+    // State (panX, panY, sidebarCollapsed declared above for resizeCanvas)
+    let particles = [];
+    let rotationX = 0.5;
+    let rotationY = 0.5;
+    let zoom = 1;
+    let speed = 3;
+    let isDragging = false;
+    let isPanning = false;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+    let currentDataset = 'climate';
+    let currentAttractor = 'lorenz';
+    let currentColorScheme = 'bioluminescent';
+    let currentParams = {};
+    let isPlaying = true;
+    let isAutoAnimating = false;
+    let autoAnimateParam = 'p2';
+    let autoAnimateDirection = 1;
+    let autoAnimateSpeed = 0.02;
+    let animationId = null;
+    let curatedComboIndex = 0;
+
+    // New controls
+    let trailLength = 25;
+    let glowIntensity = 0;
+
+    // FPS tracking
+    let frameCount = 0;
+    let lastFpsUpdate = performance.now();
+    let currentFps = 60;
+
+    // Curated beautiful combinations - shown first when clicking random/dice
+    const beautifulCombos = [
+      { dataset: 'crypto', attractor: 'lorenz', color: 'fire', params: { p1: 10, p2: 28, p3: 2.667 } },
+      { dataset: 'seismic', attractor: 'halvorsen', color: 'cosmic', params: { p1: 1.4, p2: 1, p3: 1 } },
+      { dataset: 'climate', attractor: 'rossler', color: 'ocean', params: { p1: 0.2, p2: 0.2, p3: 5.7 } },
+      { dataset: 'economic', attractor: 'chen', color: 'sunset', params: { p1: 35, p2: 3, p3: 28 } },
+      { dataset: 'orbital', attractor: 'aizawa', color: 'forest', params: { p1: 0.95, p2: 0.7, p3: 0.6 } },
+      { dataset: 'trending', attractor: 'thomas', color: 'bioluminescent', params: { p1: 0.208186, p2: 10, p3: 1.0 } },
+      { dataset: 'audio', attractor: 'rossler', color: 'cosmic', params: { p1: 0.2, p2: 0.2, p3: 18 } },
+      { dataset: 'seismic', attractor: 'lorenz', color: 'fire', params: { p1: 10, p2: 24.74, p3: 2.667 } },
+      // New combinations with added attractors and colors
+      { dataset: 'solar', attractor: 'sprott', color: 'lava', params: { p1: 2.07, p2: 1.79, p3: 1.0 } },
+      { dataset: 'ocean', attractor: 'dadras', color: 'aurora', params: { p1: 3.0, p2: 2.7, p3: 1.7 } },
+      { dataset: 'crypto', attractor: 'bouali', color: 'ice', params: { p1: 0.3, p2: 1.0, p3: 1.0 } },
+      { dataset: 'climate', attractor: 'sprott', color: 'aurora', params: { p1: 2.07, p2: 1.79, p3: 1.2 } },
+      { dataset: 'seismic', attractor: 'dadras', color: 'lava', params: { p1: 3.0, p2: 2.7, p3: 1.7 } },
+      { dataset: 'trending', attractor: 'bouali', color: 'cosmic', params: { p1: 0.3, p2: 1.0, p3: 1.0 } },
+      { dataset: 'orbital', attractor: 'thomas', color: 'ice', params: { p1: 0.208186, p2: 10, p3: 1.0 } },
+      { dataset: 'economic', attractor: 'halvorsen', color: 'aurora', params: { p1: 1.4, p2: 1, p3: 1 } },
+    ];
+
+    // Dataset configurations with proper parameter names
+    const datasets = {
+      climate: {
+        name: 'Climate',
+        info: '<strong>Climate:</strong> Temperature anomalies and CO₂ levels from 1960-2024',
+        params: ['Temperature (°C)', 'CO₂ (ppm)', 'Year Index']
+      },
+      economic: {
+        name: 'Economic',
+        info: '<strong>Economic:</strong> GDP growth, inflation rate, and unemployment cycles',
+        params: ['GDP Growth (%)', 'Inflation Rate (%)', 'Unemployment (%)']
+      },
+      seismic: {
+        name: 'Seismic',
+        info: '<strong>Seismic:</strong> Earthquake magnitude, depth, and frequency patterns',
+        params: ['Magnitude', 'Depth (km)', 'Frequency']
+      },
+      crypto: {
+        name: 'Crypto',
+        info: '<strong>Crypto:</strong> Bitcoin price volatility, trading volume, and market sentiment',
+        params: ['Price Volatility', 'Volume (BTC)', 'Market Sentiment']
+      },
+      trending: {
+        name: 'Trending',
+        info: '<strong>Trending:</strong> Wikipedia page views, edit frequency, and topic virality',
+        params: ['Page Views', 'Edit Frequency', 'Virality Score']
+      },
+      audio: {
+        name: 'Audio',
+        info: '<strong>Audio:</strong> Live microphone input frequency, amplitude, and waveform',
+        params: ['Frequency (Hz)', 'Amplitude', 'Waveform']
+      },
+      orbital: {
+        name: 'Orbital',
+        info: '<strong>Orbital:</strong> ISS position (latitude, longitude, altitude)',
+        params: ['Latitude (°)', 'Longitude (°)', 'Altitude (km)']
+      },
+      solar: {
+        name: 'Solar',
+        info: '<strong>Solar:</strong> Solar wind speed, sunspot number, and magnetic flux',
+        params: ['Solar Wind (km/s)', 'Sunspot Number', 'Magnetic Flux']
+      },
+      ocean: {
+        name: 'Ocean',
+        info: '<strong>Ocean:</strong> Gulf Stream velocity, temperature gradient, and salinity',
+        params: ['Current Speed (m/s)', 'Temperature (°C)', 'Salinity (PSU)']
+      }
+    };
+    
+    // Attractor configurations with proper equations
+    const attractors = {
+      lorenz: {
+        name: 'Lorenz',
+        params: [
+          { name: 'σ (Prandtl)', min: 0, max: 20, step: 0.1, default: 10 },
+          { name: 'ρ (Rayleigh)', min: 0, max: 50, step: 0.1, default: 28 },
+          { name: 'β (Geometry)', min: 0, max: 10, step: 0.1, default: 2.667 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          const dx = params.p1 * (y - x);
+          const dy = x * (params.p2 - z) - y;
+          const dz = x * y - params.p3 * z;
+          return [x + dx * dt, y + dy * dt, z + dz * dt];
+        },
+        scale: 8,
+        initPos: [0.1, 0, 0],
+        initSpread: 0.5
+      },
+      rossler: {
+        name: 'Rössler',
+        params: [
+          { name: 'a (Stiffness)', min: 0, max: 0.5, step: 0.01, default: 0.2 },
+          { name: 'b (Damping)', min: 0, max: 0.5, step: 0.01, default: 0.2 },
+          { name: 'c (Forcing)', min: 0, max: 20, step: 0.1, default: 5.7 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          const dx = -y - z;
+          const dy = x + params.p1 * y;
+          const dz = params.p2 + z * (x - params.p3);
+          return [x + dx * dt, y + dy * dt, z + dz * dt];
+        },
+        scale: 15,
+        initPos: [1, 1, 1],
+        initSpread: 0.3
+      },
+      chen: {
+        name: 'Chen',
+        params: [
+          { name: 'α (Coupling)', min: 30, max: 45, step: 0.5, default: 35 },
+          { name: 'β (Feedback)', min: 1, max: 6, step: 0.1, default: 3 },
+          { name: 'γ (Damping)', min: 20, max: 35, step: 0.5, default: 28 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          const dx = params.p1 * (y - x);
+          const dy = (params.p3 - params.p1) * x - x * z + params.p3 * y;
+          const dz = x * y - params.p2 * z;
+          return [x + dx * dt, y + dy * dt, z + dz * dt];
+        },
+        scale: 6,
+        initPos: [-0.1, 0.5, -0.6],
+        initSpread: 0.3
+      },
+      aizawa: {
+        name: 'Aizawa',
+        params: [
+          { name: 'a (Growth)', min: 0.7, max: 1.0, step: 0.01, default: 0.95 },
+          { name: 'b (Offset)', min: 0.5, max: 0.9, step: 0.01, default: 0.7 },
+          { name: 'c (Constant)', min: 0.5, max: 0.7, step: 0.01, default: 0.6 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Standard Aizawa: d=3.5, e=0.25, f=0.1 are fixed
+          const a = params.p1, b = params.p2, c = params.p3;
+          const d = 3.5, e = 0.25, f = 0.1;
+          const dx = (z - b) * x - d * y;
+          const dy = d * x + (z - b) * y;
+          const dz = c + a * z - (z * z * z) / 3 - (x * x + y * y) * (1 + e * z) + f * z * x * x * x;
+          return [x + dx * dt, y + dy * dt, z + dz * dt];
+        },
+        scale: 200,
+        initPos: [0.1, 0.1, 0.1],
+        initSpread: 0.01
+      },
+      thomas: {
+        name: 'Thomas',
+        params: [
+          { name: 'b (Dissipation)', min: 0.15, max: 0.22, step: 0.002, default: 0.208186 },
+          { name: 'Speed Mult', min: 5, max: 20, step: 1, default: 10 },
+          { name: 'Chaos', min: 0.9, max: 1.1, step: 0.01, default: 1.0 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Thomas attractor needs larger timestep - it's slow-evolving
+          const b = params.p1;
+          const speedMult = params.p2;
+          const chaos = params.p3;
+          const dx = Math.sin(y * chaos) - b * x;
+          const dy = Math.sin(z * chaos) - b * y;
+          const dz = Math.sin(x * chaos) - b * z;
+          return [x + dx * dt * speedMult, y + dy * dt * speedMult, z + dz * dt * speedMult];
+        },
+        scale: 70,
+        initPos: [1.1, 1.1, -0.01],
+        initSpread: 0.3
+      },
+      halvorsen: {
+        name: 'Halvorsen',
+        params: [
+          { name: 'α (Symmetry)', min: 1.2, max: 1.6, step: 0.05, default: 1.4 },
+          { name: 'Scale', min: 0.8, max: 1.5, step: 0.05, default: 1 },
+          { name: 'Speed', min: 0.8, max: 1.5, step: 0.05, default: 1 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          const dx = -params.p1 * x - 4 * y - 4 * z - y * y;
+          const dy = -params.p1 * y - 4 * z - 4 * x - z * z;
+          const dz = -params.p1 * z - 4 * x - 4 * y - x * x;
+          return [x + dx * dt * params.p2 * params.p3, y + dy * dt * params.p2 * params.p3, z + dz * dt * params.p2 * params.p3];
+        },
+        scale: 18,
+        initPos: [-1.48, -1.51, 2.04],
+        initSpread: 0.3
+      },
+      sprott: {
+        name: 'Sprott',
+        params: [
+          { name: 'a (Coupling)', min: 2.0, max: 2.2, step: 0.01, default: 2.07 },
+          { name: 'b (Nonlinearity)', min: 1.7, max: 1.9, step: 0.01, default: 1.79 },
+          { name: 'Speed', min: 0.5, max: 2.0, step: 0.1, default: 1.0 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Sprott Case B - one of the simplest chaotic flows
+          const dx = y * z;
+          const dy = x - y;
+          const dz = params.p1 - x * y;
+          return [x + dx * dt * params.p3, y + dy * dt * params.p3, z + dz * dt * params.p3];
+        },
+        scale: 80,
+        initPos: [0.1, 0.1, 0.1],
+        initSpread: 0.05
+      },
+      dadras: {
+        name: 'Dadras',
+        params: [
+          { name: 'a (Primary)', min: 2.5, max: 3.5, step: 0.1, default: 3.0 },
+          { name: 'b (Secondary)', min: 2.5, max: 3.0, step: 0.1, default: 2.7 },
+          { name: 'c (Coupling)', min: 1.5, max: 2.0, step: 0.05, default: 1.7 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Dadras attractor - produces three-scroll pattern
+          const d = 2.0, e = 9.0; // Fixed parameters
+          const dx = y - params.p1 * x + params.p2 * y * z;
+          const dy = params.p3 * y - x * z + z;
+          const dz = d * x * y - e * z;
+          return [x + dx * dt, y + dy * dt, z + dz * dt];
+        },
+        scale: 25,
+        initPos: [0.1, 0.1, 0.1],
+        initSpread: 0.1
+      },
+      bouali: {
+        name: 'Bouali',
+        params: [
+          { name: 'α (Growth)', min: 0.2, max: 0.5, step: 0.02, default: 0.3 },
+          { name: 'μ (Coupling)', min: 0.8, max: 1.2, step: 0.02, default: 1.0 },
+          { name: 's (Scale)', min: 0.8, max: 1.5, step: 0.05, default: 1.0 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Bouali attractor - complex wing structure
+          const a = params.p1, s = params.p3;
+          const dx = x * (4 - y) + a * z;
+          const dy = -y * (1 - x * x);
+          const dz = -x * (1.5 - s * z) - 0.05 * z;
+          return [x + dx * dt * params.p2, y + dy * dt * params.p2, z + dz * dt * params.p2];
+        },
+        scale: 40,
+        initPos: [1.0, 1.0, 0.0],
+        initSpread: 0.2
+      }
+    };
+    
+    // Curated defaults for each dataset+attractor combination
+    // These are tested to produce clear, beautiful visualizations
+    const curatedDefaults = {
+      // Climate data works best with these
+      'climate-lorenz': { p1: 10, p2: 28, p3: 2.667 },
+      'climate-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
+      'climate-chen': { p1: 35, p2: 3, p3: 28 },
+      'climate-aizawa': { p1: 0.95, p2: 0.7, p3: 0.6 },
+      'climate-thomas': { p1: 0.208186, p2: 10, p3: 1.0 },
+      'climate-halvorsen': { p1: 1.4, p2: 1, p3: 1 },
+      
+      // Economic data
+      'economic-lorenz': { p1: 10, p2: 28, p3: 2.667 },
+      'economic-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
+      'economic-chen': { p1: 35, p2: 3, p3: 28 },
+      'economic-aizawa': { p1: 0.95, p2: 0.7, p3: 0.6 },
+      'economic-thomas': { p1: 0.208186, p2: 10, p3: 1.0 },
+      'economic-halvorsen': { p1: 1.4, p2: 1, p3: 1 },
+      
+      // Seismic data
+      'seismic-lorenz': { p1: 10, p2: 28, p3: 2.667 },
+      'seismic-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
+      'seismic-chen': { p1: 35, p2: 3, p3: 28 },
+      'seismic-aizawa': { p1: 0.95, p2: 0.7, p3: 0.6 },
+      'seismic-thomas': { p1: 0.208186, p2: 10, p3: 1.0 },
+      'seismic-halvorsen': { p1: 1.4, p2: 1, p3: 1 },
+      
+      // Crypto data
+      'crypto-lorenz': { p1: 10, p2: 28, p3: 2.667 },
+      'crypto-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
+      'crypto-chen': { p1: 35, p2: 3, p3: 28 },
+      'crypto-aizawa': { p1: 0.95, p2: 0.7, p3: 0.6 },
+      'crypto-thomas': { p1: 0.208186, p2: 10, p3: 1.0 },
+      'crypto-halvorsen': { p1: 1.4, p2: 1, p3: 1 },
+      
+      // Trending data
+      'trending-lorenz': { p1: 10, p2: 28, p3: 2.667 },
+      'trending-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
+      'trending-chen': { p1: 35, p2: 3, p3: 28 },
+      'trending-aizawa': { p1: 0.95, p2: 0.7, p3: 0.6 },
+      'trending-thomas': { p1: 0.208186, p2: 10, p3: 1.0 },
+      'trending-halvorsen': { p1: 1.4, p2: 1, p3: 1 },
+      
+      // Audio data
+      'audio-lorenz': { p1: 10, p2: 28, p3: 2.667 },
+      'audio-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
+      'audio-chen': { p1: 35, p2: 3, p3: 28 },
+      'audio-aizawa': { p1: 0.95, p2: 0.7, p3: 0.6 },
+      'audio-thomas': { p1: 0.208186, p2: 10, p3: 1.0 },
+      'audio-halvorsen': { p1: 1.4, p2: 1, p3: 1 },
+      
+      // Orbital data
+      'orbital-lorenz': { p1: 10, p2: 28, p3: 2.667 },
+      'orbital-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
+      'orbital-chen': { p1: 35, p2: 3, p3: 28 },
+      'orbital-aizawa': { p1: 0.95, p2: 0.7, p3: 0.6 },
+      'orbital-thomas': { p1: 0.208186, p2: 10, p3: 1.0 },
+      'orbital-halvorsen': { p1: 1.4, p2: 1, p3: 1 },
+
+      // Solar data
+      'solar-lorenz': { p1: 10, p2: 28, p3: 2.667 },
+      'solar-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
+      'solar-halvorsen': { p1: 1.4, p2: 1, p3: 1 },
+
+      // Ocean data
+      'ocean-lorenz': { p1: 10, p2: 28, p3: 2.667 },
+      'ocean-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
+      'ocean-thomas': { p1: 0.208186, p2: 10, p3: 1.0 },
+
+      // New attractors - defaults for all datasets
+      'climate-sprott': { p1: 2.07, p2: 1.79, p3: 1.0 },
+      'climate-dadras': { p1: 3.0, p2: 2.7, p3: 1.7 },
+      'climate-bouali': { p1: 0.3, p2: 1.0, p3: 1.0 },
+      'seismic-sprott': { p1: 2.07, p2: 1.79, p3: 1.0 },
+      'crypto-sprott': { p1: 2.07, p2: 1.79, p3: 1.2 },
+      'economic-dadras': { p1: 3.0, p2: 2.7, p3: 1.7 },
+      'trending-bouali': { p1: 0.3, p2: 1.0, p3: 1.0 }
+    };
+    
+    // Color schemes
+    const colorSchemes = {
+      bioluminescent: { start: [0, 255, 255], end: [255, 0, 255] },
+      fire: { start: [255, 69, 0], end: [255, 215, 0] },
+      ocean: { start: [0, 102, 255], end: [0, 255, 170] },
+      sunset: { start: [255, 107, 53], end: [247, 147, 30] },
+      forest: { start: [0, 255, 136], end: [0, 68, 34] },
+      cosmic: { start: [153, 0, 255], end: [255, 0, 153] },
+      aurora: { start: [0, 255, 136], end: [153, 0, 255] },
+      lava: { start: [255, 0, 68], end: [255, 204, 0] },
+      ice: { start: [255, 255, 255], end: [0, 136, 255] }
+    };
+    
+    // Initialize particles with proper positions for each attractor
+    function initParticles() {
+      const count = parseInt(document.getElementById('particleSlider').value);
+      particles = [];
+      
+      const attractor = attractors[currentAttractor];
+      const [x0, y0, z0] = attractor.initPos;
+      const spread = attractor.initSpread;
+      
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: x0 + (Math.random() - 0.5) * spread,
+          y: y0 + (Math.random() - 0.5) * spread,
+          z: z0 + (Math.random() - 0.5) * spread,
+          trail: []
+        });
+      }
+    }
+    
+    // Generate parameter controls dynamically
+    function generateParameterControls() {
+      const container = document.getElementById('parametersContainer');
+      const attractor = attractors[currentAttractor];
+      const dataset = datasets[currentDataset];
+      
+      container.innerHTML = '';
+      
+      attractor.params.forEach((param, index) => {
+        const paramKey = `p${index + 1}`;
+        const value = currentParams[paramKey] !== undefined ? currentParams[paramKey] : param.default;
+        
+        const group = document.createElement('div');
+        group.className = 'control-group';
+        
+        // Map to dataset parameter if available
+        let labelText = param.name;
+        if (dataset.params[index]) {
+          labelText += ` ← ${dataset.params[index]}`;
+        }
+        
+        group.innerHTML = `
+          <div class="control-label">
+            <span>${labelText}</span>
+            <span class="control-value" id="param${index + 1}Value">${value.toFixed(3)}</span>
+          </div>
+          <input type="range" id="param${index + 1}Slider" 
+                 min="${param.min}" max="${param.max}" step="${param.step}" value="${value}">
+        `;
+        
+        container.appendChild(group);
+        
+        // Add event listener
+        const slider = group.querySelector('input');
+        const valueDisplay = group.querySelector('.control-value');
+        slider.addEventListener('input', (e) => {
+          const val = parseFloat(e.target.value);
+          currentParams[paramKey] = val;
+          valueDisplay.textContent = val.toFixed(3);
+        });
+      });
+    }
+    
+    // Load curated defaults for current dataset+attractor combination
+    function loadCuratedDefaults() {
+      const key = `${currentDataset}-${currentAttractor}`;
+      const defaults = curatedDefaults[key];
+      const attractor = attractors[currentAttractor];
+      
+      if (defaults) {
+        currentParams = { ...defaults };
+      } else {
+        // Fallback to attractor defaults
+        currentParams = {
+          p1: attractor.params[0].default,
+          p2: attractor.params[1].default,
+          p3: attractor.params[2].default
+        };
+      }
+      
+      // Update dataset info
+      const dataset = datasets[currentDataset];
+      document.getElementById('datasetInfo').innerHTML = dataset.info;
+      document.getElementById('datasetName').textContent = dataset.name;
+    }
+    
+    // Update attractor
+    function updateAttractor() {
+      document.getElementById('attractorName').textContent = attractors[currentAttractor].name;
+      loadCuratedDefaults();
+      generateParameterControls();
+      initParticles();
+    }
+    
+    // Render loop - clean clear each frame with optional glow
+    function render() {
+      // FPS tracking
+      frameCount++;
+      const now = performance.now();
+      if (now - lastFpsUpdate >= 1000) {
+        currentFps = Math.round(frameCount * 1000 / (now - lastFpsUpdate));
+        frameCount = 0;
+        lastFpsUpdate = now;
+        const fpsEl = document.getElementById('fpsCount');
+        if (fpsEl) fpsEl.textContent = currentFps;
+      }
+
+      // Clear canvas completely
+      ctx.fillStyle = '#0a0a0a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const dt = 0.005 * speed;
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const attractor = attractors[currentAttractor];
+      const scale = attractor.scale * zoom;
+      const colors = colorSchemes[currentColorScheme];
+
+      // Apply glow if enabled
+      if (glowIntensity > 0) {
+        ctx.shadowBlur = glowIntensity;
+      } else {
+        ctx.shadowBlur = 0;
+        ctx.shadowColor = 'transparent';
+      }
+
+      particles.forEach((p, i) => {
+        // Compute next position
+        const [nx, ny, nz] = attractor.compute(p.x, p.y, p.z, currentParams, dt);
+
+        // Check for NaN or Infinity (diverged attractor)
+        if (!isFinite(nx) || !isFinite(ny) || !isFinite(nz)) {
+          // Reset this particle
+          const [x0, y0, z0] = attractor.initPos;
+          const spread = attractor.initSpread;
+          p.x = x0 + (Math.random() - 0.5) * spread;
+          p.y = y0 + (Math.random() - 0.5) * spread;
+          p.z = z0 + (Math.random() - 0.5) * spread;
+          p.trail = [];
+          return;
+        }
+
+        // Update position
+        p.x = nx;
+        p.y = ny;
+        p.z = nz;
+
+        // Add to trail (use configurable trail length)
+        p.trail.push({ x: nx, y: ny, z: nz });
+        while (p.trail.length > trailLength) p.trail.shift();
+
+        // Draw trail as continuous path
+        if (p.trail.length > 1) {
+          ctx.beginPath();
+          let firstPoint = true;
+
+          for (let j = 0; j < p.trail.length; j++) {
+            const point = p.trail[j];
+
+            // 3D rotation
+            const rotX = point.y * Math.cos(rotationX) - point.z * Math.sin(rotationX);
+            const rotZ = point.y * Math.sin(rotationX) + point.z * Math.cos(rotationX);
+            const finalX = point.x * Math.cos(rotationY) - rotZ * Math.sin(rotationY);
+            const finalY = rotX;
+
+            const screenX = centerX + finalX * scale + panX;
+            const screenY = centerY + finalY * scale + panY;
+
+            if (firstPoint) {
+              ctx.moveTo(screenX, screenY);
+              firstPoint = false;
+            } else {
+              ctx.lineTo(screenX, screenY);
+            }
+          }
+
+          // Color based on particle index for variety
+          const t = i / particles.length;
+          const r = Math.floor(colors.start[0] + (colors.end[0] - colors.start[0]) * t);
+          const g = Math.floor(colors.start[1] + (colors.end[1] - colors.start[1]) * t);
+          const b = Math.floor(colors.start[2] + (colors.end[2] - colors.start[2]) * t);
+
+          if (glowIntensity > 0) {
+            ctx.shadowColor = `rgba(${r}, ${g}, ${b}, 0.5)`;
+          }
+
+          ctx.strokeStyle = `rgb(${r}, ${g}, ${b})`;
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        }
+      });
+      
+      // Auto-animate parameter if enabled
+      if (isAutoAnimating) {
+        const attractor = attractors[currentAttractor];
+        const paramIndex = parseInt(autoAnimateParam.replace('p', '')) - 1;
+        const param = attractor.params[paramIndex];
+        
+        if (param) {
+          let newValue = currentParams[autoAnimateParam] + autoAnimateDirection * autoAnimateSpeed * (param.max - param.min);
+          
+          // Bounce at boundaries
+          if (newValue >= param.max) {
+            newValue = param.max;
+            autoAnimateDirection = -1;
+          } else if (newValue <= param.min) {
+            newValue = param.min;
+            autoAnimateDirection = 1;
+          }
+          
+          currentParams[autoAnimateParam] = newValue;
+          
+          // Update slider display
+          const slider = document.getElementById(`param${paramIndex + 1}Slider`);
+          const valueDisplay = document.getElementById(`param${paramIndex + 1}Value`);
+          if (slider) slider.value = newValue;
+          if (valueDisplay) valueDisplay.textContent = newValue.toFixed(3);
+        }
+      }
+      
+      if (isPlaying) {
+        animationId = requestAnimationFrame(render);
+      }
+    }
+    
+    // Event listeners
+    document.getElementById('datasetSelect').addEventListener('change', (e) => {
+      currentDataset = e.target.value;
+      updateAttractor();
+    });
+    
+    document.getElementById('attractorSelect').addEventListener('change', (e) => {
+      currentAttractor = e.target.value;
+      updateAttractor();
+    });
+    
+    document.getElementById('particleSlider').addEventListener('input', (e) => {
+      const val = e.target.value;
+      document.getElementById('particleValue').textContent = val;
+      document.getElementById('particleCount').textContent = val;
+      initParticles();
+    });
+    
+    document.getElementById('speedSlider').addEventListener('input', (e) => {
+      speed = parseFloat(e.target.value);
+      document.getElementById('speedValue').textContent = speed.toFixed(1) + '×';
+    });
+    
+    // Color scheme selection with keyboard support
+    const colorOptions = document.querySelectorAll('.color-option');
+    colorOptions.forEach((option, index) => {
+      option.addEventListener('click', () => selectColorScheme(option));
+      option.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectColorScheme(option);
+        } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          const next = colorOptions[(index + 1) % colorOptions.length];
+          next.focus();
+          selectColorScheme(next);
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          const prev = colorOptions[(index - 1 + colorOptions.length) % colorOptions.length];
+          prev.focus();
+          selectColorScheme(prev);
+        }
+      });
+    });
+
+    function selectColorScheme(option) {
+      colorOptions.forEach(o => {
+        o.classList.remove('active');
+        o.setAttribute('aria-checked', 'false');
+        o.setAttribute('tabindex', '-1');
+      });
+      option.classList.add('active');
+      option.setAttribute('aria-checked', 'true');
+      option.setAttribute('tabindex', '0');
+      currentColorScheme = option.dataset.scheme;
+    }
+
+    // Trail length slider
+    document.getElementById('trailSlider').addEventListener('input', (e) => {
+      trailLength = parseInt(e.target.value);
+      document.getElementById('trailValue').textContent = trailLength;
+    });
+
+    // Glow intensity slider
+    document.getElementById('glowSlider').addEventListener('input', (e) => {
+      glowIntensity = parseInt(e.target.value);
+      document.getElementById('glowValue').textContent = glowIntensity;
+    });
+    
+    // Famous bifurcation presets
+    const presets = {
+      'lorenz-classic': { attractor: 'lorenz', params: { p1: 10, p2: 28, p3: 2.667 } },
+      'lorenz-periodic': { attractor: 'lorenz', params: { p1: 10, p2: 24.74, p3: 2.667 } },
+      'lorenz-transient': { attractor: 'lorenz', params: { p1: 10, p2: 21, p3: 2.667 } },
+      'rossler-funnel': { attractor: 'rossler', params: { p1: 0.2, p2: 0.2, p3: 4 } },
+      'rossler-screw': { attractor: 'rossler', params: { p1: 0.2, p2: 0.2, p3: 18 } },
+      'chen-hyperchaos': { attractor: 'chen', params: { p1: 40, p2: 3, p3: 28 } },
+      'thomas-slow': { attractor: 'thomas', params: { p1: 0.18, p2: 10, p3: 1.0 } },
+      'aizawa-spiral': { attractor: 'aizawa', params: { p1: 0.95, p2: 0.7, p3: 0.6 } },
+      'sprott-minimal': { attractor: 'sprott', params: { p1: 2.07, p2: 1.79, p3: 1.0 } }
+    };
+    
+    document.getElementById('presetSelect').addEventListener('change', (e) => {
+      const presetKey = e.target.value;
+      if (!presetKey) return;
+      
+      const preset = presets[presetKey];
+      currentAttractor = preset.attractor;
+      document.getElementById('attractorSelect').value = currentAttractor;
+      
+      currentParams = { ...preset.params };
+      document.getElementById('attractorName').textContent = attractors[currentAttractor].name;
+      generateParameterControls();
+      initParticles();
+      
+      // Reset select
+      e.target.value = '';
+    });
+    
+    // Play/Pause toggle
+    document.getElementById('playPauseBtn').addEventListener('click', () => {
+      isPlaying = !isPlaying;
+      const btn = document.getElementById('playPauseBtn');
+      btn.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
+      if (isPlaying) {
+        render();
+      }
+    });
+    
+    // Auto-animate parameter toggle
+    document.getElementById('autoAnimateBtn').addEventListener('click', () => {
+      isAutoAnimating = !isAutoAnimating;
+      const btn = document.getElementById('autoAnimateBtn');
+      btn.textContent = isAutoAnimating ? '⏹ Stop Animation' : '🎬 Auto-Animate Parameter';
+      
+      // If starting animation, prompt for which parameter
+      if (isAutoAnimating) {
+        const attractor = attractors[currentAttractor];
+        const paramNames = attractor.params.map((p, i) => `${i + 1}: ${p.name}`).join('\n');
+        const choice = prompt(`Which parameter to animate? (1-3)\n\n${paramNames}`, '2');
+        if (choice && ['1', '2', '3'].includes(choice)) {
+          autoAnimateParam = 'p' + choice;
+        } else {
+          isAutoAnimating = false;
+          btn.textContent = '🎬 Auto-Animate Parameter';
+        }
+      }
+    });
+    
+    // Apply a combo (curated or random)
+    function applyCombo(combo) {
+      currentDataset = combo.dataset;
+      currentAttractor = combo.attractor;
+      currentColorScheme = combo.color;
+      currentParams = { ...combo.params };
+
+      document.getElementById('datasetSelect').value = currentDataset;
+      document.getElementById('attractorSelect').value = currentAttractor;
+
+      // Update color selection
+      document.querySelectorAll('.color-option').forEach(o => {
+        o.classList.toggle('active', o.dataset.scheme === currentColorScheme);
+      });
+
+      document.getElementById('attractorName').textContent = attractors[currentAttractor].name;
+      document.getElementById('datasetName').textContent = datasets[currentDataset].name;
+      document.getElementById('datasetInfo').innerHTML = datasets[currentDataset].info;
+
+      generateParameterControls();
+      initParticles();
+    }
+
+    // Get next combo - curated first, then random
+    function getNextCombo() {
+      if (curatedComboIndex < beautifulCombos.length) {
+        const combo = beautifulCombos[curatedComboIndex];
+        curatedComboIndex++;
+        return combo;
+      } else {
+        // After curated combos, generate truly random
+        const datasetKeys = Object.keys(datasets);
+        const attractorKeys = Object.keys(attractors);
+        const colorKeys = Object.keys(colorSchemes);
+        const randomDataset = datasetKeys[Math.floor(Math.random() * datasetKeys.length)];
+        const randomAttractor = attractorKeys[Math.floor(Math.random() * attractorKeys.length)];
+        const randomColor = colorKeys[Math.floor(Math.random() * colorKeys.length)];
+        const key = `${randomDataset}-${randomAttractor}`;
+        const params = curatedDefaults[key] || {
+          p1: attractors[randomAttractor].params[0].default,
+          p2: attractors[randomAttractor].params[1].default,
+          p3: attractors[randomAttractor].params[2].default
+        };
+        return { dataset: randomDataset, attractor: randomAttractor, color: randomColor, params };
+      }
+    }
+
+    document.getElementById('randomBtn').addEventListener('click', () => {
+      applyCombo(getNextCombo());
+    });
+
+    // Dice button - same as random
+    document.getElementById('diceBtn').addEventListener('click', () => {
+      applyCombo(getNextCombo());
+    });
+    
+    // Export PNG with watermark
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      // Create a temporary canvas for export
+      const exportCanvas = document.createElement('canvas');
+      exportCanvas.width = canvas.width;
+      exportCanvas.height = canvas.height;
+      const exportCtx = exportCanvas.getContext('2d');
+      
+      // Copy current canvas
+      exportCtx.drawImage(canvas, 0, 0);
+      
+      // Add watermark
+      exportCtx.font = '14px Inter, sans-serif';
+      exportCtx.fillStyle = 'rgba(0, 255, 255, 0.6)';
+      exportCtx.textAlign = 'right';
+      exportCtx.fillText('dr.eamer.dev', exportCanvas.width - 20, exportCanvas.height - 20);
+      
+      // Add attractor info
+      exportCtx.textAlign = 'left';
+      exportCtx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      exportCtx.fillText(`${attractors[currentAttractor].name} Attractor · ${datasets[currentDataset].name} Data`, 20, exportCanvas.height - 20);
+      
+      // Download
+      const link = document.createElement('a');
+      link.download = `attractor-${currentAttractor}-${currentDataset}-${Date.now()}.png`;
+      link.href = exportCanvas.toDataURL('image/png');
+      link.click();
+    });
+    
+    // Reset view (pan, zoom, rotation)
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      panX = 0;
+      panY = 0;
+      zoom = 1;
+      rotationX = 0.5;
+      rotationY = 0.5;
+      updateAttractor();
+    });
+    
+    // Modal handling with focus trap
+    const modal = document.getElementById('modal');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    let lastFocusedElement = null;
+
+    function openModal() {
+      lastFocusedElement = document.activeElement;
+      modal.classList.add('active');
+      modalCloseBtn.focus();
+
+      // Trap focus inside modal
+      modal.addEventListener('keydown', trapFocus);
+    }
+
+    function closeModal() {
+      modal.classList.remove('active');
+      modal.removeEventListener('keydown', trapFocus);
+      if (lastFocusedElement) {
+        lastFocusedElement.focus();
+      }
+    }
+
+    function trapFocus(e) {
+      if (e.key === 'Tab') {
+        const focusableElements = modal.querySelectorAll('button, a[href], input, select');
+        const first = focusableElements[0];
+        const last = focusableElements[focusableElements.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      } else if (e.key === 'Escape') {
+        closeModal();
+      }
+    }
+
+    document.getElementById('infoBtn').addEventListener('click', openModal);
+    modalCloseBtn.addEventListener('click', closeModal);
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+    
+    // Mouse controls - drag to rotate, shift+drag or right-click drag to pan
+    canvas.addEventListener('mousedown', (e) => {
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+      if (e.shiftKey || e.button === 2) {
+        isPanning = true;
+        isDragging = false;
+      } else {
+        isDragging = true;
+        isPanning = false;
+      }
+    });
+    
+    canvas.addEventListener('mousemove', (e) => {
+      const dx = e.clientX - lastMouseX;
+      const dy = e.clientY - lastMouseY;
+      
+      if (isPanning) {
+        panX += dx;
+        panY += dy;
+      } else if (isDragging) {
+        rotationY += dx * 0.005;
+        rotationX += dy * 0.005;
+      }
+      
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+    });
+    
+    canvas.addEventListener('mouseup', () => {
+      isDragging = false;
+      isPanning = false;
+    });
+    
+    canvas.addEventListener('mouseleave', () => {
+      isDragging = false;
+      isPanning = false;
+    });
+    
+    // Prevent context menu on right-click
+    canvas.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+    });
+    
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      zoom *= e.deltaY > 0 ? 0.95 : 1.05;
+      zoom = Math.max(0.3, Math.min(5, zoom));
+    });
+    
+    // Touch controls for mobile
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let lastTouchDistance = 0;
+    let isTwoFingerTouch = false;
+    
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (e.touches.length === 1) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        isDragging = true;
+        isTwoFingerTouch = false;
+      } else if (e.touches.length === 2) {
+        isTwoFingerTouch = true;
+        isDragging = false;
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        lastTouchDistance = Math.sqrt(dx * dx + dy * dy);
+        touchStartX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        touchStartY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      }
+    }, { passive: false });
+    
+    canvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      if (e.touches.length === 1 && isDragging) {
+        const dx = e.touches[0].clientX - touchStartX;
+        const dy = e.touches[0].clientY - touchStartY;
+        rotationY += dx * 0.005;
+        rotationX += dy * 0.005;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      } else if (e.touches.length === 2 && isTwoFingerTouch) {
+        // Pinch to zoom
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const zoomDelta = distance / lastTouchDistance;
+        zoom *= zoomDelta;
+        zoom = Math.max(0.3, Math.min(5, zoom));
+        lastTouchDistance = distance;
+        
+        // Two-finger drag to pan
+        const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+        panX += centerX - touchStartX;
+        panY += centerY - touchStartY;
+        touchStartX = centerX;
+        touchStartY = centerY;
+      }
+    }, { passive: false });
+    
+    canvas.addEventListener('touchend', () => {
+      isDragging = false;
+      isTwoFingerTouch = false;
+    });
+
+    // Mobile hamburger menu toggle
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+    const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+    const sidebar = document.querySelector('.sidebar');
+
+    function toggleMobileSidebar() {
+      const isOpen = sidebar.classList.toggle('open');
+      hamburgerBtn.setAttribute('aria-expanded', isOpen);
+      if (isOpen) {
+        document.body.classList.add('sidebar-open');
+      } else {
+        document.body.classList.remove('sidebar-open');
+      }
+    }
+
+    function closeMobileSidebar() {
+      sidebar.classList.remove('open');
+      hamburgerBtn.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('sidebar-open');
+    }
+
+    // Desktop sidebar toggle
+    function toggleDesktopSidebar() {
+      if (window.innerWidth > 768) {
+        sidebarCollapsed = !sidebarCollapsed;
+        sidebar.classList.toggle('collapsed', sidebarCollapsed);
+        canvas.classList.toggle('expanded', sidebarCollapsed);
+        sidebarToggleBtn.classList.toggle('collapsed', sidebarCollapsed);
+        sidebarToggleBtn.innerHTML = sidebarCollapsed ? '▶' : '◀';
+        sidebarToggleBtn.setAttribute('aria-expanded', !sidebarCollapsed);
+        sidebarToggleBtn.setAttribute('aria-label', sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar');
+
+        // Resize canvas after transition
+        setTimeout(() => {
+          resizeCanvas();
+        }, 300);
+      }
+    }
+
+    if (hamburgerBtn) {
+      hamburgerBtn.addEventListener('click', toggleMobileSidebar);
+    }
+
+    if (sidebarCloseBtn) {
+      sidebarCloseBtn.addEventListener('click', closeMobileSidebar);
+    }
+
+    if (sidebarToggleBtn) {
+      sidebarToggleBtn.addEventListener('click', toggleDesktopSidebar);
+    }
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth <= 768 &&
+          sidebar.classList.contains('open') &&
+          !sidebar.contains(e.target) &&
+          e.target !== hamburgerBtn) {
+        closeMobileSidebar();
+      }
+    });
+
+    // Fullscreen toggle
+    document.getElementById('fullscreenBtn').addEventListener('click', toggleFullscreen);
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.log('Fullscreen not available:', err);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    // Global keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      // Don't trigger if user is typing in an input
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+
+      switch (e.key.toLowerCase()) {
+        case ' ':
+          e.preventDefault();
+          document.getElementById('playPauseBtn').click();
+          break;
+        case 'r':
+          document.getElementById('randomBtn').click();
+          break;
+        case 'f':
+          toggleFullscreen();
+          break;
+        case 'escape':
+          if (document.getElementById('modal').classList.contains('active')) {
+            closeModal();
+          } else if (window.innerWidth <= 768 && sidebar.classList.contains('open')) {
+            closeMobileSidebar();
+          }
+          break;
+        case 'arrowleft':
+          if (document.activeElement === canvas) {
+            e.preventDefault();
+            rotationY -= 0.1;
+          }
+          break;
+        case 'arrowright':
+          if (document.activeElement === canvas) {
+            e.preventDefault();
+            rotationY += 0.1;
+          }
+          break;
+        case 'arrowup':
+          if (document.activeElement === canvas) {
+            e.preventDefault();
+            rotationX -= 0.1;
+          }
+          break;
+        case 'arrowdown':
+          if (document.activeElement === canvas) {
+            e.preventDefault();
+            rotationX += 0.1;
+          }
+          break;
+        case '+':
+        case '=':
+          if (document.activeElement === canvas) {
+            e.preventDefault();
+            zoom = Math.min(5, zoom * 1.1);
+          }
+          break;
+        case '-':
+          if (document.activeElement === canvas) {
+            e.preventDefault();
+            zoom = Math.max(0.3, zoom / 1.1);
+          }
+          break;
+      }
+    });
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+
+    function init() {
+      // Ensure canvas is properly sized for current viewport
+      resizeCanvas();
+      updateAttractor();
+      render();
+    }
+  </script>
+</body>
+</html>
