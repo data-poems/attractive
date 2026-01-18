@@ -853,15 +853,33 @@
         <div class="control-group">
           <label for="datasetSelect" class="sr-only">Select data source</label>
           <select id="datasetSelect" aria-describedby="datasetInfo">
-            <option value="climate">Climate Data (1960-2024)</option>
-            <option value="economic">Economic Indicators</option>
-            <option value="seismic">Seismic Activity</option>
-            <option value="crypto">Cryptocurrency Market</option>
-            <option value="trending">Wikipedia Trends</option>
-            <option value="audio">Live Audio Input</option>
-            <option value="orbital">ISS Orbital Position</option>
-            <option value="solar">Solar Activity</option>
-            <option value="ocean">Ocean Currents</option>
+            <optgroup label="Environmental">
+              <option value="climate">Climate Data (1960-2024)</option>
+              <option value="weather">Weather Patterns</option>
+              <option value="ocean">Ocean Currents</option>
+              <option value="tides">Tidal Rhythms</option>
+              <option value="solar">Solar Activity</option>
+            </optgroup>
+            <optgroup label="Financial">
+              <option value="economic">Economic Indicators</option>
+              <option value="stocks">Stock Market</option>
+              <option value="crypto">Cryptocurrency</option>
+            </optgroup>
+            <optgroup label="Physical">
+              <option value="seismic">Seismic Activity</option>
+              <option value="orbital">ISS Orbital Position</option>
+              <option value="traffic">Traffic Flow</option>
+              <option value="power">Power Grid</option>
+            </optgroup>
+            <optgroup label="Biological">
+              <option value="heartrate">Heart Rate / ECG</option>
+              <option value="brain">Brain Waves / EEG</option>
+              <option value="pandemic">Pandemic Dynamics</option>
+            </optgroup>
+            <optgroup label="Digital">
+              <option value="trending">Wikipedia Trends</option>
+              <option value="audio">Live Audio Input</option>
+            </optgroup>
           </select>
           <div class="dataset-info" id="datasetInfo">
             <strong>Climate:</strong> Temperature anomalies and CO₂ levels drive the chaos parameters
@@ -875,15 +893,38 @@
         <div class="control-group">
           <label for="attractorSelect" class="sr-only">Select attractor type</label>
           <select id="attractorSelect">
-            <option value="lorenz">Lorenz (Butterfly)</option>
-            <option value="rossler">Rössler (Spiral Band)</option>
-            <option value="chen">Chen (Double Scroll)</option>
-            <option value="aizawa">Aizawa (Torus Knot)</option>
-            <option value="thomas">Thomas (Cyclical)</option>
-            <option value="halvorsen">Halvorsen (Tetrahedral)</option>
-            <option value="sprott">Sprott (Minimal)</option>
-            <option value="dadras">Dadras (Tri-Scroll)</option>
-            <option value="bouali">Bouali (Complex Wing)</option>
+            <optgroup label="Classic">
+              <option value="lorenz">Lorenz (Butterfly)</option>
+              <option value="rossler">Rössler (Spiral Band)</option>
+              <option value="chua">Chua (Double Scroll)</option>
+            </optgroup>
+            <optgroup label="Generalized Lorenz">
+              <option value="chen">Chen (Dual Wing)</option>
+              <option value="lu">Lü (Bridge)</option>
+              <option value="burke">Burke-Shaw</option>
+            </optgroup>
+            <optgroup label="Multi-Scroll">
+              <option value="dadras">Dadras (Tri-Scroll)</option>
+              <option value="fourwing">Four-Wing</option>
+              <option value="dequan">Dequan-Li (Complex)</option>
+              <option value="rucklidge">Rucklidge</option>
+            </optgroup>
+            <optgroup label="Geometric">
+              <option value="aizawa">Aizawa (Torus Knot)</option>
+              <option value="thomas">Thomas (Cyclical)</option>
+              <option value="halvorsen">Halvorsen (Tetrahedral)</option>
+            </optgroup>
+            <optgroup label="Physics-Derived">
+              <option value="nose">Nosé-Hoover (Molecular)</option>
+              <option value="shimizu">Shimizu-Morioka (Laser)</option>
+              <option value="rabinovich">Rabinovich-Fabrikant</option>
+            </optgroup>
+            <optgroup label="Simple Systems">
+              <option value="sprott">Sprott (Minimal)</option>
+              <option value="genesio">Genesio-Tesi</option>
+              <option value="arneodo">Arneodo</option>
+              <option value="bouali">Bouali (Wing)</option>
+            </optgroup>
           </select>
         </div>
       </div>
@@ -957,20 +998,40 @@
           <label for="presetSelect" class="sr-only">Select a preset configuration</label>
           <select id="presetSelect">
             <option value="">Select a preset...</option>
-            <optgroup label="Lorenz Attractor">
-              <option value="lorenz-classic">Lorenz Classic (σ=10, ρ=28, β=8/3)</option>
+            <optgroup label="Lorenz Family">
+              <option value="lorenz-classic">Lorenz Classic (σ=10, ρ=28)</option>
               <option value="lorenz-periodic">Lorenz Periodic (ρ=24.74)</option>
-              <option value="lorenz-transient">Lorenz Transient Chaos (ρ=21)</option>
+              <option value="lorenz-transient">Lorenz Transient (ρ=21)</option>
+              <option value="chen-hyperchaos">Chen Hyperchaos (α=40)</option>
+              <option value="lu-bridge">Lü Bridge (a=36)</option>
             </optgroup>
-            <optgroup label="Rössler Attractor">
+            <optgroup label="Rössler Family">
               <option value="rossler-funnel">Rössler Funnel (c=4)</option>
               <option value="rossler-screw">Rössler Screw (c=18)</option>
             </optgroup>
-            <optgroup label="Other Systems">
-              <option value="chen-hyperchaos">Chen Hyperchaos (α=40)</option>
-              <option value="thomas-slow">Thomas Slow Dissipation (b=0.18)</option>
-              <option value="aizawa-spiral">Aizawa Spiral (a=0.95)</option>
-              <option value="sprott-minimal">Sprott Minimal Chaos</option>
+            <optgroup label="Circuit Attractors">
+              <option value="chua-doublescroll">Chua Double Scroll</option>
+              <option value="chua-spiral">Chua Spiral</option>
+            </optgroup>
+            <optgroup label="Multi-Wing">
+              <option value="fourwing-symmetric">Four-Wing Symmetric</option>
+              <option value="dadras-triscroll">Dadras Tri-Scroll</option>
+              <option value="dequan-complex">Dequan-Li Complex</option>
+            </optgroup>
+            <optgroup label="Geometric">
+              <option value="thomas-slow">Thomas Slow (b=0.18)</option>
+              <option value="aizawa-spiral">Aizawa Spiral</option>
+              <option value="halvorsen-symmetric">Halvorsen Symmetric</option>
+            </optgroup>
+            <optgroup label="Physics">
+              <option value="nose-thermostat">Nosé-Hoover Thermostat</option>
+              <option value="shimizu-laser">Shimizu-Morioka Laser</option>
+              <option value="rabinovich-plasma">Rabinovich-Fabrikant</option>
+            </optgroup>
+            <optgroup label="Simple">
+              <option value="sprott-minimal">Sprott Minimal</option>
+              <option value="genesio-quadratic">Genesio-Tesi</option>
+              <option value="arneodo-simple">Arneodo</option>
             </optgroup>
           </select>
         </div>
@@ -1027,16 +1088,20 @@
       <h3>What Are Chaotic Attractors?</h3>
       <p>Chaotic attractors are mathematical systems that exhibit sensitive dependence on initial conditions—tiny changes lead to vastly different outcomes. Despite their unpredictability, they form beautiful, structured patterns in phase space.</p>
 
-      <h3>The Attractor Zoo</h3>
-      <p>• <strong>Lorenz</strong> — The iconic butterfly, discovered modeling weather<br>
-      • <strong>Rössler</strong> — Simpler spiral showing period-doubling<br>
-      • <strong>Chen</strong> — Double-scroll with hyperchaotic behavior<br>
-      • <strong>Aizawa</strong> — Torus knot with folded structure<br>
-      • <strong>Thomas</strong> — Cyclically symmetric with slow evolution<br>
-      • <strong>Halvorsen</strong> — Tetrahedral symmetry<br>
-      • <strong>Sprott</strong> — Minimal system with complex dynamics<br>
-      • <strong>Dadras</strong> — Three-scroll attractor<br>
-      • <strong>Bouali</strong> — Complex wing structures</p>
+      <h3>The Attractor Zoo (21 Systems)</h3>
+      <p><strong>Classic:</strong> Lorenz (butterfly), Rössler (spiral), Chua (double scroll from electronics)<br>
+      <strong>Lorenz Family:</strong> Chen, Lü (bridge system), Burke-Shaw<br>
+      <strong>Multi-Wing:</strong> Four-Wing, Dadras (tri-scroll), Dequan-Li (complex), Rucklidge<br>
+      <strong>Geometric:</strong> Aizawa (torus knot), Thomas (cyclical), Halvorsen (tetrahedral)<br>
+      <strong>Physics:</strong> Nosé-Hoover (molecular dynamics), Shimizu-Morioka (laser), Rabinovich-Fabrikant (plasma)<br>
+      <strong>Simple:</strong> Sprott (minimal), Genesio-Tesi, Arneodo, Bouali (wing)</p>
+
+      <h3>Data Sources (17 Types)</h3>
+      <p><strong>Environmental:</strong> Climate, Weather, Ocean, Tides, Solar<br>
+      <strong>Financial:</strong> Economic, Stocks, Crypto<br>
+      <strong>Physical:</strong> Seismic, Orbital, Traffic, Power Grid<br>
+      <strong>Biological:</strong> Heart Rate/ECG, Brain Waves/EEG, Pandemic<br>
+      <strong>Digital:</strong> Wikipedia Trends, Live Audio</p>
 
       <h3>How It Works</h3>
       <p>Real-world data modulates the chaos parameters of the selected attractor system. Each dataset-attractor combination has curated defaults that produce clear, beautiful visualizations.</p>
@@ -1131,23 +1196,41 @@
 
     // Curated beautiful combinations - shown first when clicking random/dice
     const beautifulCombos = [
+      // Original favorites
       { dataset: 'crypto', attractor: 'lorenz', color: 'fire', params: { p1: 10, p2: 28, p3: 2.667 } },
       { dataset: 'seismic', attractor: 'halvorsen', color: 'cosmic', params: { p1: 1.4, p2: 1, p3: 1 } },
       { dataset: 'climate', attractor: 'rossler', color: 'ocean', params: { p1: 0.2, p2: 0.2, p3: 5.7 } },
       { dataset: 'economic', attractor: 'chen', color: 'sunset', params: { p1: 35, p2: 3, p3: 28 } },
       { dataset: 'orbital', attractor: 'aizawa', color: 'forest', params: { p1: 0.95, p2: 0.7, p3: 0.6 } },
       { dataset: 'trending', attractor: 'thomas', color: 'bioluminescent', params: { p1: 0.208186, p2: 10, p3: 1.0 } },
+
+      // New attractor showcases
+      { dataset: 'heartrate', attractor: 'chua', color: 'lava', params: { p1: 15.6, p2: 28, p3: -1.143 } },
+      { dataset: 'brain', attractor: 'rabinovich', color: 'cosmic', params: { p1: 0.87, p2: 1.1, p3: 0.5 } },
+      { dataset: 'stocks', attractor: 'fourwing', color: 'aurora', params: { p1: 0.2, p2: 0.01, p3: -0.4 } },
+      { dataset: 'power', attractor: 'lu', color: 'fire', params: { p1: 36, p2: 3, p3: 20 } },
+      { dataset: 'weather', attractor: 'shimizu', color: 'ice', params: { p1: 0.85, p2: 0.5, p3: 1.0 } },
+      { dataset: 'traffic', attractor: 'nose', color: 'sunset', params: { p1: 1.5, p2: 1.0, p3: 1.0 } },
+      { dataset: 'tides', attractor: 'rucklidge', color: 'ocean', params: { p1: 2.0, p2: 6.7, p3: 1.0 } },
+      { dataset: 'pandemic', attractor: 'genesio', color: 'lava', params: { p1: 0.44, p2: 1.1, p3: 1.0 } },
+      { dataset: 'solar', attractor: 'burke', color: 'fire', params: { p1: 10, p2: 4.272, p3: 1.0 } },
+      { dataset: 'ocean', attractor: 'arneodo', color: 'bioluminescent', params: { p1: -5.5, p2: 3.5, p3: -1.0 } },
+
+      // Visually stunning combinations
       { dataset: 'audio', attractor: 'rossler', color: 'cosmic', params: { p1: 0.2, p2: 0.2, p3: 18 } },
       { dataset: 'seismic', attractor: 'lorenz', color: 'fire', params: { p1: 10, p2: 24.74, p3: 2.667 } },
-      // New combinations with added attractors and colors
       { dataset: 'solar', attractor: 'sprott', color: 'lava', params: { p1: 2.07, p2: 1.79, p3: 1.0 } },
-      { dataset: 'ocean', attractor: 'dadras', color: 'aurora', params: { p1: 3.0, p2: 2.7, p3: 1.7 } },
-      { dataset: 'crypto', attractor: 'bouali', color: 'ice', params: { p1: 0.3, p2: 1.0, p3: 1.0 } },
-      { dataset: 'climate', attractor: 'sprott', color: 'aurora', params: { p1: 2.07, p2: 1.79, p3: 1.2 } },
-      { dataset: 'seismic', attractor: 'dadras', color: 'lava', params: { p1: 3.0, p2: 2.7, p3: 1.7 } },
-      { dataset: 'trending', attractor: 'bouali', color: 'cosmic', params: { p1: 0.3, p2: 1.0, p3: 1.0 } },
-      { dataset: 'orbital', attractor: 'thomas', color: 'ice', params: { p1: 0.208186, p2: 10, p3: 1.0 } },
-      { dataset: 'economic', attractor: 'halvorsen', color: 'aurora', params: { p1: 1.4, p2: 1, p3: 1 } },
+      { dataset: 'crypto', attractor: 'dequan', color: 'aurora', params: { p1: 40, p2: 1.833, p3: 0.16 } },
+      { dataset: 'brain', attractor: 'thomas', color: 'cosmic', params: { p1: 0.208186, p2: 10, p3: 1.0 } },
+      { dataset: 'heartrate', attractor: 'aizawa', color: 'lava', params: { p1: 0.95, p2: 0.7, p3: 0.6 } },
+      { dataset: 'weather', attractor: 'halvorsen', color: 'ice', params: { p1: 1.4, p2: 1, p3: 1 } },
+      { dataset: 'stocks', attractor: 'chen', color: 'fire', params: { p1: 40, p2: 3, p3: 28 } },
+
+      // New data source highlights
+      { dataset: 'tides', attractor: 'lorenz', color: 'ocean', params: { p1: 10, p2: 28, p3: 2.667 } },
+      { dataset: 'power', attractor: 'chua', color: 'aurora', params: { p1: 15.6, p2: 28, p3: -1.143 } },
+      { dataset: 'pandemic', attractor: 'dadras', color: 'sunset', params: { p1: 3.0, p2: 2.7, p3: 1.7 } },
+      { dataset: 'traffic', attractor: 'fourwing', color: 'forest', params: { p1: 0.2, p2: 0.01, p3: -0.4 } },
     ];
 
     // Dataset configurations with proper parameter names
@@ -1196,6 +1279,46 @@
         name: 'Ocean',
         info: '<strong>Ocean:</strong> Gulf Stream velocity, temperature gradient, and salinity',
         params: ['Current Speed (m/s)', 'Temperature (°C)', 'Salinity (PSU)']
+      },
+      stocks: {
+        name: 'Stocks',
+        info: '<strong>Stocks:</strong> S&P 500 volatility, trading volume, and market momentum',
+        params: ['Volatility (VIX)', 'Volume (B)', 'Momentum']
+      },
+      weather: {
+        name: 'Weather',
+        info: '<strong>Weather:</strong> Real-time atmospheric pressure, humidity, and wind patterns',
+        params: ['Pressure (hPa)', 'Humidity (%)', 'Wind Speed (m/s)']
+      },
+      heartrate: {
+        name: 'Heart Rate',
+        info: '<strong>Heart Rate:</strong> ECG R-R intervals, heart rate variability, and rhythm',
+        params: ['BPM', 'HRV (ms)', 'Rhythm Score']
+      },
+      traffic: {
+        name: 'Traffic',
+        info: '<strong>Traffic:</strong> Urban traffic flow, congestion index, and average speed',
+        params: ['Flow (veh/hr)', 'Congestion', 'Avg Speed (km/h)']
+      },
+      power: {
+        name: 'Power Grid',
+        info: '<strong>Power Grid:</strong> Electricity demand, frequency deviation, and load balance',
+        params: ['Demand (GW)', 'Frequency (Hz)', 'Balance (%)']
+      },
+      pandemic: {
+        name: 'Pandemic',
+        info: '<strong>Pandemic:</strong> Infection rate, reproduction number, and hospitalization',
+        params: ['Daily Cases', 'R₀ Value', 'Hospital Load']
+      },
+      brain: {
+        name: 'Brain Waves',
+        info: '<strong>Brain Waves:</strong> EEG alpha, beta, and theta wave amplitudes',
+        params: ['Alpha (μV)', 'Beta (μV)', 'Theta (μV)']
+      },
+      tides: {
+        name: 'Tides',
+        info: '<strong>Tides:</strong> Tidal height, lunar phase influence, and current velocity',
+        params: ['Height (m)', 'Lunar Phase', 'Current (m/s)']
       }
     };
     
@@ -1365,6 +1488,207 @@
         scale: 40,
         initPos: [1.0, 1.0, 0.0],
         initSpread: 0.2
+      },
+      chua: {
+        name: 'Chua',
+        params: [
+          { name: 'α (Alpha)', min: 14, max: 16, step: 0.1, default: 15.6 },
+          { name: 'β (Beta)', min: 25, max: 30, step: 0.5, default: 28 },
+          { name: 'm₀ (Slope)', min: -1.2, max: -1.0, step: 0.02, default: -1.143 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Chua's circuit - iconic double scroll attractor
+          const m1 = -0.714;
+          const h = params.p3 * x + 0.5 * (m1 - params.p3) * (Math.abs(x + 1) - Math.abs(x - 1));
+          const dx = params.p1 * (y - x - h);
+          const dy = x - y + z;
+          const dz = -params.p2 * y;
+          return [x + dx * dt, y + dy * dt, z + dz * dt];
+        },
+        scale: 80,
+        initPos: [0.7, 0, 0],
+        initSpread: 0.1
+      },
+      rabinovich: {
+        name: 'Rabinovich-Fabrikant',
+        params: [
+          { name: 'γ (Gamma)', min: 0.8, max: 1.0, step: 0.01, default: 0.87 },
+          { name: 'α (Alpha)', min: 1.0, max: 1.2, step: 0.01, default: 1.1 },
+          { name: 'Speed', min: 0.3, max: 1.0, step: 0.05, default: 0.5 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Rabinovich-Fabrikant - complex multi-scroll dynamics
+          const dx = y * (z - 1 + x * x) + params.p1 * x;
+          const dy = x * (3 * z + 1 - x * x) + params.p1 * y;
+          const dz = -2 * z * (params.p2 + x * y);
+          return [x + dx * dt * params.p3, y + dy * dt * params.p3, z + dz * dt * params.p3];
+        },
+        scale: 150,
+        initPos: [-1, 0, 0.5],
+        initSpread: 0.1
+      },
+      nose: {
+        name: 'Nosé-Hoover',
+        params: [
+          { name: 'a (Coupling)', min: 1.0, max: 2.0, step: 0.1, default: 1.5 },
+          { name: 'Speed', min: 0.5, max: 2.0, step: 0.1, default: 1.0 },
+          { name: 'Scale', min: 0.8, max: 1.5, step: 0.1, default: 1.0 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Nosé-Hoover thermostat from molecular dynamics
+          const dx = y;
+          const dy = -x + y * z;
+          const dz = params.p1 - y * y;
+          return [x + dx * dt * params.p2, y + dy * dt * params.p2, z + dz * dt * params.p2];
+        },
+        scale: 100 * 1,
+        initPos: [0, 0.1, 0],
+        initSpread: 0.1
+      },
+      burke: {
+        name: 'Burke-Shaw',
+        params: [
+          { name: 's (Sigma)', min: 8, max: 12, step: 0.5, default: 10 },
+          { name: 'v (Nu)', min: 4, max: 5, step: 0.1, default: 4.272 },
+          { name: 'Speed', min: 0.5, max: 1.5, step: 0.1, default: 1.0 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Burke-Shaw attractor - similar structure to Lorenz
+          const dx = -params.p1 * (x + y);
+          const dy = -y - params.p1 * x * z;
+          const dz = params.p1 * x * y + params.p2;
+          return [x + dx * dt * params.p3, y + dy * dt * params.p3, z + dz * dt * params.p3];
+        },
+        scale: 50,
+        initPos: [0.6, 0, 0],
+        initSpread: 0.1
+      },
+      genesio: {
+        name: 'Genesio-Tesi',
+        params: [
+          { name: 'a', min: 0.4, max: 0.5, step: 0.01, default: 0.44 },
+          { name: 'b', min: 1.0, max: 1.2, step: 0.02, default: 1.1 },
+          { name: 'c', min: 0.9, max: 1.1, step: 0.02, default: 1.0 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Genesio-Tesi - simple quadratic system
+          const dx = y;
+          const dy = z;
+          const dz = -params.p3 * x - params.p2 * y - params.p1 * z + x * x;
+          return [x + dx * dt, y + dy * dt, z + dz * dt];
+        },
+        scale: 100,
+        initPos: [0.1, 0.1, 0.1],
+        initSpread: 0.05
+      },
+      arneodo: {
+        name: 'Arneodo',
+        params: [
+          { name: 'a', min: -5.5, max: -5.3, step: 0.02, default: -5.5 },
+          { name: 'b', min: 3.4, max: 3.6, step: 0.02, default: 3.5 },
+          { name: 'c', min: -0.5, max: 0.5, step: 0.1, default: -1.0 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Arneodo attractor - simple chaotic system
+          const dx = y;
+          const dy = z;
+          const dz = params.p1 * x + params.p2 * y + params.p3 * z + x * x * x;
+          return [x + dx * dt, y + dy * dt, z + dz * dt];
+        },
+        scale: 100,
+        initPos: [0.1, 0, 0],
+        initSpread: 0.05
+      },
+      shimizu: {
+        name: 'Shimizu-Morioka',
+        params: [
+          { name: 'a', min: 0.7, max: 0.9, step: 0.02, default: 0.85 },
+          { name: 'b', min: 0.4, max: 0.6, step: 0.02, default: 0.5 },
+          { name: 'Speed', min: 0.5, max: 1.5, step: 0.1, default: 1.0 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Shimizu-Morioka - from laser physics
+          const dx = y;
+          const dy = (1 - z) * x - params.p1 * y;
+          const dz = -params.p2 * z + x * x;
+          return [x + dx * dt * params.p3, y + dy * dt * params.p3, z + dz * dt * params.p3];
+        },
+        scale: 100,
+        initPos: [0.1, 0.1, 0.1],
+        initSpread: 0.05
+      },
+      fourwing: {
+        name: 'Four-Wing',
+        params: [
+          { name: 'a', min: 0.1, max: 0.3, step: 0.02, default: 0.2 },
+          { name: 'b', min: 0.01, max: 0.02, step: 0.002, default: 0.01 },
+          { name: 'c', min: -0.5, max: -0.3, step: 0.02, default: -0.4 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Four-Wing attractor - beautiful multi-wing structure
+          const dx = params.p1 * x + y * z;
+          const dy = params.p2 * x + params.p3 * y - x * z;
+          const dz = -z - x * y;
+          return [x + dx * dt, y + dy * dt, z + dz * dt];
+        },
+        scale: 150,
+        initPos: [0.1, 0.1, 0.1],
+        initSpread: 0.05
+      },
+      lu: {
+        name: 'Lü',
+        params: [
+          { name: 'a', min: 35, max: 40, step: 0.5, default: 36 },
+          { name: 'b', min: 2.5, max: 3.5, step: 0.1, default: 3 },
+          { name: 'c', min: 18, max: 22, step: 0.5, default: 20 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Lü attractor - bridge between Lorenz and Chen
+          const dx = params.p1 * (y - x);
+          const dy = -x * z + params.p3 * y;
+          const dz = x * y - params.p2 * z;
+          return [x + dx * dt, y + dy * dt, z + dz * dt];
+        },
+        scale: 7,
+        initPos: [0.1, 0.1, 0.1],
+        initSpread: 0.1
+      },
+      rucklidge: {
+        name: 'Rucklidge',
+        params: [
+          { name: 'κ (Kappa)', min: 1.8, max: 2.2, step: 0.05, default: 2.0 },
+          { name: 'λ (Lambda)', min: 6.5, max: 7.0, step: 0.1, default: 6.7 },
+          { name: 'Speed', min: 0.5, max: 1.5, step: 0.1, default: 1.0 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Rucklidge attractor - double-scroll dynamics
+          const dx = -params.p1 * x + params.p2 * y - y * z;
+          const dy = x;
+          const dz = -z + y * y;
+          return [x + dx * dt * params.p3, y + dy * dt * params.p3, z + dz * dt * params.p3];
+        },
+        scale: 50,
+        initPos: [1, 0, 4.5],
+        initSpread: 0.2
+      },
+      dequan: {
+        name: 'Dequan-Li',
+        params: [
+          { name: 'a', min: 38, max: 42, step: 0.5, default: 40 },
+          { name: 'c', min: 1.5, max: 2.0, step: 0.05, default: 1.833 },
+          { name: 'd', min: 0.1, max: 0.2, step: 0.01, default: 0.16 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Dequan Li attractor - complex multi-scroll
+          const b = 11, e = 0.65, f = 20, k = 55;
+          const dx = params.p1 * (y - x) + params.p3 * x * z;
+          const dy = k * x + f * y - x * z;
+          const dz = params.p2 * z + x * y - e * x * x;
+          return [x + dx * dt * 0.3, y + dy * dt * 0.3, z + dz * dt * 0.3];
+        },
+        scale: 5,
+        initPos: [0.349, 0, -0.16],
+        initSpread: 0.05
       }
     };
     
@@ -1755,15 +2079,34 @@
     
     // Famous bifurcation presets
     const presets = {
+      // Lorenz family
       'lorenz-classic': { attractor: 'lorenz', params: { p1: 10, p2: 28, p3: 2.667 } },
       'lorenz-periodic': { attractor: 'lorenz', params: { p1: 10, p2: 24.74, p3: 2.667 } },
       'lorenz-transient': { attractor: 'lorenz', params: { p1: 10, p2: 21, p3: 2.667 } },
+      'chen-hyperchaos': { attractor: 'chen', params: { p1: 40, p2: 3, p3: 28 } },
+      'lu-bridge': { attractor: 'lu', params: { p1: 36, p2: 3, p3: 20 } },
+      // Rössler family
       'rossler-funnel': { attractor: 'rossler', params: { p1: 0.2, p2: 0.2, p3: 4 } },
       'rossler-screw': { attractor: 'rossler', params: { p1: 0.2, p2: 0.2, p3: 18 } },
-      'chen-hyperchaos': { attractor: 'chen', params: { p1: 40, p2: 3, p3: 28 } },
+      // Circuit attractors
+      'chua-doublescroll': { attractor: 'chua', params: { p1: 15.6, p2: 28, p3: -1.143 } },
+      'chua-spiral': { attractor: 'chua', params: { p1: 15, p2: 25.58, p3: -1.02 } },
+      // Multi-wing
+      'fourwing-symmetric': { attractor: 'fourwing', params: { p1: 0.2, p2: 0.01, p3: -0.4 } },
+      'dadras-triscroll': { attractor: 'dadras', params: { p1: 3.0, p2: 2.7, p3: 1.7 } },
+      'dequan-complex': { attractor: 'dequan', params: { p1: 40, p2: 1.833, p3: 0.16 } },
+      // Geometric
       'thomas-slow': { attractor: 'thomas', params: { p1: 0.18, p2: 10, p3: 1.0 } },
       'aizawa-spiral': { attractor: 'aizawa', params: { p1: 0.95, p2: 0.7, p3: 0.6 } },
-      'sprott-minimal': { attractor: 'sprott', params: { p1: 2.07, p2: 1.79, p3: 1.0 } }
+      'halvorsen-symmetric': { attractor: 'halvorsen', params: { p1: 1.4, p2: 1, p3: 1 } },
+      // Physics
+      'nose-thermostat': { attractor: 'nose', params: { p1: 1.5, p2: 1.0, p3: 1.0 } },
+      'shimizu-laser': { attractor: 'shimizu', params: { p1: 0.85, p2: 0.5, p3: 1.0 } },
+      'rabinovich-plasma': { attractor: 'rabinovich', params: { p1: 0.87, p2: 1.1, p3: 0.5 } },
+      // Simple
+      'sprott-minimal': { attractor: 'sprott', params: { p1: 2.07, p2: 1.79, p3: 1.0 } },
+      'genesio-quadratic': { attractor: 'genesio', params: { p1: 0.44, p2: 1.1, p3: 1.0 } },
+      'arneodo-simple': { attractor: 'arneodo', params: { p1: -5.5, p2: 3.5, p3: -1.0 } }
     };
     
     document.getElementById('presetSelect').addEventListener('change', (e) => {
