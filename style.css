@@ -1536,7 +1536,8 @@ select:focus-visible,
 .color-option:focus-visible,
 .hamburger-btn:focus-visible,
 .sidebar-close-btn:focus-visible,
-.action-btn:focus-visible {
+.action-btn:focus-visible,
+.playback-btn:focus-visible {
   outline: 2px solid var(--cyan);
   outline-offset: 3px;
 }
