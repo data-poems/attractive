@@ -381,8 +381,24 @@
   
   <canvas id="canvas" role="img" aria-label="Interactive 3D attractor visualization. Use controls in sidebar to modify parameters." tabindex="0"></canvas>
 
-  <button class="dice-btn" id="diceBtn" aria-label="Random combination">🎲</button>
-  <button class="info-btn" id="infoBtn" aria-label="About this visualization" aria-haspopup="dialog">?</button>
+  <!-- Floating action buttons -->
+  <div class="floating-actions" role="toolbar" aria-label="Quick actions">
+    <button class="action-btn undo-btn" id="undoBtn" disabled aria-disabled="true" aria-label="Undo last change (Ctrl+Z)" title="Undo (Ctrl+Z)">
+      <span class="action-icon">↶</span>
+    </button>
+    <button class="action-btn export-btn" id="exportBtn" aria-label="Export as PNG" title="Export PNG">
+      <span class="action-icon">📷</span>
+    </button>
+    <button class="action-btn random-btn" id="randomBtn" aria-label="Random combination" title="Random">
+      <span class="action-icon">🎲</span>
+    </button>
+    <button class="action-btn info-btn" id="infoBtn" aria-label="About this visualization" aria-haspopup="dialog" title="About">
+      <span class="action-icon">?</span>
+    </button>
+  </div>
+
+  <!-- History indicator (floating) -->
+  <div class="history-indicator-float" id="historyIndicator" aria-live="polite" aria-atomic="true"></div>
 
   <div class="stats" role="status" aria-live="polite" aria-label="Current visualization stats">
     <div class="stats-row">
