@@ -704,9 +704,15 @@
       aurora: { start: [0, 255, 136], end: [153, 0, 255] },
       lava: { start: [255, 0, 68], end: [255, 204, 0] },
       ice: { start: [255, 255, 255], end: [0, 136, 255] },
-      neon: { start: [57, 255, 20], end: [255, 20, 147] }, 
+      neon: { start: [57, 255, 20], end: [255, 20, 147] },
       matrix: { start: [0, 255, 0], end: [0, 50, 0] },
-      cyberpunk: { start: [255, 255, 0], end: [0, 255, 255] }
+      cyberpunk: { start: [255, 255, 0], end: [0, 255, 255] },
+      // New color schemes
+      pastel: { start: [255, 182, 193], end: [176, 224, 230] },
+      monochrome: { start: [255, 255, 255], end: [80, 80, 80] },
+      ember: { start: [255, 87, 34], end: [139, 0, 0] },
+      electric: { start: [0, 191, 255], end: [255, 255, 0] },
+      bloodmoon: { start: [139, 0, 0], end: [255, 140, 0] }
     };
     
     // Initialize particles with proper positions for each attractor
