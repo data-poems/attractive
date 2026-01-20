@@ -64,6 +64,10 @@
     let depthBrightness = false;
     let trailFade = true;
 
+    // Visual style system
+    let currentStyle = 'clean';
+    let roughCanvas = null;
+
     // FPS tracking
     let frameCount = 0;
     let lastFpsUpdate = performance.now();
