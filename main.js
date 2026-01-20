@@ -934,6 +934,81 @@
       electric: { start: [0, 191, 255], end: [255, 255, 0] },
       bloodmoon: { start: [139, 0, 0], end: [255, 140, 0] }
     };
+
+    // Visual styles for different rendering aesthetics
+    const VISUAL_STYLES = {
+      clean: {
+        id: 'clean',
+        name: 'Clean',
+        description: 'Crisp lines with subtle glow',
+        category: 'modern',
+        background: { type: 'solid', color: '#0a0a0a' },
+        line: { renderer: 'canvas', width: 1.5, opacity: 1.0 },
+        glow: { enabled: true, blur: 15, multiplier: 1.0 },
+        rough: null
+      },
+      pencil: {
+        id: 'pencil',
+        name: 'Pencil',
+        description: 'Hand-drawn sketch look',
+        category: 'artistic',
+        background: { type: 'solid', color: '#f5f1e6' },
+        line: { renderer: 'rough', width: 1.2, opacity: 0.85 },
+        glow: { enabled: false },
+        rough: { roughness: 1.5, bowing: 1.2 }
+      },
+      blueprint: {
+        id: 'blueprint',
+        name: 'Blueprint',
+        description: 'Technical drawing style',
+        category: 'technical',
+        background: { type: 'grid', color: '#1a3a5c', gridColor: '#2a5a8c', gridSize: 20 },
+        line: { renderer: 'canvas', width: 1.0, opacity: 1.0 },
+        glow: { enabled: true, blur: 8, multiplier: 1.0 },
+        colorOverride: [255, 255, 255],  // Force white lines
+        rough: null
+      },
+      neon: {
+        id: 'neon',
+        name: 'Neon',
+        description: 'Intense glowing effect',
+        category: 'modern',
+        background: { type: 'solid', color: '#050508' },
+        line: { renderer: 'canvas', width: 2.0, opacity: 1.0 },
+        glow: { enabled: true, blur: 25, multiplier: 2.0 },
+        rough: null
+      },
+      chalk: {
+        id: 'chalk',
+        name: 'Chalk',
+        description: 'Chalky texture on slate',
+        category: 'artistic',
+        background: { type: 'solid', color: '#2d3436' },
+        line: { renderer: 'rough', width: 2.5, opacity: 0.9 },
+        glow: { enabled: true, blur: 5, multiplier: 0.5 },
+        rough: { roughness: 2.0, bowing: 0.8 }
+      },
+      technical: {
+        id: 'technical',
+        name: 'Technical',
+        description: 'Precise thin lines on white',
+        category: 'technical',
+        background: { type: 'grid', color: '#fafaf8', gridColor: '#e0e0d8', gridSize: 25 },
+        line: { renderer: 'canvas', width: 0.8, opacity: 1.0 },
+        glow: { enabled: false },
+        rough: null
+      },
+      watercolor: {
+        id: 'watercolor',
+        name: 'Watercolor',
+        description: 'Soft, transparent strokes',
+        category: 'artistic',
+        background: { type: 'solid', color: '#fdfbf7' },
+        line: { renderer: 'canvas', width: 3.0, opacity: 0.4 },
+        glow: { enabled: true, blur: 20, multiplier: 1.0 },
+        rough: null
+      }
+    };
     
     // Initialize particles with proper positions for each attractor
     function initParticles() {
