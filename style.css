@@ -861,6 +861,34 @@ button.secondary:hover {
     padding: 16px 20px;
     font-size: 15px;
   }
+
+  /* Mobile Quick Start */
+  .quick-start {
+    padding: 14px;
+  }
+
+  .primary-btn {
+    padding: 16px;
+  }
+
+  /* Mobile Advanced Section */
+  .advanced-section > summary {
+    padding: 14px;
+  }
+
+  .subsection {
+    padding: 0 14px 14px;
+  }
+
+  /* Mobile Playback */
+  .utility-controls {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .utility-controls button {
+    padding: 14px;
+  }
 }
 
 @media (max-width: 480px) {
