@@ -1255,14 +1255,17 @@ button.secondary:hover {
   }
 
   /* Info and dice buttons - adjust position */
-  .info-btn {
+  /* Floating actions - responsive positioning */
+  .floating-actions {
     top: 16px;
     right: 16px;
+    gap: 10px;
   }
 
-  .dice-btn {
-    top: 16px;
-    right: 68px;
+  .action-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
   }
 
   /* Modal - full width with less padding */
