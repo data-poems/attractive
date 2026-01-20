@@ -951,33 +951,39 @@
       const container = document.getElementById('parametersContainer');
       const attractor = attractors[currentAttractor];
       const dataset = datasets[currentDataset];
-      
+
       container.innerHTML = '';
-      
+
       attractor.params.forEach((param, index) => {
         const paramKey = `p${index + 1}`;
         const value = currentParams[paramKey] !== undefined ? currentParams[paramKey] : param.default;
-        
+
         const group = document.createElement('div');
         group.className = 'control-group';
-        
+
         // Map to dataset parameter if available
         let labelText = param.name;
         if (dataset.params[index]) {
           labelText += ` ← ${dataset.params[index]}`;
         }
-        
+
+        // Add tooltip if available
+        const tooltipHTML = param.tooltip ?
+          `<span class="param-info" tabindex="0" role="tooltip" aria-label="${param.tooltip}">
+            <span class="param-tooltip">${param.tooltip}</span>
+          </span>` : '';
+
         group.innerHTML = `
           <div class="control-label">
-            <span>${labelText}</span>
+            <span>${labelText}${tooltipHTML}</span>
             <span class="control-value" id="param${index + 1}Value">${value.toFixed(3)}</span>
           </div>
-          <input type="range" id="param${index + 1}Slider" 
+          <input type="range" id="param${index + 1}Slider"
                  min="${param.min}" max="${param.max}" step="${param.step}" value="${value}">
         `;
-        
+
         container.appendChild(group);
-        
+
         // Add event listener
         const slider = group.querySelector('input');
         const valueDisplay = group.querySelector('.control-value');
@@ -1019,7 +1025,18 @@
 
     // Update attractor
     function updateAttractor() {
-      document.getElementById('attractorName').textContent = attractors[currentAttractor].name;
+      const attractor = attractors[currentAttractor];
+      document.getElementById('attractorName').textContent = attractor.name;
+
+      // Update description if available
+      const descEl = document.getElementById('attractorDescription');
+      if (descEl && attractor.description) {
+        descEl.textContent = attractor.description;
+        descEl.style.display = 'block';
+      } else if (descEl) {
+        descEl.style.display = 'none';
+      }
+
       loadCuratedDefaults();
       generateParameterControls();
       initParticles();
