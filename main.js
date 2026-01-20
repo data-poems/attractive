@@ -84,6 +84,7 @@
         currentAttractor,
         currentDataset,
         currentColorScheme,
+        currentStyle,
         currentParams: { ...currentParams },
         particleCount: parseInt(document.getElementById('particleSlider').value),
         speed,
@@ -122,6 +123,7 @@
       currentAttractor = state.currentAttractor;
       currentDataset = state.currentDataset;
       currentColorScheme = state.currentColorScheme;
+      currentStyle = state.currentStyle || 'clean';
       currentParams = { ...state.currentParams };
       speed = state.speed;
       trailLength = state.trailLength;
