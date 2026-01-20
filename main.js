@@ -1663,8 +1663,56 @@
     document.getElementById('speedSlider').addEventListener('input', (e) => {
       pushState();
       speed = parseFloat(e.target.value);
-      document.getElementById('speedValue').textContent = speed.toFixed(1) + '×';
+      updateSpeedDisplay();
     });
+
+    // Update all speed displays
+    function updateSpeedDisplay() {
+      document.getElementById('speedValue').textContent = speed.toFixed(1) + '×';
+      document.getElementById('speedIndicator').textContent = speed.toFixed(1) + 'x';
+    }
+
+    // Update all play/pause button states
+    function updatePlayPauseState() {
+      const sidebarBtn = document.getElementById('playPauseBtn');
+      const floatingBtn = document.getElementById('floatingPlayPauseBtn');
+
+      if (sidebarBtn) {
+        sidebarBtn.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
+      }
+      if (floatingBtn) {
+        floatingBtn.classList.toggle('paused', !isPlaying);
+        floatingBtn.setAttribute('aria-pressed', isPlaying);
+        floatingBtn.setAttribute('aria-label', isPlaying ? 'Pause animation' : 'Play animation');
+        floatingBtn.title = isPlaying ? 'Pause' : 'Play';
+      }
+    }
+
+    // Floating playback controls
+    document.getElementById('floatingPlayPauseBtn').addEventListener('click', () => {
+      isPlaying = !isPlaying;
+      updatePlayPauseState();
+      if (isPlaying) {
+        render();
+      }
+    });
+
+    document.getElementById('speedDownBtn').addEventListener('click', () => {
+      pushState();
+      speed = Math.max(0.1, speed - 0.5);
+      document.getElementById('speedSlider').value = speed;
+      updateSpeedDisplay();
+    });
+
+    document.getElementById('speedUpBtn').addEventListener('click', () => {
+      pushState();
+      speed = Math.min(5, speed + 0.5);
+      document.getElementById('speedSlider').value = speed;
+      updateSpeedDisplay();
+    });
+
+    // Initialize speed display
+    updateSpeedDisplay();
     
     // Color scheme selection with keyboard support
     const colorOptions = document.querySelectorAll('.color-option');
@@ -1785,11 +1833,10 @@
       e.target.value = '';
     });
     
-    // Play/Pause toggle
+    // Play/Pause toggle (sidebar button)
     document.getElementById('playPauseBtn').addEventListener('click', () => {
       isPlaying = !isPlaying;
-      const btn = document.getElementById('playPauseBtn');
-      btn.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
+      updatePlayPauseState();
       if (isPlaying) {
         render();
       }
