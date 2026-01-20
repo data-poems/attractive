@@ -1345,9 +1345,10 @@
           }
 
           if (trailFade) {
-            // Draw segmented trail with fading opacity
-            for (let j = 1; j < p.trail.length; j++) {
-              const prevPoint = p.trail[j - 1];
+            // Draw segmented trail with fading opacity using styled lines
+            for (let j = 1; j < p.trail.length; j += pointReduction) {
+              const prevJ = Math.max(0, j - pointReduction);
+              const prevPoint = p.trail[prevJ];
               const point = p.trail[j];
 
               // 3D rotation for previous point
@@ -1368,56 +1369,37 @@
 
               // Opacity fades from 0 at start of trail to 1 at end
               const segmentProgress = j / p.trail.length;
-              const opacity = segmentProgress * brightnessMultiplier;
+              const opacity = segmentProgress;
 
-              ctx.beginPath();
-              ctx.moveTo(prevScreenX, prevScreenY);
-              ctx.lineTo(screenX, screenY);
-
-              if (glowIntensity > 0) {
-                ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity * 0.5})`;
-              }
-
-              ctx.strokeStyle = `rgba(${Math.floor(r * brightnessMultiplier)}, ${Math.floor(g * brightnessMultiplier)}, ${Math.floor(b * brightnessMultiplier)}, ${opacity})`;
-              ctx.lineWidth = lineWidth;
-              ctx.stroke();
+              // Use the styled line drawing function
+              drawStyledLine(prevScreenX, prevScreenY, screenX, screenY, r, g, b, opacity, brightnessMultiplier);
             }
           } else {
-            // Original solid trail rendering
-            ctx.beginPath();
-            let firstPoint = true;
-
-            for (let j = 0; j < p.trail.length; j++) {
+            // Solid trail rendering using styled lines
+            for (let j = 1; j < p.trail.length; j += pointReduction) {
+              const prevJ = Math.max(0, j - pointReduction);
+              const prevPoint = p.trail[prevJ];
               const point = p.trail[j];
 
-              // 3D rotation
+              // 3D rotation for previous point
+              const prevRotX = prevPoint.y * Math.cos(rotationX) - prevPoint.z * Math.sin(rotationX);
+              const prevRotZ = prevPoint.y * Math.sin(rotationX) + prevPoint.z * Math.cos(rotationX);
+              const prevFinalX = prevPoint.x * Math.cos(rotationY) - prevRotZ * Math.sin(rotationY);
+              const prevFinalY = prevRotX;
+              const prevScreenX = centerX + prevFinalX * scale + panX;
+              const prevScreenY = centerY + prevFinalY * scale + panY;
+
+              // 3D rotation for current point
               const rotX_pt = point.y * Math.cos(rotationX) - point.z * Math.sin(rotationX);
               const rotZ_pt = point.y * Math.sin(rotationX) + point.z * Math.cos(rotationX);
               const finalX = point.x * Math.cos(rotationY) - rotZ_pt * Math.sin(rotationY);
               const finalY = rotX_pt;
-
               const screenX = centerX + finalX * scale + panX;
               const screenY = centerY + finalY * scale + panY;
 
-              if (firstPoint) {
-                ctx.moveTo(screenX, screenY);
-                firstPoint = false;
-              } else {
-                ctx.lineTo(screenX, screenY);
-              }
+              // Use the styled line drawing function with full opacity
+              drawStyledLine(prevScreenX, prevScreenY, screenX, screenY, r, g, b, 1.0, brightnessMultiplier);
             }
-
-            const finalR = Math.floor(r * brightnessMultiplier);
-            const finalG = Math.floor(g * brightnessMultiplier);
-            const finalB = Math.floor(b * brightnessMultiplier);
-
-            if (glowIntensity > 0) {
-              ctx.shadowColor = `rgba(${finalR}, ${finalG}, ${finalB}, 0.5)`;
-            }
-
-            ctx.strokeStyle = `rgb(${finalR}, ${finalG}, ${finalB})`;
-            ctx.lineWidth = lineWidth;
-            ctx.stroke();
           }
         }
       });
