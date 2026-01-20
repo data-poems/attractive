@@ -1483,6 +1483,29 @@ button.secondary:hover {
     font-size: 15px;
   }
 
+  /* Floating playback - very compact for small screens */
+  .floating-playback {
+    bottom: 12px;
+    padding: 5px 10px;
+    gap: 4px;
+    border-radius: 24px;
+  }
+
+  .playback-btn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .play-pause-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .speed-indicator {
+    font-size: 10px;
+    min-width: 28px;
+  }
+
   .hamburger-btn {
     top: 12px;
     left: 12px;
