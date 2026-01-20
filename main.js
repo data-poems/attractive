@@ -873,44 +873,99 @@
         p.trail.push({ x: nx, y: ny, z: nz });
         while (p.trail.length > trailLength) p.trail.shift();
 
-        // Draw trail as continuous path
+        // Draw trail as continuous path (or segmented for trail fade)
         if (p.trail.length > 1) {
-          ctx.beginPath();
-          let firstPoint = true;
-
-          for (let j = 0; j < p.trail.length; j++) {
-            const point = p.trail[j];
-
-            // 3D rotation
-            const rotX = point.y * Math.cos(rotationX) - point.z * Math.sin(rotationX);
-            const rotZ = point.y * Math.sin(rotationX) + point.z * Math.cos(rotationX);
-            const finalX = point.x * Math.cos(rotationY) - rotZ * Math.sin(rotationY);
-            const finalY = rotX;
-
-            const screenX = centerX + finalX * scale + panX;
-            const screenY = centerY + finalY * scale + panY;
-
-            if (firstPoint) {
-              ctx.moveTo(screenX, screenY);
-              firstPoint = false;
-            } else {
-              ctx.lineTo(screenX, screenY);
-            }
-          }
-
           // Color based on particle index for variety
           const t = i / particles.length;
           const r = Math.floor(colors.start[0] + (colors.end[0] - colors.start[0]) * t);
           const g = Math.floor(colors.start[1] + (colors.end[1] - colors.start[1]) * t);
           const b = Math.floor(colors.start[2] + (colors.end[2] - colors.start[2]) * t);
 
-          if (glowIntensity > 0) {
-            ctx.shadowColor = `rgba(${r}, ${g}, ${b}, 0.5)`;
+          // Calculate depth brightness factor from last point
+          let brightnessMultiplier = 1;
+          if (depthBrightness && p.trail.length > 0) {
+            const lastPoint = p.trail[p.trail.length - 1];
+            const rotZ = lastPoint.y * Math.sin(rotationX) + lastPoint.z * Math.cos(rotationX);
+            const finalZ = lastPoint.x * Math.sin(rotationY) + rotZ * Math.cos(rotationY);
+            // Normalize depth to 0-1 range and map to brightness (closer = brighter)
+            brightnessMultiplier = 0.4 + 0.6 * (1 - Math.max(0, Math.min(1, (finalZ + 50) / 100)));
           }
 
-          ctx.strokeStyle = `rgb(${r}, ${g}, ${b})`;
-          ctx.lineWidth = 1.5;
-          ctx.stroke();
+          if (trailFade) {
+            // Draw segmented trail with fading opacity
+            for (let j = 1; j < p.trail.length; j++) {
+              const prevPoint = p.trail[j - 1];
+              const point = p.trail[j];
+
+              // 3D rotation for previous point
+              const prevRotX = prevPoint.y * Math.cos(rotationX) - prevPoint.z * Math.sin(rotationX);
+              const prevRotZ = prevPoint.y * Math.sin(rotationX) + prevPoint.z * Math.cos(rotationX);
+              const prevFinalX = prevPoint.x * Math.cos(rotationY) - prevRotZ * Math.sin(rotationY);
+              const prevFinalY = prevRotX;
+              const prevScreenX = centerX + prevFinalX * scale + panX;
+              const prevScreenY = centerY + prevFinalY * scale + panY;
+
+              // 3D rotation for current point
+              const rotX_pt = point.y * Math.cos(rotationX) - point.z * Math.sin(rotationX);
+              const rotZ_pt = point.y * Math.sin(rotationX) + point.z * Math.cos(rotationX);
+              const finalX = point.x * Math.cos(rotationY) - rotZ_pt * Math.sin(rotationY);
+              const finalY = rotX_pt;
+              const screenX = centerX + finalX * scale + panX;
+              const screenY = centerY + finalY * scale + panY;
+
+              // Opacity fades from 0 at start of trail to 1 at end
+              const segmentProgress = j / p.trail.length;
+              const opacity = segmentProgress * brightnessMultiplier;
+
+              ctx.beginPath();
+              ctx.moveTo(prevScreenX, prevScreenY);
+              ctx.lineTo(screenX, screenY);
+
+              if (glowIntensity > 0) {
+                ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity * 0.5})`;
+              }
+
+              ctx.strokeStyle = `rgba(${Math.floor(r * brightnessMultiplier)}, ${Math.floor(g * brightnessMultiplier)}, ${Math.floor(b * brightnessMultiplier)}, ${opacity})`;
+              ctx.lineWidth = lineWidth;
+              ctx.stroke();
+            }
+          } else {
+            // Original solid trail rendering
+            ctx.beginPath();
+            let firstPoint = true;
+
+            for (let j = 0; j < p.trail.length; j++) {
+              const point = p.trail[j];
+
+              // 3D rotation
+              const rotX_pt = point.y * Math.cos(rotationX) - point.z * Math.sin(rotationX);
+              const rotZ_pt = point.y * Math.sin(rotationX) + point.z * Math.cos(rotationX);
+              const finalX = point.x * Math.cos(rotationY) - rotZ_pt * Math.sin(rotationY);
+              const finalY = rotX_pt;
+
+              const screenX = centerX + finalX * scale + panX;
+              const screenY = centerY + finalY * scale + panY;
+
+              if (firstPoint) {
+                ctx.moveTo(screenX, screenY);
+                firstPoint = false;
+              } else {
+                ctx.lineTo(screenX, screenY);
+              }
+            }
+
+            const finalR = Math.floor(r * brightnessMultiplier);
+            const finalG = Math.floor(g * brightnessMultiplier);
+            const finalB = Math.floor(b * brightnessMultiplier);
+
+            if (glowIntensity > 0) {
+              ctx.shadowColor = `rgba(${finalR}, ${finalG}, ${finalB}, 0.5)`;
+            }
+
+            ctx.strokeStyle = `rgb(${finalR}, ${finalG}, ${finalB})`;
+            ctx.lineWidth = lineWidth;
+            ctx.stroke();
+          }
         }
       });
       
