@@ -110,6 +110,19 @@
       // New Attractors
       { dataset: 'climate', attractor: 'tsucs', color: 'neon', params: { p1: 40, p2: 0.833, p3: 0.65 } },
       { dataset: 'orbital', attractor: 'newton_leipnik', color: 'cyberpunk', params: { p1: 0.4, p2: 0.9, p3: 1.0 } },
+
+      // Iterative map attractors
+      { dataset: 'crypto', attractor: 'clifford', color: 'electric', params: { p1: -1.4, p2: 1.6, p3: 1.0 } },
+      { dataset: 'trending', attractor: 'dejong', color: 'pastel', params: { p1: -2.24, p2: 0.43, p3: -0.65 } },
+      { dataset: 'brain', attractor: 'pickover', color: 'cosmic', params: { p1: -0.97, p2: 2.88, p3: 0.77 } },
+      { dataset: 'seismic', attractor: 'clifford', color: 'bloodmoon', params: { p1: 1.5, p2: -1.8, p3: 1.7 } },
+      { dataset: 'ocean', attractor: 'dejong', color: 'monochrome', params: { p1: 1.4, p2: -2.3, p3: 2.4 } },
+
+      // New color scheme highlights
+      { dataset: 'heartrate', attractor: 'lorenz', color: 'ember', params: { p1: 10, p2: 28, p3: 2.667 } },
+      { dataset: 'power', attractor: 'chua', color: 'electric', params: { p1: 15.6, p2: 28, p3: -1.143 } },
+      { dataset: 'pandemic', attractor: 'rossler', color: 'bloodmoon', params: { p1: 0.2, p2: 0.2, p3: 5.7 } },
+      { dataset: 'weather', attractor: 'halvorsen', color: 'pastel', params: { p1: 1.4, p2: 1, p3: 1 } },
     ];
 
     // Dataset configurations with proper parameter names
