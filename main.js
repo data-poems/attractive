@@ -215,7 +215,9 @@
         },
         scale: 8,
         initPos: [0.1, 0, 0],
-        initSpread: 0.5
+        initSpread: 0.5,
+        recommendedSpeed: 3.0,
+        recommendedZoom: 1.0
       },
       rossler: {
         name: 'Rössler',
@@ -232,7 +234,9 @@
         },
         scale: 15,
         initPos: [1, 1, 1],
-        initSpread: 0.3
+        initSpread: 0.3,
+        recommendedSpeed: 4.0,
+        recommendedZoom: 0.8
       },
       chen: {
         name: 'Chen',
@@ -249,7 +253,9 @@
         },
         scale: 6,
         initPos: [-0.1, 0.5, -0.6],
-        initSpread: 0.3
+        initSpread: 0.3,
+        recommendedSpeed: 2.5,
+        recommendedZoom: 1.2
       },
       aizawa: {
         name: 'Aizawa',
