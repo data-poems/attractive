@@ -245,13 +245,13 @@ input[type="range"]::-moz-range-thumb {
 
 .color-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
 }
 
 .color-option {
-  height: 48px;
-  border-radius: 8px;
+  height: 40px;
+  border-radius: 6px;
   cursor: pointer;
   border: 2px solid transparent;
   transition: all 0.2s;
@@ -683,10 +683,10 @@ button.secondary:hover {
     font-size: 13px;
   }
 
-  /* Color grid - 2 columns for better touch targets */
+  /* Color grid - 3 columns for better touch targets */
   .color-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
   }
 
   .color-option {
