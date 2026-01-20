@@ -1333,30 +1333,56 @@
       const { r: sr, g: sg, b: sb } = getStyledColor(r, g, b, style);
 
       // Apply brightness multiplier
-      const fr = Math.floor(sr * brightnessMultiplier);
-      const fg = Math.floor(sg * brightnessMultiplier);
-      const fb = Math.floor(sb * brightnessMultiplier);
+      const fr = Math.min(255, Math.floor(sr * brightnessMultiplier));
+      const fg = Math.min(255, Math.floor(sg * brightnessMultiplier));
+      const fb = Math.min(255, Math.floor(sb * brightnessMultiplier));
 
       // Calculate effective opacity
-      const effectiveOpacity = alpha * (style.line.opacity || 1.0);
+      let effectiveOpacity = alpha * (style.line.opacity || 1.0);
 
-      // Combine style line width with user's lineWidth setting (style as base, user as multiplier)
+      // Phosphor decay effect (oscilloscope) - exponential fade
+      if (style.phosphorDecay) {
+        effectiveOpacity = Math.pow(alpha, 0.5) * (style.line.opacity || 1.0);
+      }
+
+      // Combine style line width with user's lineWidth setting
       const effectiveLineWidth = style.line.width * (lineWidth / 1.5);
+
+      // Set line cap
+      ctx.lineCap = style.line.lineCap || 'butt';
+      ctx.lineJoin = 'round';
 
       if (style.line.renderer === 'rough' && roughCanvas && style.rough) {
         // Use rough.js for hand-drawn effect
-        // Reduce roughness for older trail segments (more transparent = smoother)
         const adjustedRoughness = style.rough.roughness * Math.max(0.3, alpha);
 
         try {
-          roughCanvas.line(x1, y1, x2, y2, {
-            stroke: `rgba(${fr}, ${fg}, ${fb}, ${effectiveOpacity})`,
-            strokeWidth: effectiveLineWidth,
-            roughness: adjustedRoughness,
-            bowing: style.rough.bowing
-          });
+          // Multi-stroke for ink/chalk effect
+          if (style.multiStroke) {
+            // Draw multiple slightly offset strokes for richer texture
+            const offsets = [
+              { dx: 0, dy: 0, opacity: 1.0 },
+              { dx: 0.5, dy: 0.3, opacity: 0.6 },
+              { dx: -0.3, dy: 0.5, opacity: 0.4 }
+            ];
+            offsets.forEach(({ dx, dy, opacity }) => {
+              roughCanvas.line(x1 + dx, y1 + dy, x2 + dx, y2 + dy, {
+                stroke: `rgba(${fr}, ${fg}, ${fb}, ${effectiveOpacity * opacity})`,
+                strokeWidth: effectiveLineWidth * (opacity === 1 ? 1 : 0.7),
+                roughness: adjustedRoughness * (1 + Math.random() * 0.3),
+                bowing: style.rough.bowing * (1 + Math.random() * 0.2)
+              });
+            });
+          } else {
+            roughCanvas.line(x1, y1, x2, y2, {
+              stroke: `rgba(${fr}, ${fg}, ${fb}, ${effectiveOpacity})`,
+              strokeWidth: effectiveLineWidth,
+              roughness: adjustedRoughness,
+              bowing: style.rough.bowing
+            });
+          }
         } catch (e) {
-          // Fallback to canvas if rough.js fails
+          // Fallback to canvas
           ctx.beginPath();
           ctx.moveTo(x1, y1);
           ctx.lineTo(x2, y2);
@@ -1366,27 +1392,67 @@
         }
       } else {
         // Standard canvas rendering
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        ctx.strokeStyle = `rgba(${fr}, ${fg}, ${fb}, ${effectiveOpacity})`;
-        ctx.lineWidth = effectiveLineWidth;
 
-        // Apply glow if enabled for style
-        if (style.glow && style.glow.enabled && glowIntensity > 0) {
-          const glowBlur = style.glow.blur * (style.glow.multiplier || 1.0);
-          ctx.shadowColor = `rgba(${fr}, ${fg}, ${fb}, ${effectiveOpacity * 0.5})`;
-          ctx.shadowBlur = glowBlur * (glowIntensity / 20); // Scale by user glow setting
-        } else {
-          ctx.shadowBlur = 0;
-          ctx.shadowColor = 'transparent';
+        // Double glow for neon effect - draw a wider, more diffuse glow first
+        if (style.doubleGlow && style.glow && style.glow.enabled && glowIntensity > 0) {
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.strokeStyle = `rgba(${fr}, ${fg}, ${fb}, ${effectiveOpacity * 0.3})`;
+          ctx.lineWidth = effectiveLineWidth * 3;
+          ctx.shadowColor = `rgba(${fr}, ${fg}, ${fb}, 0.8)`;
+          ctx.shadowBlur = style.glow.blur * 2 * (glowIntensity / 20);
+          ctx.stroke();
         }
 
-        ctx.stroke();
+        // Multi-stroke for watercolor bleeding effect
+        if (style.multiStroke && !style.rough) {
+          const strokes = [
+            { offset: 0, widthMult: 1.0, opacityMult: 1.0 },
+            { offset: 1.5, widthMult: 1.3, opacityMult: 0.3 },
+            { offset: -1.5, widthMult: 1.3, opacityMult: 0.3 },
+            { offset: 0, widthMult: 2.0, opacityMult: 0.15 }
+          ];
+          strokes.forEach(({ offset, widthMult, opacityMult }) => {
+            ctx.beginPath();
+            // Perpendicular offset
+            const dx = y2 - y1;
+            const dy = x1 - x2;
+            const len = Math.sqrt(dx * dx + dy * dy) || 1;
+            const ox = (dx / len) * offset;
+            const oy = (dy / len) * offset;
+            ctx.moveTo(x1 + ox, y1 + oy);
+            ctx.lineTo(x2 + ox, y2 + oy);
+            ctx.strokeStyle = `rgba(${fr}, ${fg}, ${fb}, ${effectiveOpacity * opacityMult})`;
+            ctx.lineWidth = effectiveLineWidth * widthMult;
+            ctx.shadowBlur = 0;
+            ctx.stroke();
+          });
+        } else {
+          // Standard single stroke
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.strokeStyle = `rgba(${fr}, ${fg}, ${fb}, ${effectiveOpacity})`;
+          ctx.lineWidth = effectiveLineWidth;
 
-        // Reset shadow after drawing to prevent bleeding
+          // Apply glow if enabled
+          if (style.glow && style.glow.enabled && glowIntensity > 0) {
+            const glowBlur = style.glow.blur * (style.glow.multiplier || 1.0);
+            ctx.shadowColor = `rgba(${fr}, ${fg}, ${fb}, ${effectiveOpacity * 0.6})`;
+            ctx.shadowBlur = glowBlur * (glowIntensity / 20);
+          } else {
+            ctx.shadowBlur = 0;
+            ctx.shadowColor = 'transparent';
+          }
+
+          ctx.stroke();
+        }
+
+        // Reset
         ctx.shadowBlur = 0;
         ctx.shadowColor = 'transparent';
+        ctx.lineCap = 'butt';
       }
     }
 
