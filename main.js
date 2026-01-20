@@ -1181,8 +1181,8 @@
       // Draw grid if style has grid background
       if (bg.type === 'grid') {
         ctx.strokeStyle = bg.gridColor;
-        ctx.lineWidth = 0.5;
-        ctx.globalAlpha = 0.5;
+        ctx.lineWidth = bg.gridWidth || 0.5;
+        ctx.globalAlpha = 0.6;
         ctx.beginPath();
 
         // Vertical lines
@@ -1198,6 +1198,74 @@
         }
 
         ctx.stroke();
+        ctx.globalAlpha = 1.0;
+      }
+
+      // Parchment texture (Da Vinci style)
+      if (bg.type === 'parchment' && bg.texture) {
+        ctx.globalAlpha = 0.08;
+        for (let i = 0; i < 3000; i++) {
+          const x = Math.random() * canvas.width;
+          const y = Math.random() * canvas.height;
+          const size = Math.random() * 2 + 0.5;
+          ctx.fillStyle = Math.random() > 0.5 ? '#8b7355' : '#a08060';
+          ctx.fillRect(x, y, size, size);
+        }
+        // Add some aging stains
+        ctx.globalAlpha = 0.03;
+        for (let i = 0; i < 5; i++) {
+          const x = Math.random() * canvas.width;
+          const y = Math.random() * canvas.height;
+          const r = Math.random() * 150 + 50;
+          const gradient = ctx.createRadialGradient(x, y, 0, x, y, r);
+          gradient.addColorStop(0, '#6b5344');
+          gradient.addColorStop(1, 'transparent');
+          ctx.fillStyle = gradient;
+          ctx.fillRect(x - r, y - r, r * 2, r * 2);
+        }
+        ctx.globalAlpha = 1.0;
+      }
+
+      // Blackboard texture (Chalk style)
+      if (bg.type === 'blackboard' && bg.texture) {
+        ctx.globalAlpha = 0.15;
+        for (let i = 0; i < 2000; i++) {
+          const x = Math.random() * canvas.width;
+          const y = Math.random() * canvas.height;
+          ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.1})`;
+          ctx.fillRect(x, y, Math.random() * 3, 1);
+        }
+        ctx.globalAlpha = 1.0;
+      }
+
+      // CRT scanlines (Oscilloscope style)
+      if (bg.type === 'crt') {
+        ctx.globalAlpha = 0.08;
+        ctx.fillStyle = '#001500';
+        for (let y = 0; y < canvas.height; y += 3) {
+          ctx.fillRect(0, y, canvas.width, 1);
+        }
+        // Subtle vignette
+        const vignette = ctx.createRadialGradient(
+          canvas.width / 2, canvas.height / 2, canvas.height * 0.3,
+          canvas.width / 2, canvas.height / 2, canvas.height * 0.8
+        );
+        vignette.addColorStop(0, 'transparent');
+        vignette.addColorStop(1, 'rgba(0, 0, 0, 0.4)');
+        ctx.fillStyle = vignette;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.globalAlpha = 1.0;
+      }
+
+      // Paper texture (Watercolor style)
+      if (bg.type === 'paper' && bg.texture) {
+        ctx.globalAlpha = 0.04;
+        for (let i = 0; i < 1500; i++) {
+          const x = Math.random() * canvas.width;
+          const y = Math.random() * canvas.height;
+          ctx.fillStyle = Math.random() > 0.5 ? '#d0d0c8' : '#e8e8e0';
+          ctx.fillRect(x, y, Math.random() * 4 + 1, Math.random() * 4 + 1);
+        }
         ctx.globalAlpha = 1.0;
       }
     }
