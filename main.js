@@ -985,6 +985,8 @@
           const val = parseFloat(e.target.value);
           currentParams[paramKey] = val;
           valueDisplay.textContent = val.toFixed(3);
+          // Update mapping display when parameter changes
+          updateMappingDisplay();
         });
       });
     }
@@ -1010,8 +1012,11 @@
       const dataset = datasets[currentDataset];
       document.getElementById('datasetInfo').innerHTML = dataset.info;
       document.getElementById('datasetName').textContent = dataset.name;
+
+      // Update mapping display
+      updateMappingDisplay();
     }
-    
+
     // Update attractor
     function updateAttractor() {
       document.getElementById('attractorName').textContent = attractors[currentAttractor].name;
@@ -1802,6 +1807,38 @@
           }
           break;
       }
+    });
+
+    // Mood filter functionality
+    let currentMoodFilter = 'all';
+    const moodButtons = document.querySelectorAll('.mood-btn');
+    const colorCategories = document.querySelectorAll('.color-category');
+
+    moodButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentMoodFilter = btn.dataset.mood;
+
+        // Update active state
+        moodButtons.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        // Filter color categories
+        if (currentMoodFilter === 'all') {
+          colorCategories.forEach(cat => cat.classList.remove('hidden'));
+        } else {
+          colorCategories.forEach(cat => {
+            if (cat.dataset.category === currentMoodFilter) {
+              cat.classList.remove('hidden');
+            } else {
+              cat.classList.add('hidden');
+            }
+          });
+        }
+      });
     });
 
     // Generate mock data values for visualization
