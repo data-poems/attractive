@@ -60,6 +60,9 @@
     // New controls
     let trailLength = 25;
     let glowIntensity = 0;
+    let lineWidth = 1.5;
+    let depthBrightness = false;
+    let trailFade = true;
 
     // FPS tracking
     let frameCount = 0;
