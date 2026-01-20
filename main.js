@@ -1640,6 +1640,25 @@
       currentColorScheme = combo.color;
       currentParams = { ...combo.params };
 
+      // Apply style if included in combo
+      if (combo.style) {
+        currentStyle = combo.style;
+
+        // Update style UI
+        document.querySelectorAll('.style-card').forEach(c => {
+          const isActive = c.dataset.style === currentStyle;
+          c.classList.toggle('active', isActive);
+          c.setAttribute('aria-checked', isActive ? 'true' : 'false');
+          c.setAttribute('tabindex', isActive ? '0' : '-1');
+        });
+        updateStyleInfo(currentStyle);
+
+        // Initialize rough canvas if needed
+        if (VISUAL_STYLES[currentStyle].line.renderer === 'rough') {
+          initRoughCanvas();
+        }
+      }
+
       document.getElementById('datasetSelect').value = currentDataset;
       document.getElementById('attractorSelect').value = currentAttractor;
 
