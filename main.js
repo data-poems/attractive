@@ -1729,20 +1729,26 @@
       exportCanvas.width = canvas.width;
       exportCanvas.height = canvas.height;
       const exportCtx = exportCanvas.getContext('2d');
-      
+
       // Copy current canvas
       exportCtx.drawImage(canvas, 0, 0);
-      
+
+      // Determine watermark colors based on style (light vs dark background)
+      const style = VISUAL_STYLES[currentStyle];
+      const isLightBg = ['pencil', 'technical', 'watercolor'].includes(currentStyle);
+      const watermarkColor = isLightBg ? 'rgba(100, 100, 100, 0.7)' : 'rgba(0, 255, 255, 0.6)';
+      const infoColor = isLightBg ? 'rgba(60, 60, 60, 0.8)' : 'rgba(255, 255, 255, 0.7)';
+
       // Add watermark
       exportCtx.font = '14px Inter, sans-serif';
-      exportCtx.fillStyle = 'rgba(0, 255, 255, 0.6)';
+      exportCtx.fillStyle = watermarkColor;
       exportCtx.textAlign = 'right';
       exportCtx.fillText('dr.eamer.dev', exportCanvas.width - 20, exportCanvas.height - 20);
-      
+
       // Add attractor info
       exportCtx.textAlign = 'left';
-      exportCtx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-      exportCtx.fillText(`${attractors[currentAttractor].name} Attractor · ${datasets[currentDataset].name} Data`, 20, exportCanvas.height - 20);
+      exportCtx.fillStyle = infoColor;
+      exportCtx.fillText(`${attractors[currentAttractor].name} Attractor · ${datasets[currentDataset].name} Data · ${style.name} Style`, 20, exportCanvas.height - 20);
       
       // Download
       const link = document.createElement('a');
