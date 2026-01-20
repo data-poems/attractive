@@ -835,6 +835,95 @@ button.secondary:hover {
   box-shadow: 0 4px 16px rgba(0, 255, 255, 0.3);
 }
 
+/* ================================
+   FLOATING PLAYBACK CONTROLS
+   ================================ */
+.floating-playback {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(20, 20, 20, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 28px;
+  padding: 8px 16px;
+  backdrop-filter: blur(10px);
+  z-index: 60;
+}
+
+.playback-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--gray-200);
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.playback-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #fff;
+}
+
+.playback-btn:active {
+  transform: scale(0.95);
+}
+
+/* Play/Pause button - larger and accent colored */
+.play-pause-btn {
+  width: 52px;
+  height: 52px;
+  background: rgba(0, 255, 255, 0.15);
+  border-color: rgba(0, 255, 255, 0.4);
+  color: var(--cyan);
+}
+
+.play-pause-btn:hover {
+  background: rgba(0, 255, 255, 0.25);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+}
+
+/* Show/hide play vs pause icons based on state */
+.play-pause-btn .play-icon {
+  display: none;
+}
+.play-pause-btn .pause-icon {
+  display: block;
+}
+.play-pause-btn.paused .play-icon {
+  display: block;
+}
+.play-pause-btn.paused .pause-icon {
+  display: none;
+}
+
+/* Speed buttons */
+.speed-down-btn:hover,
+.speed-up-btn:hover {
+  color: var(--magenta);
+  border-color: rgba(255, 0, 255, 0.4);
+}
+
+/* Speed indicator */
+.speed-indicator {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-400);
+  min-width: 36px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
 /* Stats */
 .stats {
   position: fixed;
