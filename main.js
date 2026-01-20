@@ -1272,6 +1272,7 @@
 
     // Get the effective line color for current style
     function getStyledColor(r, g, b, style) {
+      // Color override takes precedence
       if (style.colorOverride) {
         return {
           r: style.colorOverride[0],
@@ -1279,6 +1280,50 @@
           b: style.colorOverride[2]
         };
       }
+
+      // Apply color transforms
+      if (style.colorTransform) {
+        switch (style.colorTransform) {
+          case 'sepia':
+            // Convert to sepia/brown ink tones
+            const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+            return {
+              r: Math.min(255, gray * 0.6 + 60),
+              g: Math.min(255, gray * 0.4 + 30),
+              b: Math.min(255, gray * 0.2 + 10)
+            };
+
+          case 'saturate':
+            // Boost saturation for neon effect
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            const mid = (max + min) / 2;
+            const boost = 1.5;
+            return {
+              r: Math.min(255, Math.max(0, mid + (r - mid) * boost)),
+              g: Math.min(255, Math.max(0, mid + (g - mid) * boost)),
+              b: Math.min(255, Math.max(0, mid + (b - mid) * boost))
+            };
+
+          case 'pastel':
+            // Soften to chalk pastel colors
+            return {
+              r: Math.floor(r * 0.6 + 100),
+              g: Math.floor(g * 0.6 + 100),
+              b: Math.floor(b * 0.6 + 100)
+            };
+
+          case 'watercolor':
+            // Muted, natural pigment colors
+            const lum = (r + g + b) / 3;
+            return {
+              r: Math.floor(r * 0.7 + lum * 0.2),
+              g: Math.floor(g * 0.7 + lum * 0.2),
+              b: Math.floor(b * 0.7 + lum * 0.2)
+            };
+        }
+      }
+
       return { r, g, b };
     }
 
