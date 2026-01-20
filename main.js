@@ -1125,6 +1125,117 @@
       initParticles();
     }
     
+    // Initialize rough.js canvas when needed
+    function initRoughCanvas() {
+      if (typeof rough !== 'undefined' && canvas) {
+        roughCanvas = rough.canvas(canvas);
+      }
+    }
+
+    // Render background based on current visual style
+    function renderBackground() {
+      const style = VISUAL_STYLES[currentStyle];
+      const bg = style.background;
+
+      // Fill base background
+      ctx.fillStyle = bg.color;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw grid if style has grid background
+      if (bg.type === 'grid') {
+        ctx.strokeStyle = bg.gridColor;
+        ctx.lineWidth = 0.5;
+        ctx.globalAlpha = 0.5;
+        ctx.beginPath();
+
+        // Vertical lines
+        for (let x = 0; x <= canvas.width; x += bg.gridSize) {
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, canvas.height);
+        }
+
+        // Horizontal lines
+        for (let y = 0; y <= canvas.height; y += bg.gridSize) {
+          ctx.moveTo(0, y);
+          ctx.lineTo(canvas.width, y);
+        }
+
+        ctx.stroke();
+        ctx.globalAlpha = 1.0;
+      }
+    }
+
+    // Get the effective line color for current style
+    function getStyledColor(r, g, b, style) {
+      if (style.colorOverride) {
+        return {
+          r: style.colorOverride[0],
+          g: style.colorOverride[1],
+          b: style.colorOverride[2]
+        };
+      }
+      return { r, g, b };
+    }
+
+    // Draw a styled line segment using canvas or rough.js
+    function drawStyledLine(x1, y1, x2, y2, r, g, b, alpha, brightnessMultiplier) {
+      const style = VISUAL_STYLES[currentStyle];
+      const { r: sr, g: sg, b: sb } = getStyledColor(r, g, b, style);
+
+      // Apply brightness multiplier
+      const fr = Math.floor(sr * brightnessMultiplier);
+      const fg = Math.floor(sg * brightnessMultiplier);
+      const fb = Math.floor(sb * brightnessMultiplier);
+
+      // Calculate effective opacity
+      const effectiveOpacity = alpha * (style.line.opacity || 1.0);
+
+      if (style.line.renderer === 'rough' && roughCanvas && style.rough) {
+        // Use rough.js for hand-drawn effect
+        // Reduce roughness for older trail segments (more transparent = smoother)
+        const adjustedRoughness = style.rough.roughness * Math.max(0.3, alpha);
+
+        try {
+          roughCanvas.line(x1, y1, x2, y2, {
+            stroke: `rgba(${fr}, ${fg}, ${fb}, ${effectiveOpacity})`,
+            strokeWidth: style.line.width,
+            roughness: adjustedRoughness,
+            bowing: style.rough.bowing
+          });
+        } catch (e) {
+          // Fallback to canvas if rough.js fails
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.strokeStyle = `rgba(${fr}, ${fg}, ${fb}, ${effectiveOpacity})`;
+          ctx.lineWidth = style.line.width;
+          ctx.stroke();
+        }
+      } else {
+        // Standard canvas rendering
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.strokeStyle = `rgba(${fr}, ${fg}, ${fb}, ${effectiveOpacity})`;
+        ctx.lineWidth = style.line.width;
+
+        // Apply glow if enabled for style
+        if (style.glow && style.glow.enabled && glowIntensity > 0) {
+          const glowBlur = style.glow.blur * (style.glow.multiplier || 1.0);
+          ctx.shadowColor = `rgba(${fr}, ${fg}, ${fb}, ${effectiveOpacity * 0.5})`;
+          ctx.shadowBlur = glowBlur * (glowIntensity / 20); // Scale by user glow setting
+        }
+
+        ctx.stroke();
+      }
+    }
+
+    // Get point reduction factor for rough.js styles (performance optimization)
+    function getPointReductionFactor() {
+      const style = VISUAL_STYLES[currentStyle];
+      return style.line.renderer === 'rough' ? 3 : 1;
+    }
+
     // Render loop - clean clear each frame with optional glow
     function render() {
       // FPS tracking
@@ -1138,9 +1249,8 @@
         if (fpsEl) fpsEl.textContent = currentFps;
       }
 
-      // Clear canvas completely
-      ctx.fillStyle = '#0a0a0a';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Clear canvas and render background based on style
+      renderBackground();
 
       const dt = 0.005 * speed;
       const centerX = canvas.width / 2;
