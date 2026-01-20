@@ -2266,6 +2266,8 @@
     function init() {
       // Ensure canvas is properly sized for current viewport
       resizeCanvas();
+      // Initialize rough.js canvas for hand-drawn styles
+      initRoughCanvas();
       updateAttractor();
       updateHistoryIndicator();
       updateMappingDisplay();
