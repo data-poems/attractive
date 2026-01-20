@@ -2072,6 +2072,127 @@
       });
     });
 
+    // ================================
+    // VISUAL STYLE SYSTEM UI
+    // ================================
+
+    // Initialize style grid with all styles
+    function initStyleUI() {
+      const grid = document.getElementById('styleGrid');
+      if (!grid) return;
+
+      // Clear existing content
+      grid.innerHTML = '';
+
+      // Create style cards
+      Object.values(VISUAL_STYLES).forEach(style => {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'style-card' + (style.id === currentStyle ? ' active' : '');
+        card.dataset.style = style.id;
+        card.dataset.category = style.category;
+        card.title = style.name;
+        card.setAttribute('role', 'radio');
+        card.setAttribute('aria-checked', style.id === currentStyle ? 'true' : 'false');
+        card.setAttribute('tabindex', style.id === currentStyle ? '0' : '-1');
+        card.innerHTML = `<span class="style-label">${style.name}</span>`;
+
+        card.addEventListener('click', () => selectStyle(style.id));
+        card.addEventListener('keydown', (e) => handleStyleKeyboard(e, style.id));
+
+        grid.appendChild(card);
+      });
+
+      // Set up category filter buttons
+      document.querySelectorAll('.style-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => filterStylesByCategory(btn.dataset.category));
+      });
+
+      // Update info display
+      updateStyleInfo(currentStyle);
+    }
+
+    // Select a visual style
+    function selectStyle(styleId) {
+      if (!VISUAL_STYLES[styleId]) return;
+
+      pushState();  // For undo
+      currentStyle = styleId;
+
+      // Update UI
+      document.querySelectorAll('.style-card').forEach(c => {
+        const isActive = c.dataset.style === styleId;
+        c.classList.toggle('active', isActive);
+        c.setAttribute('aria-checked', isActive ? 'true' : 'false');
+        c.setAttribute('tabindex', isActive ? '0' : '-1');
+      });
+
+      updateStyleInfo(styleId);
+
+      // Initialize rough canvas if needed for this style
+      if (VISUAL_STYLES[styleId].line.renderer === 'rough') {
+        initRoughCanvas();
+      }
+    }
+
+    // Update style info display
+    function updateStyleInfo(styleId) {
+      const style = VISUAL_STYLES[styleId];
+      const infoEl = document.getElementById('styleInfo');
+      if (infoEl && style) {
+        infoEl.innerHTML = `<span class="style-name">${style.name}</span> — <span class="style-desc">${style.description}</span>`;
+      }
+    }
+
+    // Filter styles by category
+    function filterStylesByCategory(category) {
+      // Update filter button states
+      document.querySelectorAll('.style-filter-btn').forEach(btn => {
+        const isActive = btn.dataset.category === category;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
+
+      // Filter style cards
+      document.querySelectorAll('.style-card').forEach(card => {
+        if (category === 'all' || card.dataset.category === category) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    }
+
+    // Keyboard navigation for style cards
+    function handleStyleKeyboard(e, styleId) {
+      const cards = Array.from(document.querySelectorAll('.style-card:not(.hidden)'));
+      const currentIndex = cards.findIndex(c => c.dataset.style === styleId);
+
+      let nextIndex;
+      switch (e.key) {
+        case 'ArrowRight':
+        case 'ArrowDown':
+          e.preventDefault();
+          nextIndex = (currentIndex + 1) % cards.length;
+          cards[nextIndex].focus();
+          break;
+        case 'ArrowLeft':
+        case 'ArrowUp':
+          e.preventDefault();
+          nextIndex = (currentIndex - 1 + cards.length) % cards.length;
+          cards[nextIndex].focus();
+          break;
+        case 'Enter':
+        case ' ':
+          e.preventDefault();
+          selectStyle(styleId);
+          break;
+      }
+    }
+
+    // Initialize style UI
+    initStyleUI();
+
     // Generate mock data values for visualization
     function generateMockDataValues(dataset) {
       // Mock values that make sense for each dataset type
