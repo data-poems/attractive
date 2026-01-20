@@ -614,6 +614,82 @@
         scale: 25,
         initPos: [0.349, 0, -0.16],
         initSpread: 0.05
+      },
+      clifford: {
+        name: 'Clifford',
+        params: [
+          { name: 'a (Param A)', min: -3, max: 3, step: 0.1, default: -1.4 },
+          { name: 'b (Param B)', min: -3, max: 3, step: 0.1, default: 1.6 },
+          { name: 'c (Param C)', min: -3, max: 3, step: 0.1, default: 1.0 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Clifford attractor (2D iterative map extended to 3D)
+          // x(n+1) = sin(a*y) + c*cos(a*x)
+          // y(n+1) = sin(b*x) + d*cos(b*y) where d = params.p3
+          const d = params.p3;
+          const nx = Math.sin(params.p1 * y) + params.p3 * Math.cos(params.p1 * x);
+          const ny = Math.sin(params.p2 * x) + d * Math.cos(params.p2 * y);
+          // Z follows a slow oscillation based on xy position
+          const nz = z + (Math.sin(x + y) - z) * dt * 2;
+          // Blend slowly towards the iterated position
+          return [
+            x + (nx - x) * dt * 5,
+            y + (ny - y) * dt * 5,
+            nz
+          ];
+        },
+        scale: 70,
+        initPos: [0.1, 0.1, 0],
+        initSpread: 0.5
+      },
+      dejong: {
+        name: 'De Jong',
+        params: [
+          { name: 'a (Param A)', min: -3, max: 3, step: 0.1, default: -2.24 },
+          { name: 'b (Param B)', min: -3, max: 3, step: 0.1, default: 0.43 },
+          { name: 'c (Param C)', min: -3, max: 3, step: 0.1, default: -0.65 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // De Jong attractor (Peter de Jong, 1987)
+          // x(n+1) = sin(a*y) - cos(b*x)
+          // y(n+1) = sin(c*x) - cos(d*y) where d = 2.43 (constant)
+          const d = 2.43;
+          const nx = Math.sin(params.p1 * y) - Math.cos(params.p2 * x);
+          const ny = Math.sin(params.p3 * x) - Math.cos(d * y);
+          // Z oscillates based on position
+          const nz = z + (Math.cos(x * 2) * Math.sin(y * 2) - z) * dt * 3;
+          return [
+            x + (nx - x) * dt * 4,
+            y + (ny - y) * dt * 4,
+            nz
+          ];
+        },
+        scale: 80,
+        initPos: [0.5, 0.5, 0],
+        initSpread: 0.3
+      },
+      pickover: {
+        name: 'Pickover',
+        params: [
+          { name: 'a', min: -3, max: 3, step: 0.1, default: -0.966918 },
+          { name: 'b', min: -3, max: 3, step: 0.1, default: 2.879879 },
+          { name: 'c', min: -3, max: 3, step: 0.1, default: 0.765145 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Pickover attractor - 3D chaotic map
+          const d = 0.744728; // Fixed fourth parameter
+          const nx = Math.sin(params.p1 * y) - z * Math.cos(params.p2 * x);
+          const ny = z * Math.sin(params.p3 * x) - Math.cos(d * y);
+          const nz = Math.sin(x);
+          return [
+            x + (nx - x) * dt * 3,
+            y + (ny - y) * dt * 3,
+            z + (nz - z) * dt * 3
+          ];
+        },
+        scale: 80,
+        initPos: [0.1, 0.1, 0.1],
+        initSpread: 0.2
       }
     };
     
