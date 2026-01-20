@@ -792,25 +792,6 @@ button.secondary:hover {
   flex-shrink: 0;
 }
 
-/* Undo button */
-.undo-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: var(--gray-300);
-}
-
-.undo-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.4);
-  color: #fff;
-  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.15);
-}
-
-.undo-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
 /* Export button */
 .export-btn {
   background: rgba(0, 255, 136, 0.1);
@@ -852,23 +833,6 @@ button.secondary:hover {
 .action-btn.info-btn:hover {
   background: rgba(0, 255, 255, 0.2);
   box-shadow: 0 4px 16px rgba(0, 255, 255, 0.3);
-}
-
-/* Floating history indicator */
-.history-indicator-float {
-  position: fixed;
-  top: 76px;
-  right: 24px;
-  font-size: 11px;
-  color: var(--gray-400);
-  text-align: right;
-  z-index: 50;
-  opacity: 0.8;
-  transition: opacity 0.2s;
-}
-
-.history-indicator-float:empty {
-  display: none;
 }
 
 /* Stats */
