@@ -270,11 +270,11 @@
       { dataset: 'weather', attractor: 'halvorsen', color: 'pastel', params: { p1: 1.4, p2: 1, p3: 1 } },
 
       // Visual style showcases
-      { dataset: 'climate', attractor: 'lorenz', color: 'monochrome', style: 'pencil', params: { p1: 10, p2: 28, p3: 2.667 } },
+      { dataset: 'climate', attractor: 'lorenz', color: 'monochrome', style: 'davinci', params: { p1: 10, p2: 28, p3: 2.667 } },
       { dataset: 'seismic', attractor: 'rossler', color: 'ice', style: 'blueprint', params: { p1: 0.2, p2: 0.2, p3: 5.7 } },
       { dataset: 'crypto', attractor: 'chen', color: 'neon', style: 'neon', params: { p1: 35, p2: 3, p3: 28 } },
       { dataset: 'brain', attractor: 'thomas', color: 'pastel', style: 'chalk', params: { p1: 0.208186, p2: 10, p3: 1.0 } },
-      { dataset: 'orbital', attractor: 'aizawa', color: 'monochrome', style: 'technical', params: { p1: 0.95, p2: 0.7, p3: 0.6 } },
+      { dataset: 'orbital', attractor: 'aizawa', color: 'electric', style: 'oscilloscope', params: { p1: 0.95, p2: 0.7, p3: 0.6 } },
       { dataset: 'ocean', attractor: 'halvorsen', color: 'aurora', style: 'watercolor', params: { p1: 1.4, p2: 1, p3: 1 } },
     ];
 
@@ -1914,7 +1914,7 @@
 
       // Determine watermark colors based on style (light vs dark background)
       const style = VISUAL_STYLES[currentStyle];
-      const isLightBg = ['pencil', 'technical', 'watercolor'].includes(currentStyle);
+      const isLightBg = ['davinci', 'watercolor'].includes(currentStyle);
       const watermarkColor = isLightBg ? 'rgba(100, 100, 100, 0.7)' : 'rgba(0, 255, 255, 0.6)';
       const infoColor = isLightBg ? 'rgba(60, 60, 60, 0.8)' : 'rgba(255, 255, 255, 0.7)';
 
