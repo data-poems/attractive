@@ -969,68 +969,81 @@
         background: { type: 'solid', color: '#0a0a0a' },
         line: { renderer: 'canvas', width: 1.5, opacity: 1.0 },
         glow: { enabled: true, blur: 15, multiplier: 1.0 },
-        rough: null
+        rough: null,
+        colorTransform: null
       },
-      pencil: {
-        id: 'pencil',
-        name: 'Pencil',
-        description: 'Hand-drawn sketch look',
+      davinci: {
+        id: 'davinci',
+        name: 'Da Vinci',
+        description: 'Aged parchment with ink sketches',
         category: 'artistic',
-        background: { type: 'solid', color: '#f5f1e6' },
-        line: { renderer: 'rough', width: 1.2, opacity: 0.85 },
+        background: { type: 'parchment', color: '#e8dcc4', texture: true },
+        line: { renderer: 'rough', width: 1.0, opacity: 0.85, lineCap: 'round' },
         glow: { enabled: false },
-        rough: { roughness: 1.5, bowing: 1.2 }
+        rough: { roughness: 2.5, bowing: 2.0 },
+        colorTransform: 'sepia',  // Transform colors to sepia tones
+        multiStroke: true  // Draw multiple strokes for ink effect
       },
       blueprint: {
         id: 'blueprint',
         name: 'Blueprint',
-        description: 'Technical drawing style',
+        description: 'Technical cyanotype drawing',
         category: 'technical',
-        background: { type: 'grid', color: '#1a3a5c', gridColor: '#2a5a8c', gridSize: 20 },
-        line: { renderer: 'canvas', width: 1.0, opacity: 1.0 },
-        glow: { enabled: true, blur: 8, multiplier: 1.0 },
-        colorOverride: [255, 255, 255],  // Force white lines
-        rough: null
+        background: { type: 'grid', color: '#0a2540', gridColor: '#1a4a7c', gridSize: 20, gridWidth: 0.5 },
+        line: { renderer: 'canvas', width: 1.2, opacity: 1.0 },
+        glow: { enabled: true, blur: 12, multiplier: 1.5 },
+        colorOverride: [220, 240, 255],  // Pale cyan-white lines
+        rough: null,
+        colorTransform: null
       },
       neon: {
         id: 'neon',
         name: 'Neon',
-        description: 'Intense glowing effect',
+        description: 'Electric glow tubes',
         category: 'modern',
         background: { type: 'solid', color: '#050508' },
-        line: { renderer: 'canvas', width: 2.0, opacity: 1.0 },
-        glow: { enabled: true, blur: 25, multiplier: 2.0 },
-        rough: null
+        line: { renderer: 'canvas', width: 2.5, opacity: 1.0 },
+        glow: { enabled: true, blur: 35, multiplier: 3.0 },
+        rough: null,
+        colorTransform: 'saturate',  // Boost saturation for neon effect
+        doubleGlow: true  // Extra glow pass for intensity
       },
       chalk: {
         id: 'chalk',
         name: 'Chalk',
-        description: 'Chalky texture on slate',
+        description: 'Dusty chalk on blackboard',
         category: 'artistic',
-        background: { type: 'solid', color: '#2d3436' },
-        line: { renderer: 'rough', width: 2.5, opacity: 0.9 },
-        glow: { enabled: true, blur: 5, multiplier: 0.5 },
-        rough: { roughness: 2.0, bowing: 0.8 }
+        background: { type: 'blackboard', color: '#1a2a1a', texture: true },
+        line: { renderer: 'rough', width: 3.0, opacity: 0.75 },
+        glow: { enabled: true, blur: 8, multiplier: 0.3 },
+        rough: { roughness: 3.0, bowing: 1.5 },
+        colorTransform: 'pastel',  // Soften to pastel chalk colors
+        multiStroke: true
       },
-      technical: {
-        id: 'technical',
-        name: 'Technical',
-        description: 'Precise thin lines on white',
+      oscilloscope: {
+        id: 'oscilloscope',
+        name: 'Oscilloscope',
+        description: 'Retro phosphor display',
         category: 'technical',
-        background: { type: 'grid', color: '#fafaf8', gridColor: '#e0e0d8', gridSize: 25 },
-        line: { renderer: 'canvas', width: 0.8, opacity: 1.0 },
-        glow: { enabled: false },
-        rough: null
+        background: { type: 'crt', color: '#0a0f0a' },
+        line: { renderer: 'canvas', width: 2.0, opacity: 1.0 },
+        glow: { enabled: true, blur: 20, multiplier: 2.5 },
+        colorOverride: [0, 255, 100],  // Phosphor green
+        rough: null,
+        colorTransform: null,
+        phosphorDecay: true  // Trails fade like phosphor afterglow
       },
       watercolor: {
         id: 'watercolor',
         name: 'Watercolor',
-        description: 'Soft, transparent strokes',
+        description: 'Soft bleeding pigments',
         category: 'artistic',
-        background: { type: 'solid', color: '#fdfbf7' },
-        line: { renderer: 'canvas', width: 3.0, opacity: 0.4 },
-        glow: { enabled: true, blur: 20, multiplier: 1.0 },
-        rough: null
+        background: { type: 'paper', color: '#faf8f5', texture: true },
+        line: { renderer: 'canvas', width: 4.0, opacity: 0.25 },
+        glow: { enabled: true, blur: 25, multiplier: 0.8 },
+        rough: null,
+        colorTransform: 'watercolor',  // Muted, bleeding colors
+        multiStroke: true  // Multiple semi-transparent strokes
       }
     };
     
