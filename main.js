@@ -343,10 +343,11 @@
     const attractors = {
       lorenz: {
         name: 'Lorenz',
+        description: 'The iconic "butterfly effect" discovered by Edward Lorenz in 1963 while studying weather. Shows how tiny changes lead to vastly different outcomes.',
         params: [
-          { name: 'σ (Prandtl)', min: 0, max: 20, step: 0.1, default: 10 },
-          { name: 'ρ (Rayleigh)', min: 0, max: 50, step: 0.1, default: 28 },
-          { name: 'β (Geometry)', min: 0, max: 10, step: 0.1, default: 2.667 }
+          { name: 'σ (Prandtl)', min: 0, max: 20, step: 0.1, default: 10, tooltip: 'Prandtl number - controls the rate of convective heat transfer. Higher values create more turbulent motion.' },
+          { name: 'ρ (Rayleigh)', min: 0, max: 50, step: 0.1, default: 28, tooltip: 'Rayleigh number - temperature difference driving the system. The famous chaos threshold is ρ=24.74' },
+          { name: 'β (Geometry)', min: 0, max: 10, step: 0.1, default: 2.667, tooltip: 'Geometric ratio - aspect ratio of the convection cell. Affects the butterfly wing shape.' }
         ],
         compute: (x, y, z, params, dt) => {
           const dx = params.p1 * (y - x);
@@ -362,10 +363,11 @@
       },
       rossler: {
         name: 'Rössler',
+        description: 'Otto Rössler\'s elegant spiral band attractor from 1976. Simpler than Lorenz but equally chaotic with a characteristic twisted ribbon shape.',
         params: [
-          { name: 'a (Stiffness)', min: 0, max: 0.5, step: 0.01, default: 0.2 },
-          { name: 'b (Damping)', min: 0, max: 0.5, step: 0.01, default: 0.2 },
-          { name: 'c (Forcing)', min: 0, max: 20, step: 0.1, default: 5.7 }
+          { name: 'a (Stiffness)', min: 0, max: 0.5, step: 0.01, default: 0.2, tooltip: 'Stiffness parameter - controls the tightness of spiral winding.' },
+          { name: 'b (Damping)', min: 0, max: 0.5, step: 0.01, default: 0.2, tooltip: 'Damping parameter - affects energy dissipation in the system.' },
+          { name: 'c (Forcing)', min: 0, max: 20, step: 0.1, default: 5.7, tooltip: 'Forcing parameter - drives the chaotic behavior. Values above 5 produce more complex patterns.' }
         ],
         compute: (x, y, z, params, dt) => {
           const dx = -y - z;
@@ -381,10 +383,11 @@
       },
       chen: {
         name: 'Chen',
+        description: 'Guanrong Chen\'s 1999 dual-wing attractor that bridges Lorenz and Lü systems. Features symmetric lobes with complex folding dynamics.',
         params: [
-          { name: 'α (Coupling)', min: 30, max: 45, step: 0.5, default: 35 },
-          { name: 'β (Feedback)', min: 1, max: 6, step: 0.1, default: 3 },
-          { name: 'γ (Damping)', min: 20, max: 35, step: 0.5, default: 28 }
+          { name: 'α (Coupling)', min: 30, max: 45, step: 0.5, default: 35, tooltip: 'Coupling strength - controls how strongly the variables interact.' },
+          { name: 'β (Feedback)', min: 1, max: 6, step: 0.1, default: 3, tooltip: 'Feedback parameter - modulates the nonlinear feedback loops.' },
+          { name: 'γ (Damping)', min: 20, max: 35, step: 0.5, default: 28, tooltip: 'Damping coefficient - affects the decay rate and wing symmetry.' }
         ],
         compute: (x, y, z, params, dt) => {
           const dx = params.p1 * (y - x);
@@ -514,10 +517,11 @@
       },
       chua: {
         name: 'Chua',
+        description: 'Leon Chua\'s electronic circuit attractor from 1983. The iconic double-scroll pattern can be built with physical components.',
         params: [
-          { name: 'α (Alpha)', min: 14, max: 16, step: 0.1, default: 15.6 },
-          { name: 'β (Beta)', min: 25, max: 30, step: 0.5, default: 28 },
-          { name: 'm₀ (Slope)', min: -1.2, max: -1.0, step: 0.02, default: -1.143 }
+          { name: 'α (Alpha)', min: 14, max: 16, step: 0.1, default: 15.6, tooltip: 'Alpha - time constant ratio in the circuit model.' },
+          { name: 'β (Beta)', min: 25, max: 30, step: 0.5, default: 28, tooltip: 'Beta - coupling strength between circuit elements.' },
+          { name: 'm₀ (Slope)', min: -1.2, max: -1.0, step: 0.02, default: -1.143, tooltip: 'Slope m₀ - controls the piecewise-linear nonlinearity that creates the double scroll.' }
         ],
         compute: (x, y, z, params, dt) => {
           // Chua's circuit - iconic double scroll attractor
