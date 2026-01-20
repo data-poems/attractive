@@ -74,126 +74,6 @@
     const MAX_HISTORY = 20;
     let isRestoringState = false; // Flag to prevent pushState during undo
 
-    // Capture current state for history
-    function captureState() {
-      return {
-        currentAttractor,
-        currentDataset,
-        currentColorScheme,
-        currentParams: { ...currentParams },
-        particleCount: parseInt(document.getElementById('particleSlider').value),
-        speed,
-        trailLength,
-        glowIntensity,
-        lineWidth,
-        depthBrightness,
-        trailFade,
-        rotationX,
-        rotationY,
-        zoom,
-        panX,
-        panY
-      };
-    }
-
-    // Push current state to history
-    function pushState() {
-      if (isRestoringState) return; // Don't push during undo
-
-      const state = captureState();
-      historyStack.push(state);
-
-      // Limit history size
-      if (historyStack.length > MAX_HISTORY) {
-        historyStack.shift();
-      }
-
-      updateHistoryIndicator();
-    }
-
-    // Restore state from history
-    function restoreState(state) {
-      isRestoringState = true;
-
-      currentAttractor = state.currentAttractor;
-      currentDataset = state.currentDataset;
-      currentColorScheme = state.currentColorScheme;
-      currentParams = { ...state.currentParams };
-      speed = state.speed;
-      trailLength = state.trailLength;
-      glowIntensity = state.glowIntensity;
-      lineWidth = state.lineWidth;
-      depthBrightness = state.depthBrightness;
-      trailFade = state.trailFade;
-      rotationX = state.rotationX;
-      rotationY = state.rotationY;
-      zoom = state.zoom;
-      panX = state.panX;
-      panY = state.panY;
-
-      // Update UI elements
-      document.getElementById('datasetSelect').value = currentDataset;
-      document.getElementById('attractorSelect').value = currentAttractor;
-      document.getElementById('particleSlider').value = state.particleCount;
-      document.getElementById('particleValue').textContent = state.particleCount;
-      document.getElementById('particleCount').textContent = state.particleCount;
-      document.getElementById('speedSlider').value = speed;
-      document.getElementById('speedValue').textContent = speed.toFixed(1) + '×';
-      document.getElementById('trailSlider').value = trailLength;
-      document.getElementById('trailValue').textContent = trailLength;
-      document.getElementById('glowSlider').value = glowIntensity;
-      document.getElementById('glowValue').textContent = glowIntensity;
-      document.getElementById('lineWidthSlider').value = lineWidth;
-      document.getElementById('lineWidthValue').textContent = lineWidth.toFixed(1);
-      document.getElementById('trailFadeToggle').checked = trailFade;
-      document.getElementById('depthBrightnessToggle').checked = depthBrightness;
-
-      // Update color selection
-      document.querySelectorAll('.color-option').forEach(o => {
-        const isActive = o.dataset.scheme === currentColorScheme;
-        o.classList.toggle('active', isActive);
-        o.setAttribute('aria-checked', isActive ? 'true' : 'false');
-        o.setAttribute('tabindex', isActive ? '0' : '-1');
-      });
-
-      // Update attractor display
-      document.getElementById('attractorName').textContent = attractors[currentAttractor].name;
-      document.getElementById('datasetName').textContent = datasets[currentDataset].name;
-      document.getElementById('datasetInfo').innerHTML = datasets[currentDataset].info;
-
-      generateParameterControls();
-      initParticles();
-
-      isRestoringState = false;
-    }
-
-    // Undo last change
-    function undo() {
-      if (historyStack.length === 0) {
-        return; // No history to undo
-      }
-
-      const previousState = historyStack.pop();
-      restoreState(previousState);
-      updateHistoryIndicator();
-    }
-
-    // Update history depth indicator
-    function updateHistoryIndicator() {
-      const indicator = document.getElementById('historyIndicator');
-      if (indicator) {
-        const count = historyStack.length;
-        indicator.textContent = count === 0 ? '' : `${count} ${count === 1 ? 'change' : 'changes'}`;
-
-        // Update undo button state
-        const undoBtn = document.getElementById('undoBtn');
-        if (undoBtn) {
-          undoBtn.disabled = count === 0;
-          undoBtn.setAttribute('aria-disabled', count === 0 ? 'true' : 'false');
-        }
-      }
-    }
-
     // Curated beautiful combinations - shown first when clicking random/dice
     const beautifulCombos = [
       // Original favorites
@@ -1213,27 +1093,23 @@
     
     // Event listeners
     document.getElementById('datasetSelect').addEventListener('change', (e) => {
-      pushState();
       currentDataset = e.target.value;
       updateAttractor();
     });
-
+    
     document.getElementById('attractorSelect').addEventListener('change', (e) => {
-      pushState();
       currentAttractor = e.target.value;
       updateAttractor();
     });
-
+    
     document.getElementById('particleSlider').addEventListener('input', (e) => {
-      pushState();
       const val = e.target.value;
       document.getElementById('particleValue').textContent = val;
       document.getElementById('particleCount').textContent = val;
       initParticles();
     });
-
+    
     document.getElementById('speedSlider').addEventListener('input', (e) => {
-      pushState();
       speed = parseFloat(e.target.value);
       document.getElementById('speedValue').textContent = speed.toFixed(1) + '×';
     });
@@ -1261,7 +1137,6 @@
     });
 
     function selectColorScheme(option) {
-      pushState();
       colorOptions.forEach(o => {
         o.classList.remove('active');
         o.setAttribute('aria-checked', 'false');
@@ -1275,34 +1150,29 @@
 
     // Trail length slider
     document.getElementById('trailSlider').addEventListener('input', (e) => {
-      pushState();
       trailLength = parseInt(e.target.value);
       document.getElementById('trailValue').textContent = trailLength;
     });
 
     // Glow intensity slider
     document.getElementById('glowSlider').addEventListener('input', (e) => {
-      pushState();
       glowIntensity = parseInt(e.target.value);
       document.getElementById('glowValue').textContent = glowIntensity;
     });
 
     // Line width slider
     document.getElementById('lineWidthSlider').addEventListener('input', (e) => {
-      pushState();
       lineWidth = parseFloat(e.target.value);
       document.getElementById('lineWidthValue').textContent = lineWidth.toFixed(1);
     });
 
     // Trail fade toggle
     document.getElementById('trailFadeToggle').addEventListener('change', (e) => {
-      pushState();
       trailFade = e.target.checked;
     });
 
     // Depth brightness toggle
     document.getElementById('depthBrightnessToggle').addEventListener('change', (e) => {
-      pushState();
       depthBrightness = e.target.checked;
     });
     
@@ -1341,18 +1211,16 @@
     document.getElementById('presetSelect').addEventListener('change', (e) => {
       const presetKey = e.target.value;
       if (!presetKey) return;
-
-      pushState();
-
+      
       const preset = presets[presetKey];
       currentAttractor = preset.attractor;
       document.getElementById('attractorSelect').value = currentAttractor;
-
+      
       currentParams = { ...preset.params };
       document.getElementById('attractorName').textContent = attractors[currentAttractor].name;
       generateParameterControls();
       initParticles();
-
+      
       // Reset select
       e.target.value = '';
     });
@@ -1397,8 +1265,6 @@
     
     // Apply a combo (curated or random)
     function applyCombo(combo) {
-      pushState();
-
       currentDataset = combo.dataset;
       currentAttractor = combo.attractor;
       currentColorScheme = combo.color;
@@ -1409,10 +1275,7 @@
 
       // Update color selection
       document.querySelectorAll('.color-option').forEach(o => {
-        const isActive = o.dataset.scheme === currentColorScheme;
-        o.classList.toggle('active', isActive);
-        o.setAttribute('aria-checked', isActive ? 'true' : 'false');
-        o.setAttribute('tabindex', isActive ? '0' : '-1');
+        o.classList.toggle('active', o.dataset.scheme === currentColorScheme);
       });
 
       document.getElementById('attractorName').textContent = attractors[currentAttractor].name;
@@ -1487,7 +1350,6 @@
     
     // Reset view (pan, zoom, rotation)
     document.getElementById('resetBtn').addEventListener('click', () => {
-      pushState();
       panX = 0;
       panY = 0;
       zoom = 1;
@@ -1495,12 +1357,6 @@
       rotationY = 0.5;
       updateAttractor();
     });
-
-    // Undo button
-    const undoBtn = document.getElementById('undoBtn');
-    if (undoBtn) {
-      undoBtn.addEventListener('click', undo);
-    }
     
     // Modal handling with focus trap
     const modal = document.getElementById('modal');
@@ -1739,13 +1595,6 @@
       // Don't trigger if user is typing in an input
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
 
-      // Ctrl+Z or Cmd+Z for undo
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
-        e.preventDefault();
-        undo();
-        return;
-      }
-
       switch (e.key.toLowerCase()) {
         case ' ':
           e.preventDefault();
@@ -1815,6 +1664,5 @@
       // Ensure canvas is properly sized for current viewport
       resizeCanvas();
       updateAttractor();
-      updateHistoryIndicator();
       render();
     }
