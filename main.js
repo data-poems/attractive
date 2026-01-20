@@ -636,24 +636,21 @@
           { name: 'c (Param C)', min: -3, max: 3, step: 0.1, default: 1.0 }
         ],
         compute: (x, y, z, params, dt) => {
-          // Clifford attractor (2D iterative map extended to 3D)
-          // x(n+1) = sin(a*y) + c*cos(a*x)
-          // y(n+1) = sin(b*x) + d*cos(b*y) where d = params.p3
-          const d = params.p3;
-          const nx = Math.sin(params.p1 * y) + params.p3 * Math.cos(params.p1 * x);
-          const ny = Math.sin(params.p2 * x) + d * Math.cos(params.p2 * y);
-          // Z follows a slow oscillation based on xy position
-          const nz = z + (Math.sin(x + y) - z) * dt * 2;
-          // Blend slowly towards the iterated position
-          return [
-            x + (nx - x) * dt * 5,
-            y + (ny - y) * dt * 5,
-            nz
-          ];
+          // Clifford attractor - treat as continuous ODE approximation
+          const a = params.p1, b = params.p2, c = params.p3;
+          const d = -0.6; // Fixed fourth parameter
+          // Target positions from Clifford equations
+          const tx = Math.sin(a * y) + c * Math.cos(a * x);
+          const ty = Math.sin(b * x) + d * Math.cos(b * y);
+          // Derivatives point toward target
+          const dx = (tx - x) * 2;
+          const dy = (ty - y) * 2;
+          const dz = Math.sin(x * 3 + y * 2) * 0.5;
+          return [x + dx * dt, y + dy * dt, z + dz * dt];
         },
-        scale: 70,
+        scale: 35,
         initPos: [0.1, 0.1, 0],
-        initSpread: 0.5
+        initSpread: 1.5
       },
       dejong: {
         name: 'De Jong',
@@ -663,23 +660,21 @@
           { name: 'c (Param C)', min: -3, max: 3, step: 0.1, default: -0.65 }
         ],
         compute: (x, y, z, params, dt) => {
-          // De Jong attractor (Peter de Jong, 1987)
-          // x(n+1) = sin(a*y) - cos(b*x)
-          // y(n+1) = sin(c*x) - cos(d*y) where d = 2.43 (constant)
-          const d = 2.43;
-          const nx = Math.sin(params.p1 * y) - Math.cos(params.p2 * x);
-          const ny = Math.sin(params.p3 * x) - Math.cos(d * y);
-          // Z oscillates based on position
-          const nz = z + (Math.cos(x * 2) * Math.sin(y * 2) - z) * dt * 3;
-          return [
-            x + (nx - x) * dt * 4,
-            y + (ny - y) * dt * 4,
-            nz
-          ];
+          // De Jong attractor - continuous ODE approximation
+          const a = params.p1, b = params.p2, c = params.p3;
+          const d = 2.43; // Fixed fourth parameter
+          // Target positions from De Jong equations
+          const tx = Math.sin(a * y) - Math.cos(b * x);
+          const ty = Math.sin(c * x) - Math.cos(d * y);
+          // Derivatives point toward target
+          const dx = (tx - x) * 1.5;
+          const dy = (ty - y) * 1.5;
+          const dz = Math.cos(x * 2 + y) * 0.3;
+          return [x + dx * dt, y + dy * dt, z + dz * dt];
         },
-        scale: 80,
+        scale: 40,
         initPos: [0.5, 0.5, 0],
-        initSpread: 0.3
+        initSpread: 1.2
       },
       pickover: {
         name: 'Pickover',
@@ -689,20 +684,20 @@
           { name: 'c', min: -3, max: 3, step: 0.1, default: 0.765145 }
         ],
         compute: (x, y, z, params, dt) => {
-          // Pickover attractor - 3D chaotic map
+          // Pickover attractor - 3D chaotic continuous approximation
+          const a = params.p1, b = params.p2, c = params.p3;
           const d = 0.744728; // Fixed fourth parameter
-          const nx = Math.sin(params.p1 * y) - z * Math.cos(params.p2 * x);
-          const ny = z * Math.sin(params.p3 * x) - Math.cos(d * y);
-          const nz = Math.sin(x);
-          return [
-            x + (nx - x) * dt * 3,
-            y + (ny - y) * dt * 3,
-            z + (nz - z) * dt * 3
-          ];
+          const tx = Math.sin(a * y) - z * Math.cos(b * x);
+          const ty = z * Math.sin(c * x) - Math.cos(d * y);
+          const tz = Math.sin(x);
+          const dx = (tx - x) * 1.2;
+          const dy = (ty - y) * 1.2;
+          const dz = (tz - z) * 1.2;
+          return [x + dx * dt, y + dy * dt, z + dz * dt];
         },
-        scale: 80,
+        scale: 50,
         initPos: [0.1, 0.1, 0.1],
-        initSpread: 0.2
+        initSpread: 1.0
       }
     };
     
