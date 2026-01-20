@@ -1264,13 +1264,18 @@
         rotationY += 0.005;
       }
 
-      // Apply glow if enabled
-      if (glowIntensity > 0) {
-        ctx.shadowBlur = glowIntensity;
+      // Apply glow based on style and user setting
+      const currentStyleObj = VISUAL_STYLES[currentStyle];
+      if (currentStyleObj.glow && currentStyleObj.glow.enabled && glowIntensity > 0) {
+        const glowBlur = currentStyleObj.glow.blur * (currentStyleObj.glow.multiplier || 1.0);
+        ctx.shadowBlur = glowBlur * (glowIntensity / 20);
       } else {
         ctx.shadowBlur = 0;
         ctx.shadowColor = 'transparent';
       }
+
+      // Get point reduction for performance (rough.js styles skip points)
+      const pointReduction = getPointReductionFactor();
 
       particles.forEach((p, i) => {
         // Compute next position
