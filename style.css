@@ -758,59 +758,114 @@ button.secondary:hover {
   }
 }
 
-/* Dice button */
-.dice-btn {
+/* ================================
+   FLOATING ACTION BUTTONS
+   ================================ */
+.floating-actions {
   position: fixed;
   top: 24px;
-  right: 76px;
+  right: 24px;
+  display: flex;
+  gap: 12px;
+  z-index: 50;
+}
+
+.action-btn {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: rgba(255, 0, 255, 0.1);
-  border: 1px solid rgba(255, 0, 255, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 20px;
+  font-size: 18px;
   transition: all 0.2s;
-  z-index: 50;
+  padding: 0;
+  margin: 0;
+  position: relative;
 }
 
-.dice-btn:hover {
+.action-icon {
+  line-height: 1;
+}
+
+/* Undo button */
+.undo-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--gray-300);
+}
+
+.undo-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.15);
+}
+
+.undo-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Export button */
+.export-btn {
+  background: rgba(0, 255, 136, 0.1);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  color: #00ff88;
+}
+
+.export-btn:hover {
+  background: rgba(0, 255, 136, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 255, 136, 0.3);
+  transform: scale(1.05);
+}
+
+/* Random button */
+.random-btn {
+  background: rgba(255, 0, 255, 0.1);
+  border: 1px solid rgba(255, 0, 255, 0.3);
+  color: #ff00ff;
+}
+
+.random-btn:hover {
   background: rgba(255, 0, 255, 0.2);
   box-shadow: 0 4px 16px rgba(255, 0, 255, 0.3);
   transform: rotate(15deg);
 }
 
-.dice-btn:active {
+.random-btn:active {
   transform: rotate(180deg);
 }
 
 /* Info button */
-.info-btn {
-  position: fixed;
-  top: 24px;
-  right: 24px;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
+.action-btn.info-btn {
   background: rgba(0, 255, 255, 0.1);
   border: 1px solid rgba(0, 255, 255, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 20px;
+  color: var(--cyan);
   font-weight: 600;
-  color: #00ffff;
-  transition: all 0.2s;
-  z-index: 50;
 }
 
-.info-btn:hover {
+.action-btn.info-btn:hover {
   background: rgba(0, 255, 255, 0.2);
   box-shadow: 0 4px 16px rgba(0, 255, 255, 0.3);
+}
+
+/* Floating history indicator */
+.history-indicator-float {
+  position: fixed;
+  top: 76px;
+  right: 24px;
+  font-size: 11px;
+  color: var(--gray-400);
+  text-align: right;
+  z-index: 50;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.history-indicator-float:empty {
+  display: none;
 }
 
 /* Stats */
