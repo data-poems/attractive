@@ -1804,6 +1804,69 @@
       }
     });
 
+    // Generate mock data values for visualization
+    function generateMockDataValues(dataset) {
+      // Mock values that make sense for each dataset type
+      const mockData = {
+        climate: ['15.2°C', '421 ppm', 'Year 64'],
+        economic: ['2.3%', '3.1%', '4.2%'],
+        seismic: ['5.8 Mw', '12 km', '8.2 Hz'],
+        crypto: ['$42,150', '18.5K BTC', '+12'],
+        trending: ['1.2M views', '342/hr', '87'],
+        audio: ['440 Hz', '0.72', 'sine'],
+        orbital: ['51.6°N', '0.0°E', '408 km'],
+        solar: ['450 km/s', '127', '15.2 μT'],
+        ocean: ['2.3 m/s', '18.5°C', '35.2 PSU'],
+        stocks: ['18.5', '$2.1B', '+0.8'],
+        weather: ['1013 hPa', '65%', '12 m/s'],
+        heartrate: ['72 BPM', '45 ms', '0.89'],
+        traffic: ['1,850/hr', '6.2', '45 km/h'],
+        power: ['42.3 GW', '50.02 Hz', '98%'],
+        pandemic: ['1,284', '1.15', '78%'],
+        brain: ['12.5 μV', '18.2 μV', '8.7 μV'],
+        tides: ['2.4 m', '0.67', '1.8 m/s']
+      };
+
+      return mockData[dataset] || ['Value 1', 'Value 2', 'Value 3'];
+    }
+
+    // Update the data mapping visualization
+    function updateMappingDisplay() {
+      const mappingContent = document.getElementById('mappingContent');
+      if (!mappingContent) return;
+
+      const dataset = datasets[currentDataset];
+      const attractor = attractors[currentAttractor];
+
+      // Generate mock data values based on dataset type
+      const dataValues = generateMockDataValues(currentDataset);
+
+      // Build mapping HTML
+      let html = '';
+      attractor.params.forEach((param, index) => {
+        const paramKey = `p${index + 1}`;
+        const paramValue = currentParams[paramKey] !== undefined ? currentParams[paramKey] : param.default;
+        const dataSource = dataset.params[index] || 'Data';
+        const dataValue = dataValues[index];
+
+        html += `
+          <div class="mapping-item">
+            <div class="mapping-source">
+              <strong>${dataSource}</strong><br>
+              <span class="mapping-value">${dataValue}</span>
+            </div>
+            <div class="mapping-arrow">→</div>
+            <div class="mapping-target">
+              <strong>${param.name}</strong><br>
+              <span class="mapping-value">${paramValue.toFixed(3)}</span>
+            </div>
+          </div>
+        `;
+      });
+
+      mappingContent.innerHTML = html;
+    }
+
     // Initialize when DOM is ready
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', init);
@@ -1816,5 +1879,6 @@
       resizeCanvas();
       updateAttractor();
       updateHistoryIndicator();
+      updateMappingDisplay();
       render();
     }
