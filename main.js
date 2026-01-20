@@ -162,6 +162,20 @@
         o.setAttribute('tabindex', isActive ? '0' : '-1');
       });
 
+      // Update style selection
+      document.querySelectorAll('.style-card').forEach(c => {
+        const isActive = c.dataset.style === currentStyle;
+        c.classList.toggle('active', isActive);
+        c.setAttribute('aria-checked', isActive ? 'true' : 'false');
+        c.setAttribute('tabindex', isActive ? '0' : '-1');
+      });
+      updateStyleInfo(currentStyle);
+
+      // Initialize rough canvas if needed for restored style
+      if (VISUAL_STYLES[currentStyle].line.renderer === 'rough') {
+        initRoughCanvas();
+      }
+
       // Update attractor display
       document.getElementById('attractorName').textContent = attractors[currentAttractor].name;
       document.getElementById('datasetName').textContent = datasets[currentDataset].name;
