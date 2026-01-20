@@ -1214,6 +1214,9 @@
       // Calculate effective opacity
       const effectiveOpacity = alpha * (style.line.opacity || 1.0);
 
+      // Combine style line width with user's lineWidth setting (style as base, user as multiplier)
+      const effectiveLineWidth = style.line.width * (lineWidth / 1.5);
+
       if (style.line.renderer === 'rough' && roughCanvas && style.rough) {
         // Use rough.js for hand-drawn effect
         // Reduce roughness for older trail segments (more transparent = smoother)
@@ -1222,7 +1225,7 @@
         try {
           roughCanvas.line(x1, y1, x2, y2, {
             stroke: `rgba(${fr}, ${fg}, ${fb}, ${effectiveOpacity})`,
-            strokeWidth: style.line.width,
+            strokeWidth: effectiveLineWidth,
             roughness: adjustedRoughness,
             bowing: style.rough.bowing
           });
@@ -1232,7 +1235,7 @@
           ctx.moveTo(x1, y1);
           ctx.lineTo(x2, y2);
           ctx.strokeStyle = `rgba(${fr}, ${fg}, ${fb}, ${effectiveOpacity})`;
-          ctx.lineWidth = style.line.width;
+          ctx.lineWidth = effectiveLineWidth;
           ctx.stroke();
         }
       } else {
@@ -1241,16 +1244,23 @@
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
         ctx.strokeStyle = `rgba(${fr}, ${fg}, ${fb}, ${effectiveOpacity})`;
-        ctx.lineWidth = style.line.width;
+        ctx.lineWidth = effectiveLineWidth;
 
         // Apply glow if enabled for style
         if (style.glow && style.glow.enabled && glowIntensity > 0) {
           const glowBlur = style.glow.blur * (style.glow.multiplier || 1.0);
           ctx.shadowColor = `rgba(${fr}, ${fg}, ${fb}, ${effectiveOpacity * 0.5})`;
           ctx.shadowBlur = glowBlur * (glowIntensity / 20); // Scale by user glow setting
+        } else {
+          ctx.shadowBlur = 0;
+          ctx.shadowColor = 'transparent';
         }
 
         ctx.stroke();
+
+        // Reset shadow after drawing to prevent bleeding
+        ctx.shadowBlur = 0;
+        ctx.shadowColor = 'transparent';
       }
     }
 
