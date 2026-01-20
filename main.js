@@ -1,0 +1,1493 @@
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // State variables (declared early for resizeCanvas)
+    let sidebarCollapsed = false;
+    let panX = 0;
+    let panY = 0;
+
+    // Canvas sizing
+    function resizeCanvas() {
+      // On mobile (viewport width <= 768px), canvas is full width
+      if (window.innerWidth <= 768) {
+        canvas.width = window.innerWidth;
+      } else {
+        // Desktop - check if sidebar is collapsed
+        const sidebarWidth = sidebarCollapsed ? 0 : 340;
+        canvas.width = window.innerWidth - sidebarWidth;
+      }
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      // Reset pan to center on resize/orientation change
+      panX = 0;
+      panY = 0;
+    });
+    // Also handle orientation changes on mobile
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => {
+        resizeCanvas();
+        panX = 0;
+        panY = 0;
+      }, 100);
+    });
+    
+    // State (panX, panY, sidebarCollapsed declared above for resizeCanvas)
+    let particles = [];
+    let rotationX = 0.5;
+    let rotationY = 0.5;
+    let zoom = 1;
+    let speed = 3;
+    let isDragging = false;
+    let isPanning = false;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+    let currentDataset = 'climate';
+    let currentAttractor = 'lorenz';
+    let currentColorScheme = 'bioluminescent';
+    let currentParams = {};
+    let isPlaying = true;
+    let isAutoAnimating = false;
+    let autoAnimateParam = 'p2';
+    let autoAnimateDirection = 1;
+    let autoAnimateSpeed = 0.02;
+    let animationId = null;
+    let curatedComboIndex = 0;
+    let autoRotate = false;
+
+    // New controls
+    let trailLength = 25;
+    let glowIntensity = 0;
+
+    // FPS tracking
+    let frameCount = 0;
+    let lastFpsUpdate = performance.now();
+    let currentFps = 60;
+
+    // Curated beautiful combinations - shown first when clicking random/dice
+    const beautifulCombos = [
+      // Original favorites
+      { dataset: 'crypto', attractor: 'lorenz', color: 'fire', params: { p1: 10, p2: 28, p3: 2.667 } },
+      { dataset: 'seismic', attractor: 'halvorsen', color: 'cosmic', params: { p1: 1.4, p2: 1, p3: 1 } },
+      { dataset: 'climate', attractor: 'rossler', color: 'ocean', params: { p1: 0.2, p2: 0.2, p3: 5.7 } },
+      { dataset: 'economic', attractor: 'chen', color: 'sunset', params: { p1: 35, p2: 3, p3: 28 } },
+      { dataset: 'orbital', attractor: 'aizawa', color: 'forest', params: { p1: 0.95, p2: 0.7, p3: 0.6 } },
+      { dataset: 'trending', attractor: 'thomas', color: 'bioluminescent', params: { p1: 0.208186, p2: 10, p3: 1.0 } },
+
+      // New attractor showcases
+      { dataset: 'heartrate', attractor: 'chua', color: 'lava', params: { p1: 15.6, p2: 28, p3: -1.143 } },
+      { dataset: 'brain', attractor: 'rabinovich', color: 'cosmic', params: { p1: 0.87, p2: 1.1, p3: 0.5 } },
+      { dataset: 'stocks', attractor: 'fourwing', color: 'aurora', params: { p1: 0.2, p2: 0.01, p3: -0.4 } },
+      { dataset: 'power', attractor: 'lu', color: 'fire', params: { p1: 36, p2: 3, p3: 20 } },
+      { dataset: 'weather', attractor: 'shimizu', color: 'ice', params: { p1: 0.85, p2: 0.5, p3: 1.0 } },
+      { dataset: 'traffic', attractor: 'nose', color: 'sunset', params: { p1: 1.5, p2: 1.0, p3: 1.0 } },
+      { dataset: 'tides', attractor: 'rucklidge', color: 'ocean', params: { p1: 2.0, p2: 6.7, p3: 1.0 } },
+      { dataset: 'pandemic', attractor: 'genesio', color: 'lava', params: { p1: 0.44, p2: 1.1, p3: 1.0 } },
+      { dataset: 'solar', attractor: 'burke', color: 'fire', params: { p1: 10, p2: 4.272, p3: 1.0 } },
+      { dataset: 'ocean', attractor: 'arneodo', color: 'bioluminescent', params: { p1: -5.5, p2: 3.5, p3: -1.0 } },
+
+      // Visually stunning combinations
+      { dataset: 'audio', attractor: 'rossler', color: 'cosmic', params: { p1: 0.2, p2: 0.2, p3: 18 } },
+      { dataset: 'seismic', attractor: 'lorenz', color: 'fire', params: { p1: 10, p2: 24.74, p3: 2.667 } },
+      { dataset: 'solar', attractor: 'sprott', color: 'lava', params: { p1: 2.07, p2: 1.79, p3: 1.0 } },
+      { dataset: 'crypto', attractor: 'dequan', color: 'aurora', params: { p1: 40, p2: 1.833, p3: 0.16 } },
+      { dataset: 'brain', attractor: 'thomas', color: 'cosmic', params: { p1: 0.208186, p2: 10, p3: 1.0 } },
+      { dataset: 'heartrate', attractor: 'aizawa', color: 'lava', params: { p1: 0.95, p2: 0.7, p3: 0.6 } },
+      { dataset: 'weather', attractor: 'halvorsen', color: 'ice', params: { p1: 1.4, p2: 1, p3: 1 } },
+      { dataset: 'stocks', attractor: 'chen', color: 'fire', params: { p1: 40, p2: 3, p3: 28 } },
+
+      // New data source highlights
+      { dataset: 'tides', attractor: 'lorenz', color: 'ocean', params: { p1: 10, p2: 28, p3: 2.667 } },
+      { dataset: 'power', attractor: 'chua', color: 'aurora', params: { p1: 15.6, p2: 28, p3: -1.143 } },
+      { dataset: 'pandemic', attractor: 'dadras', color: 'sunset', params: { p1: 3.0, p2: 2.7, p3: 1.7 } },
+      { dataset: 'traffic', attractor: 'fourwing', color: 'forest', params: { p1: 0.2, p2: 0.01, p3: -0.4 } },
+
+      // New Attractors
+      { dataset: 'climate', attractor: 'tsucs', color: 'neon', params: { p1: 40, p2: 0.833, p3: 0.65 } },
+      { dataset: 'orbital', attractor: 'newton_leipnik', color: 'cyberpunk', params: { p1: 0.4, p2: 0.9, p3: 1.0 } },
+    ];
+
+    // Dataset configurations with proper parameter names
+    const datasets = {
+      climate: {
+        name: 'Climate',
+        info: '<strong>Climate:</strong> Temperature anomalies and CO₂ levels from 1960-2024',
+        params: ['Temperature (°C)', 'CO₂ (ppm)', 'Year Index']
+      },
+      economic: {
+        name: 'Economic',
+        info: '<strong>Economic:</strong> GDP growth, inflation rate, and unemployment cycles',
+        params: ['GDP Growth (%)', 'Inflation Rate (%)', 'Unemployment (%)']
+      },
+      seismic: {
+        name: 'Seismic',
+        info: '<strong>Seismic:</strong> Earthquake magnitude, depth, and frequency patterns',
+        params: ['Magnitude', 'Depth (km)', 'Frequency']
+      },
+      crypto: {
+        name: 'Crypto',
+        info: '<strong>Crypto:</strong> Bitcoin price volatility, trading volume, and market sentiment',
+        params: ['Price Volatility', 'Volume (BTC)', 'Market Sentiment']
+      },
+      trending: {
+        name: 'Trending',
+        info: '<strong>Trending:</strong> Wikipedia page views, edit frequency, and topic virality',
+        params: ['Page Views', 'Edit Frequency', 'Virality Score']
+      },
+      audio: {
+        name: 'Audio',
+        info: '<strong>Audio:</strong> Live microphone input frequency, amplitude, and waveform',
+        params: ['Frequency (Hz)', 'Amplitude', 'Waveform']
+      },
+      orbital: {
+        name: 'Orbital',
+        info: '<strong>Orbital:</strong> ISS position (latitude, longitude, altitude)',
+        params: ['Latitude (°)', 'Longitude (°)', 'Altitude (km)']
+      },
+      solar: {
+        name: 'Solar',
+        info: '<strong>Solar:</strong> Solar wind speed, sunspot number, and magnetic flux',
+        params: ['Solar Wind (km/s)', 'Sunspot Number', 'Magnetic Flux']
+      },
+      ocean: {
+        name: 'Ocean',
+        info: '<strong>Ocean:</strong> Gulf Stream velocity, temperature gradient, and salinity',
+        params: ['Current Speed (m/s)', 'Temperature (°C)', 'Salinity (PSU)']
+      },
+      stocks: {
+        name: 'Stocks',
+        info: '<strong>Stocks:</strong> S&P 500 volatility, trading volume, and market momentum',
+        params: ['Volatility (VIX)', 'Volume (B)', 'Momentum']
+      },
+      weather: {
+        name: 'Weather',
+        info: '<strong>Weather:</strong> Real-time atmospheric pressure, humidity, and wind patterns',
+        params: ['Pressure (hPa)', 'Humidity (%)', 'Wind Speed (m/s)']
+      },
+      heartrate: {
+        name: 'Heart Rate',
+        info: '<strong>Heart Rate:</strong> ECG R-R intervals, heart rate variability, and rhythm',
+        params: ['BPM', 'HRV (ms)', 'Rhythm Score']
+      },
+      traffic: {
+        name: 'Traffic',
+        info: '<strong>Traffic:</strong> Urban traffic flow, congestion index, and average speed',
+        params: ['Flow (veh/hr)', 'Congestion', 'Avg Speed (km/h)']
+      },
+      power: {
+        name: 'Power Grid',
+        info: '<strong>Power Grid:</strong> Electricity demand, frequency deviation, and load balance',
+        params: ['Demand (GW)', 'Frequency (Hz)', 'Balance (%)']
+      },
+      pandemic: {
+        name: 'Pandemic',
+        info: '<strong>Pandemic:</strong> Infection rate, reproduction number, and hospitalization',
+        params: ['Daily Cases', 'R₀ Value', 'Hospital Load']
+      },
+      brain: {
+        name: 'Brain Waves',
+        info: '<strong>Brain Waves:</strong> EEG alpha, beta, and theta wave amplitudes',
+        params: ['Alpha (μV)', 'Beta (μV)', 'Theta (μV)']
+      },
+      tides: {
+        name: 'Tides',
+        info: '<strong>Tides:</strong> Tidal height, lunar phase influence, and current velocity',
+        params: ['Height (m)', 'Lunar Phase', 'Current (m/s)']
+      }
+    };
+    
+    // Attractor configurations with proper equations
+    const attractors = {
+      lorenz: {
+        name: 'Lorenz',
+        params: [
+          { name: 'σ (Prandtl)', min: 0, max: 20, step: 0.1, default: 10 },
+          { name: 'ρ (Rayleigh)', min: 0, max: 50, step: 0.1, default: 28 },
+          { name: 'β (Geometry)', min: 0, max: 10, step: 0.1, default: 2.667 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          const dx = params.p1 * (y - x);
+          const dy = x * (params.p2 - z) - y;
+          const dz = x * y - params.p3 * z;
+          return [x + dx * dt, y + dy * dt, z + dz * dt];
+        },
+        scale: 8,
+        initPos: [0.1, 0, 0],
+        initSpread: 0.5
+      },
+      rossler: {
+        name: 'Rössler',
+        params: [
+          { name: 'a (Stiffness)', min: 0, max: 0.5, step: 0.01, default: 0.2 },
+          { name: 'b (Damping)', min: 0, max: 0.5, step: 0.01, default: 0.2 },
+          { name: 'c (Forcing)', min: 0, max: 20, step: 0.1, default: 5.7 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          const dx = -y - z;
+          const dy = x + params.p1 * y;
+          const dz = params.p2 + z * (x - params.p3);
+          return [x + dx * dt, y + dy * dt, z + dz * dt];
+        },
+        scale: 15,
+        initPos: [1, 1, 1],
+        initSpread: 0.3
+      },
+      chen: {
+        name: 'Chen',
+        params: [
+          { name: 'α (Coupling)', min: 30, max: 45, step: 0.5, default: 35 },
+          { name: 'β (Feedback)', min: 1, max: 6, step: 0.1, default: 3 },
+          { name: 'γ (Damping)', min: 20, max: 35, step: 0.5, default: 28 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          const dx = params.p1 * (y - x);
+          const dy = (params.p3 - params.p1) * x - x * z + params.p3 * y;
+          const dz = x * y - params.p2 * z;
+          return [x + dx * dt, y + dy * dt, z + dz * dt];
+        },
+        scale: 6,
+        initPos: [-0.1, 0.5, -0.6],
+        initSpread: 0.3
+      },
+      aizawa: {
+        name: 'Aizawa',
+        params: [
+          { name: 'a (Growth)', min: 0.7, max: 1.0, step: 0.01, default: 0.95 },
+          { name: 'b (Offset)', min: 0.5, max: 0.9, step: 0.01, default: 0.7 },
+          { name: 'c (Constant)', min: 0.5, max: 0.7, step: 0.01, default: 0.6 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Standard Aizawa: d=3.5, e=0.25, f=0.1 are fixed
+          const a = params.p1, b = params.p2, c = params.p3;
+          const d = 3.5, e = 0.25, f = 0.1;
+          const dx = (z - b) * x - d * y;
+          const dy = d * x + (z - b) * y;
+          const dz = c + a * z - (z * z * z) / 3 - (x * x + y * y) * (1 + e * z) + f * z * x * x * x;
+          return [x + dx * dt, y + dy * dt, z + dz * dt];
+        },
+        scale: 200,
+        initPos: [0.1, 0.1, 0.1],
+        initSpread: 0.01
+      },
+      thomas: {
+        name: 'Thomas',
+        params: [
+          { name: 'b (Dissipation)', min: 0.15, max: 0.22, step: 0.002, default: 0.208186 },
+          { name: 'Speed Mult', min: 5, max: 20, step: 1, default: 10 },
+          { name: 'Chaos', min: 0.9, max: 1.1, step: 0.01, default: 1.0 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Thomas attractor needs larger timestep - it's slow-evolving
+          const b = params.p1;
+          const speedMult = params.p2;
+          const chaos = params.p3;
+          const dx = Math.sin(y * chaos) - b * x;
+          const dy = Math.sin(z * chaos) - b * y;
+          const dz = Math.sin(x * chaos) - b * z;
+          return [x + dx * dt * speedMult, y + dy * dt * speedMult, z + dz * dt * speedMult];
+        },
+        scale: 70,
+        initPos: [1.1, 1.1, -0.01],
+        initSpread: 0.3
+      },
+      halvorsen: {
+        name: 'Halvorsen',
+        params: [
+          { name: 'α (Symmetry)', min: 1.2, max: 1.6, step: 0.05, default: 1.4 },
+          { name: 'Scale', min: 0.8, max: 1.5, step: 0.05, default: 1 },
+          { name: 'Speed', min: 0.8, max: 1.5, step: 0.05, default: 1 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          const dx = -params.p1 * x - 4 * y - 4 * z - y * y;
+          const dy = -params.p1 * y - 4 * z - 4 * x - z * z;
+          const dz = -params.p1 * z - 4 * x - 4 * y - x * x;
+          return [x + dx * dt * params.p2 * params.p3, y + dy * dt * params.p2 * params.p3, z + dz * dt * params.p2 * params.p3];
+        },
+        scale: 18,
+        initPos: [-1.48, -1.51, 2.04],
+        initSpread: 0.3
+      },
+      sprott: {
+        name: 'Sprott',
+        params: [
+          { name: 'a (Coupling)', min: 2.0, max: 2.2, step: 0.01, default: 2.07 },
+          { name: 'b (Nonlinearity)', min: 1.7, max: 1.9, step: 0.01, default: 1.79 },
+          { name: 'Speed', min: 0.5, max: 2.0, step: 0.1, default: 1.0 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Sprott Case B - one of the simplest chaotic flows
+          const dx = y * z;
+          const dy = x - y;
+          const dz = params.p1 - x * y;
+          return [x + dx * dt * params.p3, y + dy * dt * params.p3, z + dz * dt * params.p3];
+        },
+        scale: 80,
+        initPos: [0.1, 0.1, 0.1],
+        initSpread: 0.05
+      },
+      dadras: {
+        name: 'Dadras',
+        params: [
+          { name: 'a (Primary)', min: 2.5, max: 3.5, step: 0.1, default: 3.0 },
+          { name: 'b (Secondary)', min: 2.5, max: 3.0, step: 0.1, default: 2.7 },
+          { name: 'c (Coupling)', min: 1.5, max: 2.0, step: 0.05, default: 1.7 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Dadras attractor - produces three-scroll pattern
+          const d = 2.0, e = 9.0; // Fixed parameters
+          const dx = y - params.p1 * x + params.p2 * y * z;
+          const dy = params.p3 * y - x * z + z;
+          const dz = d * x * y - e * z;
+          return [x + dx * dt, y + dy * dt, z + dz * dt];
+        },
+        scale: 25,
+        initPos: [0.1, 0.1, 0.1],
+        initSpread: 0.1
+      },
+      bouali: {
+        name: 'Bouali',
+        params: [
+          { name: 'α (Growth)', min: 0.2, max: 0.5, step: 0.02, default: 0.3 },
+          { name: 'μ (Coupling)', min: 0.8, max: 1.2, step: 0.02, default: 1.0 },
+          { name: 's (Scale)', min: 0.8, max: 1.5, step: 0.05, default: 1.0 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Bouali attractor - complex wing structure
+          const a = params.p1, s = params.p3;
+          const dx = x * (4 - y) + a * z;
+          const dy = -y * (1 - x * x);
+          const dz = -x * (1.5 - s * z) - 0.05 * z;
+          return [x + dx * dt * params.p2, y + dy * dt * params.p2, z + dz * dt * params.p2];
+        },
+        scale: 40,
+        initPos: [1.0, 1.0, 0.0],
+        initSpread: 0.2
+      },
+      chua: {
+        name: 'Chua',
+        params: [
+          { name: 'α (Alpha)', min: 14, max: 16, step: 0.1, default: 15.6 },
+          { name: 'β (Beta)', min: 25, max: 30, step: 0.5, default: 28 },
+          { name: 'm₀ (Slope)', min: -1.2, max: -1.0, step: 0.02, default: -1.143 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Chua's circuit - iconic double scroll attractor
+          const m1 = -0.714;
+          const h = params.p3 * x + 0.5 * (m1 - params.p3) * (Math.abs(x + 1) - Math.abs(x - 1));
+          const dx = params.p1 * (y - x - h);
+          const dy = x - y + z;
+          const dz = -params.p2 * y;
+          return [x + dx * dt, y + dy * dt, z + dz * dt];
+        },
+        scale: 80,
+        initPos: [0.7, 0, 0],
+        initSpread: 0.1
+      },
+      rabinovich: {
+        name: 'Rabinovich-Fabrikant',
+        params: [
+          { name: 'γ (Gamma)', min: 0.8, max: 1.0, step: 0.01, default: 0.87 },
+          { name: 'α (Alpha)', min: 1.0, max: 1.2, step: 0.01, default: 1.1 },
+          { name: 'Speed', min: 0.3, max: 1.0, step: 0.05, default: 0.5 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Rabinovich-Fabrikant - multi-scroll dynamics
+          const dx = y * (z - 1 + x * x) + params.p1 * x;
+          const dy = x * (3 * z + 1 - x * x) + params.p1 * y;
+          const dz = -2 * z * (params.p2 + x * y);
+          return [x + dx * dt * params.p3, y + dy * dt * params.p3, z + dz * dt * params.p3];
+        },
+        scale: 150,
+        initPos: [-1, 0, 0.5],
+        initSpread: 0.1
+      },
+      nose: {
+        name: 'Nosé-Hoover',
+        params: [
+          { name: 'a (Coupling)', min: 1.0, max: 2.0, step: 0.1, default: 1.5 },
+          { name: 'Speed', min: 0.5, max: 2.0, step: 0.1, default: 1.0 },
+          { name: 'Scale', min: 0.8, max: 1.5, step: 0.1, default: 1.0 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Nosé-Hoover thermostat from molecular dynamics
+          const dx = y;
+          const dy = -x + y * z;
+          const dz = params.p1 - y * y;
+          return [x + dx * dt * params.p2, y + dy * dt * params.p2, z + dz * dt * params.p2];
+        },
+        scale: 100 * 1,
+        initPos: [0, 0.1, 0],
+        initSpread: 0.1
+      },
+      burke: {
+        name: 'Burke-Shaw',
+        params: [
+          { name: 's (Sigma)', min: 8, max: 12, step: 0.5, default: 10 },
+          { name: 'v (Nu)', min: 4, max: 5, step: 0.1, default: 4.272 },
+          { name: 'Speed', min: 0.5, max: 1.5, step: 0.1, default: 1.0 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Burke-Shaw attractor - similar structure to Lorenz
+          const dx = -params.p1 * (x + y);
+          const dy = -y - params.p1 * x * z;
+          const dz = params.p1 * x * y + params.p2;
+          return [x + dx * dt * params.p3, y + dy * dt * params.p3, z + dz * dt * params.p3];
+        },
+        scale: 50,
+        initPos: [0.6, 0, 0],
+        initSpread: 0.1
+      },
+      genesio: {
+        name: 'Genesio-Tesi',
+        params: [
+          { name: 'a', min: 0.4, max: 0.5, step: 0.01, default: 0.44 },
+          { name: 'b', min: 1.0, max: 1.2, step: 0.02, default: 1.1 },
+          { name: 'c', min: 0.9, max: 1.1, step: 0.02, default: 1.0 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Genesio-Tesi - simple quadratic system
+          const dx = y;
+          const dy = z;
+          const dz = -params.p3 * x - params.p2 * y - params.p1 * z + x * x;
+          return [x + dx * dt, y + dy * dt, z + dz * dt];
+        },
+        scale: 100,
+        initPos: [0.1, 0.1, 0.1],
+        initSpread: 0.05
+      },
+      arneodo: {
+        name: 'Arneodo',
+        params: [
+          { name: 'a', min: -5.5, max: -5.3, step: 0.02, default: -5.5 },
+          { name: 'b', min: 3.4, max: 3.6, step: 0.02, default: 3.5 },
+          { name: 'c', min: -0.5, max: 0.5, step: 0.1, default: -1.0 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Arneodo attractor - simple chaotic system
+          const dx = y;
+          const dy = z;
+          const dz = params.p1 * x + params.p2 * y + params.p3 * z + x * x * x;
+          return [x + dx * dt, y + dy * dt, z + dz * dt];
+        },
+        scale: 100,
+        initPos: [0.1, 0, 0],
+        initSpread: 0.05
+      },
+      shimizu: {
+        name: 'Shimizu-Morioka',
+        params: [
+          { name: 'a', min: 0.7, max: 0.9, step: 0.02, default: 0.85 },
+          { name: 'b', min: 0.4, max: 0.6, step: 0.02, default: 0.5 },
+          { name: 'Speed', min: 0.5, max: 1.5, step: 0.1, default: 1.0 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Shimizu-Morioka - from laser physics
+          const dx = y;
+          const dy = (1 - z) * x - params.p1 * y;
+          const dz = -params.p2 * z + x * x;
+          return [x + dx * dt * params.p3, y + dy * dt * params.p3, z + dz * dt * params.p3];
+        },
+        scale: 100,
+        initPos: [0.1, 0.1, 0.1],
+        initSpread: 0.05
+      },
+      fourwing: {
+        name: 'Four-Wing',
+        params: [
+          { name: 'a', min: 0.1, max: 0.3, step: 0.02, default: 0.2 },
+          { name: 'b', min: 0.01, max: 0.02, step: 0.002, default: 0.01 },
+          { name: 'c', min: -0.5, max: -0.3, step: 0.02, default: -0.4 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Four-Wing attractor - beautiful multi-wing structure
+          const dx = params.p1 * x + y * z;
+          const dy = params.p2 * x + params.p3 * y - x * z;
+          const dz = -z - x * y;
+          return [x + dx * dt, y + dy * dt, z + dz * dt];
+        },
+        scale: 150,
+        initPos: [0.1, 0.1, 0.1],
+        initSpread: 0.05
+      },
+      lu: {
+        name: 'Lü',
+        params: [
+          { name: 'a', min: 35, max: 40, step: 0.5, default: 36 },
+          { name: 'b', min: 2.5, max: 3.5, step: 0.1, default: 3 },
+          { name: 'c', min: 18, max: 22, step: 0.5, default: 20 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Lü attractor - bridge between Lorenz and Chen
+          const dx = params.p1 * (y - x);
+          const dy = -x * z + params.p3 * y;
+          const dz = x * y - params.p2 * z;
+          return [x + dx * dt, y + dy * dt, z + dz * dt];
+        },
+        scale: 7,
+        initPos: [0.1, 0.1, 0.1],
+        initSpread: 0.1
+      },
+      rucklidge: {
+        name: 'Rucklidge',
+        params: [
+          { name: 'κ (Kappa)', min: 1.8, max: 2.2, step: 0.05, default: 2.0 },
+          { name: 'λ (Lambda)', min: 6.5, max: 7.0, step: 0.1, default: 6.7 },
+          { name: 'Speed', min: 0.5, max: 1.5, step: 0.1, default: 1.0 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Rucklidge attractor - double-scroll dynamics
+          const dx = -params.p1 * x + params.p2 * y - y * z;
+          const dy = x;
+          const dz = -z + y * y;
+          return [x + dx * dt * params.p3, y + dy * dt * params.p3, z + dz * dt * params.p3];
+        },
+        scale: 50,
+        initPos: [1, 0, 4.5],
+        initSpread: 0.2
+      },
+      dequan: {
+        name: 'Dequan-Li',
+        params: [
+          { name: 'a', min: 38, max: 42, step: 0.5, default: 40 },
+          { name: 'c', min: 1.5, max: 2.0, step: 0.05, default: 1.833 },
+          { name: 'd', min: 0.1, max: 0.2, step: 0.01, default: 0.16 }
+        ],
+        compute: (x, y, z, params, dt) => {
+          // Dequan Li attractor - complex multi-scroll
+          const b = 11, e = 0.65, f = 20, k = 55;
+          const dx = params.p1 * (y - x) + params.p3 * x * z;
+          const dy = k * x + f * y - x * z;
+          const dz = params.p2 * z + x * y - e * x * x;
+          return [x + dx * dt * 0.3, y + dy * dt * 0.3, z + dz * dt * 0.3];
+        },
+        scale: 5,
+        initPos: [0.349, 0, -0.16],
+        initSpread: 0.05
+      },
+      tsucs: {
+        name: 'Tsucs',
+        params: [
+          { name: 'a (Param)', min: 35, max: 45, step: 0.5, default: 40 },
+          { name: 'c (Param)', min: 0.5, max: 1.0, step: 0.01, default: 0.833 },
+          { name: 'e (Param)', min: 0.5, max: 0.8, step: 0.01, default: 0.65 }
+        ],
+        compute: (x, y, z, params, dt) => {
+            const a = params.p1;
+            const c = params.p2;
+            const e = params.p3;
+            const d = 0.5;
+            const k = 55;
+            const f = 20;
+            const dx = a * (y - x) + d * x * z;
+            const dy = k * x + f * y - x * z;
+            const dz = c * z + x * y - e * x * x;
+            return [x + dx * dt * 0.05, y + dy * dt * 0.05, z + dz * dt * 0.05];
+        },
+        scale: 4,
+        initPos: [0.1, 0.1, 0.1],
+        initSpread: 0.1
+      },
+      newton_leipnik: {
+        name: 'Newton-Leipnik',
+        params: [
+            { name: 'a (Shear)', min: 0.3, max: 0.5, step: 0.01, default: 0.4 },
+            { name: 'b (Attraction)', min: 0.8, max: 1.0, step: 0.01, default: 0.9 },
+            { name: 'Scale', min: 0.1, max: 1.0, step: 0.1, default: 1.0 }
+        ],
+         compute: (x, y, z, params, dt) => {
+            const dx = -params.p1 * x + y + 10 * y * z;
+            const dy = -x - 0.4 * y + 5 * x * z;
+            const dz = params.p2 * z - 5 * x * y;
+            return [x + dx * dt * 0.2 * params.p3, y + dy * dt * 0.2 * params.p3, z + dz * dt * 0.2 * params.p3];
+        },
+        scale: 25,
+        initPos: [0.349, 0, -0.16],
+        initSpread: 0.05
+      }
+    };
+    
+    // Curated defaults for each dataset+attractor combination
+    // These are tested to produce clear, beautiful visualizations
+    const curatedDefaults = {
+      // Climate data works best with these
+      'climate-lorenz': { p1: 10, p2: 28, p3: 2.667 },
+      'climate-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
+      'climate-chen': { p1: 35, p2: 3, p3: 28 },
+      'climate-aizawa': { p1: 0.95, p2: 0.7, p3: 0.6 },
+      'climate-thomas': { p1: 0.208186, p2: 10, p3: 1.0 },
+      'climate-halvorsen': { p1: 1.4, p2: 1, p3: 1 },
+      
+      // Economic data
+      'economic-lorenz': { p1: 10, p2: 28, p3: 2.667 },
+      'economic-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
+      'economic-chen': { p1: 35, p2: 3, p3: 28 },
+      'economic-aizawa': { p1: 0.95, p2: 0.7, p3: 0.6 },
+      'economic-thomas': { p1: 0.208186, p2: 10, p3: 1.0 },
+      'economic-halvorsen': { p1: 1.4, p2: 1, p3: 1 },
+      
+      // Seismic data
+      'seismic-lorenz': { p1: 10, p2: 28, p3: 2.667 },
+      'seismic-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
+      'seismic-chen': { p1: 35, p2: 3, p3: 28 },
+      'seismic-aizawa': { p1: 0.95, p2: 0.7, p3: 0.6 },
+      'seismic-thomas': { p1: 0.208186, p2: 10, p3: 1.0 },
+      'seismic-halvorsen': { p1: 1.4, p2: 1, p3: 1 },
+      
+      // Crypto data
+      'crypto-lorenz': { p1: 10, p2: 28, p3: 2.667 },
+      'crypto-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
+      'crypto-chen': { p1: 35, p2: 3, p3: 28 },
+      'crypto-aizawa': { p1: 0.95, p2: 0.7, p3: 0.6 },
+      'crypto-thomas': { p1: 0.208186, p2: 10, p3: 1.0 },
+      'crypto-halvorsen': { p1: 1.4, p2: 1, p3: 1 },
+      
+      // Trending data
+      'trending-lorenz': { p1: 10, p2: 28, p3: 2.667 },
+      'trending-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
+      'trending-chen': { p1: 35, p2: 3, p3: 28 },
+      'trending-aizawa': { p1: 0.95, p2: 0.7, p3: 0.6 },
+      'trending-thomas': { p1: 0.208186, p2: 10, p3: 1.0 },
+      'trending-halvorsen': { p1: 1.4, p2: 1, p3: 1 },
+      
+      // Audio data
+      'audio-lorenz': { p1: 10, p2: 28, p3: 2.667 },
+      'audio-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
+      'audio-chen': { p1: 35, p2: 3, p3: 28 },
+      'audio-aizawa': { p1: 0.95, p2: 0.7, p3: 0.6 },
+      'audio-thomas': { p1: 0.208186, p2: 10, p3: 1.0 },
+      'audio-halvorsen': { p1: 1.4, p2: 1, p3: 1 },
+      
+      // Orbital data
+      'orbital-lorenz': { p1: 10, p2: 28, p3: 2.667 },
+      'orbital-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
+      'orbital-chen': { p1: 35, p2: 3, p3: 28 },
+      'orbital-aizawa': { p1: 0.95, p2: 0.7, p3: 0.6 },
+      'orbital-thomas': { p1: 0.208186, p2: 10, p3: 1.0 },
+      'orbital-halvorsen': { p1: 1.4, p2: 1, p3: 1 },
+
+      // Solar data
+      'solar-lorenz': { p1: 10, p2: 28, p3: 2.667 },
+      'solar-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
+      'solar-halvorsen': { p1: 1.4, p2: 1, p3: 1 },
+
+      // Ocean data
+      'ocean-lorenz': { p1: 10, p2: 28, p3: 2.667 },
+      'ocean-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
+      'ocean-thomas': { p1: 0.208186, p2: 10, p3: 1.0 },
+
+      // New attractors - defaults for all datasets
+      'climate-sprott': { p1: 2.07, p2: 1.79, p3: 1.0 },
+      'climate-dadras': { p1: 3.0, p2: 2.7, p3: 1.7 },
+      'climate-bouali': { p1: 0.3, p2: 1.0, p3: 1.0 },
+      'seismic-sprott': { p1: 2.07, p2: 1.79, p3: 1.0 },
+      'crypto-sprott': { p1: 2.07, p2: 1.79, p3: 1.2 },
+      'economic-dadras': { p1: 3.0, p2: 2.7, p3: 1.7 },
+      'trending-bouali': { p1: 0.3, p2: 1.0, p3: 1.0 }
+    };
+    
+    // Color schemes
+    const colorSchemes = {
+      bioluminescent: { start: [0, 255, 255], end: [255, 0, 255] },
+      fire: { start: [255, 69, 0], end: [255, 215, 0] },
+      ocean: { start: [0, 102, 255], end: [0, 255, 170] },
+      sunset: { start: [255, 107, 53], end: [247, 147, 30] },
+      forest: { start: [0, 255, 136], end: [0, 68, 34] },
+      cosmic: { start: [153, 0, 255], end: [255, 0, 153] },
+      aurora: { start: [0, 255, 136], end: [153, 0, 255] },
+      lava: { start: [255, 0, 68], end: [255, 204, 0] },
+      ice: { start: [255, 255, 255], end: [0, 136, 255] },
+      neon: { start: [57, 255, 20], end: [255, 20, 147] }, 
+      matrix: { start: [0, 255, 0], end: [0, 50, 0] },
+      cyberpunk: { start: [255, 255, 0], end: [0, 255, 255] }
+    };
+    
+    // Initialize particles with proper positions for each attractor
+    function initParticles() {
+      const count = parseInt(document.getElementById('particleSlider').value);
+      particles = [];
+      
+      const attractor = attractors[currentAttractor];
+      const [x0, y0, z0] = attractor.initPos;
+      const spread = attractor.initSpread;
+      
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: x0 + (Math.random() - 0.5) * spread,
+          y: y0 + (Math.random() - 0.5) * spread,
+          z: z0 + (Math.random() - 0.5) * spread,
+          trail: []
+        });
+      }
+    }
+    
+    // Generate parameter controls dynamically
+    function generateParameterControls() {
+      const container = document.getElementById('parametersContainer');
+      const attractor = attractors[currentAttractor];
+      const dataset = datasets[currentDataset];
+      
+      container.innerHTML = '';
+      
+      attractor.params.forEach((param, index) => {
+        const paramKey = `p${index + 1}`;
+        const value = currentParams[paramKey] !== undefined ? currentParams[paramKey] : param.default;
+        
+        const group = document.createElement('div');
+        group.className = 'control-group';
+        
+        // Map to dataset parameter if available
+        let labelText = param.name;
+        if (dataset.params[index]) {
+          labelText += ` ← ${dataset.params[index]}`;
+        }
+        
+        group.innerHTML = `
+          <div class="control-label">
+            <span>${labelText}</span>
+            <span class="control-value" id="param${index + 1}Value">${value.toFixed(3)}</span>
+          </div>
+          <input type="range" id="param${index + 1}Slider" 
+                 min="${param.min}" max="${param.max}" step="${param.step}" value="${value}">
+        `;
+        
+        container.appendChild(group);
+        
+        // Add event listener
+        const slider = group.querySelector('input');
+        const valueDisplay = group.querySelector('.control-value');
+        slider.addEventListener('input', (e) => {
+          const val = parseFloat(e.target.value);
+          currentParams[paramKey] = val;
+          valueDisplay.textContent = val.toFixed(3);
+        });
+      });
+    }
+    
+    // Load curated defaults for current dataset+attractor combination
+    function loadCuratedDefaults() {
+      const key = `${currentDataset}-${currentAttractor}`;
+      const defaults = curatedDefaults[key];
+      const attractor = attractors[currentAttractor];
+      
+      if (defaults) {
+        currentParams = { ...defaults };
+      } else {
+        // Fallback to attractor defaults
+        currentParams = {
+          p1: attractor.params[0].default,
+          p2: attractor.params[1].default,
+          p3: attractor.params[2].default
+        };
+      }
+      
+      // Update dataset info
+      const dataset = datasets[currentDataset];
+      document.getElementById('datasetInfo').innerHTML = dataset.info;
+      document.getElementById('datasetName').textContent = dataset.name;
+    }
+    
+    // Update attractor
+    function updateAttractor() {
+      document.getElementById('attractorName').textContent = attractors[currentAttractor].name;
+      loadCuratedDefaults();
+      generateParameterControls();
+      initParticles();
+    }
+    
+    // Render loop - clean clear each frame with optional glow
+    function render() {
+      // FPS tracking
+      frameCount++;
+      const now = performance.now();
+      if (now - lastFpsUpdate >= 1000) {
+        currentFps = Math.round(frameCount * 1000 / (now - lastFpsUpdate));
+        frameCount = 0;
+        lastFpsUpdate = now;
+        const fpsEl = document.getElementById('fpsCount');
+        if (fpsEl) fpsEl.textContent = currentFps;
+      }
+
+      // Clear canvas completely
+      ctx.fillStyle = '#0a0a0a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const dt = 0.005 * speed;
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const attractor = attractors[currentAttractor];
+      const scale = attractor.scale * zoom;
+      const colors = colorSchemes[currentColorScheme];
+
+      // Auto rotate
+      if (autoRotate) {
+        rotationY += 0.005;
+      }
+
+      // Apply glow if enabled
+      if (glowIntensity > 0) {
+        ctx.shadowBlur = glowIntensity;
+      } else {
+        ctx.shadowBlur = 0;
+        ctx.shadowColor = 'transparent';
+      }
+
+      particles.forEach((p, i) => {
+        // Compute next position
+        const [nx, ny, nz] = attractor.compute(p.x, p.y, p.z, currentParams, dt);
+
+        // Check for NaN or Infinity (diverged attractor)
+        if (!isFinite(nx) || !isFinite(ny) || !isFinite(nz)) {
+          // Reset this particle
+          const [x0, y0, z0] = attractor.initPos;
+          const spread = attractor.initSpread;
+          p.x = x0 + (Math.random() - 0.5) * spread;
+          p.y = y0 + (Math.random() - 0.5) * spread;
+          p.z = z0 + (Math.random() - 0.5) * spread;
+          p.trail = [];
+          return;
+        }
+
+        // Update position
+        p.x = nx;
+        p.y = ny;
+        p.z = nz;
+
+        // Add to trail (use configurable trail length)
+        p.trail.push({ x: nx, y: ny, z: nz });
+        while (p.trail.length > trailLength) p.trail.shift();
+
+        // Draw trail as continuous path
+        if (p.trail.length > 1) {
+          ctx.beginPath();
+          let firstPoint = true;
+
+          for (let j = 0; j < p.trail.length; j++) {
+            const point = p.trail[j];
+
+            // 3D rotation
+            const rotX = point.y * Math.cos(rotationX) - point.z * Math.sin(rotationX);
+            const rotZ = point.y * Math.sin(rotationX) + point.z * Math.cos(rotationX);
+            const finalX = point.x * Math.cos(rotationY) - rotZ * Math.sin(rotationY);
+            const finalY = rotX;
+
+            const screenX = centerX + finalX * scale + panX;
+            const screenY = centerY + finalY * scale + panY;
+
+            if (firstPoint) {
+              ctx.moveTo(screenX, screenY);
+              firstPoint = false;
+            } else {
+              ctx.lineTo(screenX, screenY);
+            }
+          }
+
+          // Color based on particle index for variety
+          const t = i / particles.length;
+          const r = Math.floor(colors.start[0] + (colors.end[0] - colors.start[0]) * t);
+          const g = Math.floor(colors.start[1] + (colors.end[1] - colors.start[1]) * t);
+          const b = Math.floor(colors.start[2] + (colors.end[2] - colors.start[2]) * t);
+
+          if (glowIntensity > 0) {
+            ctx.shadowColor = `rgba(${r}, ${g}, ${b}, 0.5)`;
+          }
+
+          ctx.strokeStyle = `rgb(${r}, ${g}, ${b})`;
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        }
+      });
+      
+      // Auto-animate parameter if enabled
+      if (isAutoAnimating) {
+        const attractor = attractors[currentAttractor];
+        const paramIndex = parseInt(autoAnimateParam.replace('p', '')) - 1;
+        const param = attractor.params[paramIndex];
+        
+        if (param) {
+          let newValue = currentParams[autoAnimateParam] + autoAnimateDirection * autoAnimateSpeed * (param.max - param.min);
+          
+          // Bounce at boundaries
+          if (newValue >= param.max) {
+            newValue = param.max;
+            autoAnimateDirection = -1;
+          } else if (newValue <= param.min) {
+            newValue = param.min;
+            autoAnimateDirection = 1;
+          }
+          
+          currentParams[autoAnimateParam] = newValue;
+          
+          // Update slider display
+          const slider = document.getElementById(`param${paramIndex + 1}Slider`);
+          const valueDisplay = document.getElementById(`param${paramIndex + 1}Value`);
+          if (slider) slider.value = newValue;
+          if (valueDisplay) valueDisplay.textContent = newValue.toFixed(3);
+        }
+      }
+      
+      if (isPlaying) {
+        animationId = requestAnimationFrame(render);
+      }
+    }
+    
+    // Event listeners
+    document.getElementById('datasetSelect').addEventListener('change', (e) => {
+      currentDataset = e.target.value;
+      updateAttractor();
+    });
+    
+    document.getElementById('attractorSelect').addEventListener('change', (e) => {
+      currentAttractor = e.target.value;
+      updateAttractor();
+    });
+    
+    document.getElementById('particleSlider').addEventListener('input', (e) => {
+      const val = e.target.value;
+      document.getElementById('particleValue').textContent = val;
+      document.getElementById('particleCount').textContent = val;
+      initParticles();
+    });
+    
+    document.getElementById('speedSlider').addEventListener('input', (e) => {
+      speed = parseFloat(e.target.value);
+      document.getElementById('speedValue').textContent = speed.toFixed(1) + '×';
+    });
+    
+    // Color scheme selection with keyboard support
+    const colorOptions = document.querySelectorAll('.color-option');
+    colorOptions.forEach((option, index) => {
+      option.addEventListener('click', () => selectColorScheme(option));
+      option.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectColorScheme(option);
+        } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          const next = colorOptions[(index + 1) % colorOptions.length];
+          next.focus();
+          selectColorScheme(next);
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          const prev = colorOptions[(index - 1 + colorOptions.length) % colorOptions.length];
+          prev.focus();
+          selectColorScheme(prev);
+        }
+      });
+    });
+
+    function selectColorScheme(option) {
+      colorOptions.forEach(o => {
+        o.classList.remove('active');
+        o.setAttribute('aria-checked', 'false');
+        o.setAttribute('tabindex', '-1');
+      });
+      option.classList.add('active');
+      option.setAttribute('aria-checked', 'true');
+      option.setAttribute('tabindex', '0');
+      currentColorScheme = option.dataset.scheme;
+    }
+
+    // Trail length slider
+    document.getElementById('trailSlider').addEventListener('input', (e) => {
+      trailLength = parseInt(e.target.value);
+      document.getElementById('trailValue').textContent = trailLength;
+    });
+
+    // Glow intensity slider
+    document.getElementById('glowSlider').addEventListener('input', (e) => {
+      glowIntensity = parseInt(e.target.value);
+      document.getElementById('glowValue').textContent = glowIntensity;
+    });
+    
+    // Famous bifurcation presets
+    const presets = {
+      // Lorenz family
+      'lorenz-classic': { attractor: 'lorenz', params: { p1: 10, p2: 28, p3: 2.667 } },
+      'lorenz-periodic': { attractor: 'lorenz', params: { p1: 10, p2: 24.74, p3: 2.667 } },
+      'lorenz-transient': { attractor: 'lorenz', params: { p1: 10, p2: 21, p3: 2.667 } },
+      'chen-hyperchaos': { attractor: 'chen', params: { p1: 40, p2: 3, p3: 28 } },
+      'lu-bridge': { attractor: 'lu', params: { p1: 36, p2: 3, p3: 20 } },
+      // Rössler family
+      'rossler-funnel': { attractor: 'rossler', params: { p1: 0.2, p2: 0.2, p3: 4 } },
+      'rossler-screw': { attractor: 'rossler', params: { p1: 0.2, p2: 0.2, p3: 18 } },
+      // Circuit attractors
+      'chua-doublescroll': { attractor: 'chua', params: { p1: 15.6, p2: 28, p3: -1.143 } },
+      'chua-spiral': { attractor: 'chua', params: { p1: 15, p2: 25.58, p3: -1.02 } },
+      // Multi-wing
+      'fourwing-symmetric': { attractor: 'fourwing', params: { p1: 0.2, p2: 0.01, p3: -0.4 } },
+      'dadras-triscroll': { attractor: 'dadras', params: { p1: 3.0, p2: 2.7, p3: 1.7 } },
+      'dequan-complex': { attractor: 'dequan', params: { p1: 40, p2: 1.833, p3: 0.16 } },
+      // Geometric
+      'thomas-slow': { attractor: 'thomas', params: { p1: 0.18, p2: 10, p3: 1.0 } },
+      'aizawa-spiral': { attractor: 'aizawa', params: { p1: 0.95, p2: 0.7, p3: 0.6 } },
+      'halvorsen-symmetric': { attractor: 'halvorsen', params: { p1: 1.4, p2: 1, p3: 1 } },
+      // Physics
+      'nose-thermostat': { attractor: 'nose', params: { p1: 1.5, p2: 1.0, p3: 1.0 } },
+      'shimizu-laser': { attractor: 'shimizu', params: { p1: 0.85, p2: 0.5, p3: 1.0 } },
+      'rabinovich-plasma': { attractor: 'rabinovich', params: { p1: 0.87, p2: 1.1, p3: 0.5 } },
+      // Simple
+      'sprott-minimal': { attractor: 'sprott', params: { p1: 2.07, p2: 1.79, p3: 1.0 } },
+      'genesio-quadratic': { attractor: 'genesio', params: { p1: 0.44, p2: 1.1, p3: 1.0 } },
+      'arneodo-simple': { attractor: 'arneodo', params: { p1: -5.5, p2: 3.5, p3: -1.0 } }
+    };
+    
+    document.getElementById('presetSelect').addEventListener('change', (e) => {
+      const presetKey = e.target.value;
+      if (!presetKey) return;
+      
+      const preset = presets[presetKey];
+      currentAttractor = preset.attractor;
+      document.getElementById('attractorSelect').value = currentAttractor;
+      
+      currentParams = { ...preset.params };
+      document.getElementById('attractorName').textContent = attractors[currentAttractor].name;
+      generateParameterControls();
+      initParticles();
+      
+      // Reset select
+      e.target.value = '';
+    });
+    
+    // Play/Pause toggle
+    document.getElementById('playPauseBtn').addEventListener('click', () => {
+      isPlaying = !isPlaying;
+      const btn = document.getElementById('playPauseBtn');
+      btn.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
+      if (isPlaying) {
+        render();
+      }
+    });
+
+    // Auto rotate toggle (New Feature)
+    document.getElementById('autoRotateBtn').addEventListener('click', () => {
+        autoRotate = !autoRotate;
+        const btn = document.getElementById('autoRotateBtn');
+        btn.textContent = autoRotate ? 'Stop Rotate' : 'Auto Rotate';
+        btn.setAttribute('aria-pressed', autoRotate);
+    });
+    
+    // Auto-animate parameter toggle
+    document.getElementById('autoAnimateBtn').addEventListener('click', () => {
+      isAutoAnimating = !isAutoAnimating;
+      const btn = document.getElementById('autoAnimateBtn');
+      btn.textContent = isAutoAnimating ? '⏹ Stop Animation' : '🎬 Auto-Animate Parameter';
+      
+      // If starting animation, prompt for which parameter
+      if (isAutoAnimating) {
+        const attractor = attractors[currentAttractor];
+        const paramNames = attractor.params.map((p, i) => `${i + 1}: ${p.name}`).join('\n');
+        const choice = prompt(`Which parameter to animate? (1-3)\n\n${paramNames}`, '2');
+        if (choice && ['1', '2', '3'].includes(choice)) {
+          autoAnimateParam = 'p' + choice;
+        } else {
+          isAutoAnimating = false;
+          btn.textContent = '🎬 Auto-Animate Parameter';
+        }
+      }
+    });
+    
+    // Apply a combo (curated or random)
+    function applyCombo(combo) {
+      currentDataset = combo.dataset;
+      currentAttractor = combo.attractor;
+      currentColorScheme = combo.color;
+      currentParams = { ...combo.params };
+
+      document.getElementById('datasetSelect').value = currentDataset;
+      document.getElementById('attractorSelect').value = currentAttractor;
+
+      // Update color selection
+      document.querySelectorAll('.color-option').forEach(o => {
+        o.classList.toggle('active', o.dataset.scheme === currentColorScheme);
+      });
+
+      document.getElementById('attractorName').textContent = attractors[currentAttractor].name;
+      document.getElementById('datasetName').textContent = datasets[currentDataset].name;
+      document.getElementById('datasetInfo').innerHTML = datasets[currentDataset].info;
+
+      generateParameterControls();
+      initParticles();
+    }
+
+    // Get next combo - curated first, then random
+    function getNextCombo() {
+      if (curatedComboIndex < beautifulCombos.length) {
+        const combo = beautifulCombos[curatedComboIndex];
+        curatedComboIndex++;
+        return combo;
+      } else {
+        // After curated combos, generate truly random
+        const datasetKeys = Object.keys(datasets);
+        const attractorKeys = Object.keys(attractors);
+        const colorKeys = Object.keys(colorSchemes);
+        const randomDataset = datasetKeys[Math.floor(Math.random() * datasetKeys.length)];
+        const randomAttractor = attractorKeys[Math.floor(Math.random() * attractorKeys.length)];
+        const randomColor = colorKeys[Math.floor(Math.random() * colorKeys.length)];
+        const key = `${randomDataset}-${randomAttractor}`;
+        const params = curatedDefaults[key] || {
+          p1: attractors[randomAttractor].params[0].default,
+          p2: attractors[randomAttractor].params[1].default,
+          p3: attractors[randomAttractor].params[2].default
+        };
+        return { dataset: randomDataset, attractor: randomAttractor, color: randomColor, params };
+      }
+    }
+
+    document.getElementById('randomBtn').addEventListener('click', () => {
+      applyCombo(getNextCombo());
+    });
+
+    // Dice button - same as random
+    document.getElementById('diceBtn').addEventListener('click', () => {
+      applyCombo(getNextCombo());
+    });
+    
+    // Export PNG with watermark
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      // Create a temporary canvas for export
+      const exportCanvas = document.createElement('canvas');
+      exportCanvas.width = canvas.width;
+      exportCanvas.height = canvas.height;
+      const exportCtx = exportCanvas.getContext('2d');
+      
+      // Copy current canvas
+      exportCtx.drawImage(canvas, 0, 0);
+      
+      // Add watermark
+      exportCtx.font = '14px Inter, sans-serif';
+      exportCtx.fillStyle = 'rgba(0, 255, 255, 0.6)';
+      exportCtx.textAlign = 'right';
+      exportCtx.fillText('dr.eamer.dev', exportCanvas.width - 20, exportCanvas.height - 20);
+      
+      // Add attractor info
+      exportCtx.textAlign = 'left';
+      exportCtx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      exportCtx.fillText(`${attractors[currentAttractor].name} Attractor · ${datasets[currentDataset].name} Data`, 20, exportCanvas.height - 20);
+      
+      // Download
+      const link = document.createElement('a');
+      link.download = `attractor-${currentAttractor}-${currentDataset}-${Date.now()}.png`;
+      link.href = exportCanvas.toDataURL('image/png');
+      link.click();
+    });
+    
+    // Reset view (pan, zoom, rotation)
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      panX = 0;
+      panY = 0;
+      zoom = 1;
+      rotationX = 0.5;
+      rotationY = 0.5;
+      updateAttractor();
+    });
+    
+    // Modal handling with focus trap
+    const modal = document.getElementById('modal');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    let lastFocusedElement = null;
+
+    function openModal() {
+      lastFocusedElement = document.activeElement;
+      modal.classList.add('active');
+      modalCloseBtn.focus();
+
+      // Trap focus inside modal
+      modal.addEventListener('keydown', trapFocus);
+    }
+
+    function closeModal() {
+      modal.classList.remove('active');
+      modal.removeEventListener('keydown', trapFocus);
+      if (lastFocusedElement) {
+        lastFocusedElement.focus();
+      }
+    }
+
+    function trapFocus(e) {
+      if (e.key === 'Tab') {
+        const focusableElements = modal.querySelectorAll('button, a[href], input, select');
+        const first = focusableElements[0];
+        const last = focusableElements[focusableElements.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      } else if (e.key === 'Escape') {
+        closeModal();
+      }
+    }
+
+    document.getElementById('infoBtn').addEventListener('click', openModal);
+    modalCloseBtn.addEventListener('click', closeModal);
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+    
+    // Mouse controls - drag to rotate, shift+drag or right-click drag to pan
+    canvas.addEventListener('mousedown', (e) => {
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+      if (e.shiftKey || e.button === 2) {
+        isPanning = true;
+        isDragging = false;
+      } else {
+        isDragging = true;
+        isPanning = false;
+      }
+    });
+    
+    canvas.addEventListener('mousemove', (e) => {
+      const dx = e.clientX - lastMouseX;
+      const dy = e.clientY - lastMouseY;
+      
+      if (isPanning) {
+        panX += dx;
+        panY += dy;
+      } else if (isDragging) {
+        rotationY += dx * 0.005;
+        rotationX += dy * 0.005;
+      }
+      
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+    });
+    
+    canvas.addEventListener('mouseup', () => {
+      isDragging = false;
+      isPanning = false;
+    });
+    
+    canvas.addEventListener('mouseleave', () => {
+      isDragging = false;
+      isPanning = false;
+    });
+    
+    // Prevent context menu on right-click
+    canvas.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+    });
+    
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      zoom *= e.deltaY > 0 ? 0.95 : 1.05;
+      zoom = Math.max(0.3, Math.min(5, zoom));
+    });
+    
+    // Touch controls for mobile
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let lastTouchDistance = 0;
+    let isTwoFingerTouch = false;
+    
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (e.touches.length === 1) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        isDragging = true;
+        isTwoFingerTouch = false;
+      } else if (e.touches.length === 2) {
+        isTwoFingerTouch = true;
+        isDragging = false;
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        lastTouchDistance = Math.sqrt(dx * dx + dy * dy);
+        touchStartX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        touchStartY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      }
+    }, { passive: false });
+    
+    canvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      if (e.touches.length === 1 && isDragging) {
+        const dx = e.touches[0].clientX - touchStartX;
+        const dy = e.touches[0].clientY - touchStartY;
+        rotationY += dx * 0.005;
+        rotationX += dy * 0.005;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      } else if (e.touches.length === 2 && isTwoFingerTouch) {
+        // Pinch to zoom
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const zoomDelta = distance / lastTouchDistance;
+        zoom *= zoomDelta;
+        zoom = Math.max(0.3, Math.min(5, zoom));
+        lastTouchDistance = distance;
+        
+        // Two-finger drag to pan
+        const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+        panX += centerX - touchStartX;
+        panY += centerY - touchStartY;
+        touchStartX = centerX;
+        touchStartY = centerY;
+      }
+    }, { passive: false });
+    
+    canvas.addEventListener('touchend', () => {
+      isDragging = false;
+      isTwoFingerTouch = false;
+    });
+
+    // Mobile hamburger menu toggle
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+    const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+    const sidebar = document.querySelector('.sidebar');
+
+    function toggleMobileSidebar() {
+      const isOpen = sidebar.classList.toggle('open');
+      hamburgerBtn.setAttribute('aria-expanded', isOpen);
+      if (isOpen) {
+        document.body.classList.add('sidebar-open');
+      } else {
+        document.body.classList.remove('sidebar-open');
+      }
+    }
+
+    function closeMobileSidebar() {
+      sidebar.classList.remove('open');
+      hamburgerBtn.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('sidebar-open');
+    }
+
+    // Desktop sidebar toggle
+    function toggleDesktopSidebar() {
+      if (window.innerWidth > 768) {
+        sidebarCollapsed = !sidebarCollapsed;
+        sidebar.classList.toggle('collapsed', sidebarCollapsed);
+        canvas.classList.toggle('expanded', sidebarCollapsed);
+        sidebarToggleBtn.classList.toggle('collapsed', sidebarCollapsed);
+        sidebarToggleBtn.innerHTML = sidebarCollapsed ? '▶' : '◀';
+        sidebarToggleBtn.setAttribute('aria-expanded', !sidebarCollapsed);
+        sidebarToggleBtn.setAttribute('aria-label', sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar');
+
+        // Resize canvas after transition
+        setTimeout(() => {
+          resizeCanvas();
+        }, 300);
+      }
+    }
+
+    if (hamburgerBtn) {
+      hamburgerBtn.addEventListener('click', toggleMobileSidebar);
+    }
+
+    if (sidebarCloseBtn) {
+      sidebarCloseBtn.addEventListener('click', closeMobileSidebar);
+    }
+
+    if (sidebarToggleBtn) {
+      sidebarToggleBtn.addEventListener('click', toggleDesktopSidebar);
+    }
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth <= 768 &&
+          sidebar.classList.contains('open') &&
+          !sidebar.contains(e.target) &&
+          e.target !== hamburgerBtn) {
+        closeMobileSidebar();
+      }
+    });
+
+    // Fullscreen toggle
+    document.getElementById('fullscreenBtn').addEventListener('click', toggleFullscreen);
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.log('Fullscreen not available:', err);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    // Global keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      // Don't trigger if user is typing in an input
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+
+      switch (e.key.toLowerCase()) {
+        case ' ':
+          e.preventDefault();
+          document.getElementById('playPauseBtn').click();
+          break;
+        case 'r':
+          document.getElementById('randomBtn').click();
+          break;
+        case 'f':
+          toggleFullscreen();
+          break;
+        case 'escape':
+          if (document.getElementById('modal').classList.contains('active')) {
+            closeModal();
+          } else if (window.innerWidth <= 768 && sidebar.classList.contains('open')) {
+            closeMobileSidebar();
+          }
+          break;
+        case 'arrowleft':
+          if (document.activeElement === canvas) {
+            e.preventDefault();
+            rotationY -= 0.1;
+          }
+          break;
+        case 'arrowright':
+          if (document.activeElement === canvas) {
+            e.preventDefault();
+            rotationY += 0.1;
+          }
+          break;
+        case 'arrowup':
+          if (document.activeElement === canvas) {
+            e.preventDefault();
+            rotationX -= 0.1;
+          }
+          break;
+        case 'arrowdown':
+          if (document.activeElement === canvas) {
+            e.preventDefault();
+            rotationX += 0.1;
+          }
+          break;
+        case '+':
+        case '=':
+          if (document.activeElement === canvas) {
+            e.preventDefault();
+            zoom = Math.min(5, zoom * 1.1);
+          }
+          break;
+        case '-':
+          if (document.activeElement === canvas) {
+            e.preventDefault();
+            zoom = Math.max(0.3, zoom / 1.1);
+          }
+          break;
+      }
+    });
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+
+    function init() {
+      // Ensure canvas is properly sized for current viewport
+      resizeCanvas();
+      updateAttractor();
+      render();
+    }
