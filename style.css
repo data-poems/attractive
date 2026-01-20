@@ -1393,20 +1393,16 @@ button.secondary:hover {
     font-size: 11px;
   }
 
-  .info-btn {
+  .floating-actions {
     top: 12px;
     right: 12px;
-    width: 40px;
-    height: 40px;
-    font-size: 18px;
+    gap: 8px;
   }
 
-  .dice-btn {
-    top: 12px;
-    right: 58px;
-    width: 40px;
-    height: 40px;
-    font-size: 18px;
+  .action-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 15px;
   }
 
   .hamburger-btn {
@@ -1439,8 +1435,7 @@ select:focus-visible,
 .color-option:focus-visible,
 .hamburger-btn:focus-visible,
 .sidebar-close-btn:focus-visible,
-.info-btn:focus-visible,
-.dice-btn:focus-visible {
+.action-btn:focus-visible {
   outline: 2px solid var(--cyan);
   outline-offset: 3px;
 }
