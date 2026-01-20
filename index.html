@@ -170,6 +170,28 @@
           </div>
         </div>
 
+        <!-- Visual Style Selector -->
+        <div class="control-group">
+          <div class="control-label">
+            <span id="visualStyleLabel">Visual Style</span>
+          </div>
+
+          <!-- Style Category Filter -->
+          <div class="style-filter" role="group" aria-label="Filter by style category">
+            <button type="button" class="style-filter-btn active" data-category="all" aria-pressed="true" title="Show all styles">All</button>
+            <button type="button" class="style-filter-btn" data-category="modern" aria-pressed="false" title="Modern styles">Modern</button>
+            <button type="button" class="style-filter-btn" data-category="artistic" aria-pressed="false" title="Artistic styles">Artistic</button>
+            <button type="button" class="style-filter-btn" data-category="technical" aria-pressed="false" title="Technical styles">Technical</button>
+          </div>
+
+          <div class="style-grid" id="styleGrid" role="radiogroup" aria-labelledby="visualStyleLabel">
+            <!-- Styles will be dynamically generated -->
+          </div>
+          <div class="style-info" id="styleInfo">
+            <span class="style-name">Clean</span> — <span class="style-desc">Crisp lines with subtle glow</span>
+          </div>
+        </div>
+
         <div class="control-group">
           <div class="control-label">
             <label for="particleSlider">Particle Count</label>
