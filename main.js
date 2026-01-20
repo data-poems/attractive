@@ -268,6 +268,14 @@
       { dataset: 'power', attractor: 'chua', color: 'electric', params: { p1: 15.6, p2: 28, p3: -1.143 } },
       { dataset: 'pandemic', attractor: 'rossler', color: 'bloodmoon', params: { p1: 0.2, p2: 0.2, p3: 5.7 } },
       { dataset: 'weather', attractor: 'halvorsen', color: 'pastel', params: { p1: 1.4, p2: 1, p3: 1 } },
+
+      // Visual style showcases
+      { dataset: 'climate', attractor: 'lorenz', color: 'monochrome', style: 'pencil', params: { p1: 10, p2: 28, p3: 2.667 } },
+      { dataset: 'seismic', attractor: 'rossler', color: 'ice', style: 'blueprint', params: { p1: 0.2, p2: 0.2, p3: 5.7 } },
+      { dataset: 'crypto', attractor: 'chen', color: 'neon', style: 'neon', params: { p1: 35, p2: 3, p3: 28 } },
+      { dataset: 'brain', attractor: 'thomas', color: 'pastel', style: 'chalk', params: { p1: 0.208186, p2: 10, p3: 1.0 } },
+      { dataset: 'orbital', attractor: 'aizawa', color: 'monochrome', style: 'technical', params: { p1: 0.95, p2: 0.7, p3: 0.6 } },
+      { dataset: 'ocean', attractor: 'halvorsen', color: 'aurora', style: 'watercolor', params: { p1: 1.4, p2: 1, p3: 1 } },
     ];
 
     // Dataset configurations with proper parameter names
@@ -1689,16 +1697,19 @@
         const datasetKeys = Object.keys(datasets);
         const attractorKeys = Object.keys(attractors);
         const colorKeys = Object.keys(colorSchemes);
+        const styleKeys = Object.keys(VISUAL_STYLES);
         const randomDataset = datasetKeys[Math.floor(Math.random() * datasetKeys.length)];
         const randomAttractor = attractorKeys[Math.floor(Math.random() * attractorKeys.length)];
         const randomColor = colorKeys[Math.floor(Math.random() * colorKeys.length)];
+        // 30% chance to change style on random (keep clean most of the time)
+        const randomStyle = Math.random() < 0.3 ? styleKeys[Math.floor(Math.random() * styleKeys.length)] : currentStyle;
         const key = `${randomDataset}-${randomAttractor}`;
         const params = curatedDefaults[key] || {
           p1: attractors[randomAttractor].params[0].default,
           p2: attractors[randomAttractor].params[1].default,
           p3: attractors[randomAttractor].params[2].default
         };
-        return { dataset: randomDataset, attractor: randomAttractor, color: randomColor, params };
+        return { dataset: randomDataset, attractor: randomAttractor, color: randomColor, style: randomStyle, params };
       }
     }
 
