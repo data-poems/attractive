@@ -318,6 +318,150 @@ button.secondary:hover {
   box-shadow: 0 4px 16px rgba(255, 255, 255, 0.1);
 }
 
+/* ================================
+   QUICK START SECTION
+   ================================ */
+.quick-start {
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.08) 0%, rgba(255, 0, 255, 0.05) 100%);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.quick-start .section-title {
+  color: var(--cyan);
+  margin-bottom: 12px;
+}
+
+.primary-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.25) 0%, rgba(255, 0, 255, 0.2) 100%);
+  border: 1px solid rgba(0, 255, 255, 0.5);
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 14px 16px;
+  margin-bottom: 0;
+  box-shadow: 0 4px 12px rgba(0, 255, 255, 0.2);
+}
+
+.primary-btn:hover {
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.35) 0%, rgba(255, 0, 255, 0.3) 100%);
+  border-color: var(--cyan);
+  box-shadow: 0 6px 20px rgba(0, 255, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+.primary-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 255, 255, 0.2);
+}
+
+/* ================================
+   COLLAPSIBLE ADVANCED SECTION
+   ================================ */
+.advanced-section {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0;
+  margin-bottom: 24px;
+}
+
+.advanced-section > summary {
+  padding: 16px;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+}
+
+.advanced-section > summary::-webkit-details-marker {
+  display: none;
+}
+
+.advanced-section > summary::after {
+  content: '▸';
+  font-size: 14px;
+  color: var(--gray-500);
+  transition: transform 0.2s;
+}
+
+.advanced-section[open] > summary::after {
+  transform: rotate(90deg);
+}
+
+.advanced-section > summary:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.advanced-section > summary:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: -2px;
+}
+
+.advanced-section .section-title.collapsible {
+  margin-bottom: 0;
+}
+
+.subsection {
+  padding: 0 16px 16px;
+}
+
+.subsection:first-of-type {
+  padding-top: 4px;
+}
+
+.subsection-title {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--gray-500);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ================================
+   PLAYBACK SECTION
+   ================================ */
+.playback-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.playback-controls button {
+  margin-bottom: 0;
+}
+
+.utility-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.utility-controls button {
+  margin-bottom: 0;
+  padding: 12px 14px;
+  font-size: 13px;
+}
+
+/* Hint section smaller spacing */
+.hint-section {
+  margin-bottom: 16px;
+}
+
 /* Canvas */
 #canvas {
   position: fixed;
