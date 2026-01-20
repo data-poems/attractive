@@ -1070,6 +1070,22 @@
       glowIntensity = parseInt(e.target.value);
       document.getElementById('glowValue').textContent = glowIntensity;
     });
+
+    // Line width slider
+    document.getElementById('lineWidthSlider').addEventListener('input', (e) => {
+      lineWidth = parseFloat(e.target.value);
+      document.getElementById('lineWidthValue').textContent = lineWidth.toFixed(1);
+    });
+
+    // Trail fade toggle
+    document.getElementById('trailFadeToggle').addEventListener('change', (e) => {
+      trailFade = e.target.checked;
+    });
+
+    // Depth brightness toggle
+    document.getElementById('depthBrightnessToggle').addEventListener('change', (e) => {
+      depthBrightness = e.target.checked;
+    });
     
     // Famous bifurcation presets
     const presets = {

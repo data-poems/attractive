@@ -499,6 +499,65 @@ button.secondary:hover {
   font-weight: 600;
 }
 
+/* Toggle switches */
+.toggle-group {
+  margin-bottom: 12px;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-label input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 44px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.toggle-label input[type="checkbox"]::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  background: #888;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.toggle-label input[type="checkbox"]:checked {
+  background: rgba(0, 255, 255, 0.3);
+}
+
+.toggle-label input[type="checkbox"]:checked::before {
+  left: 23px;
+  background: #00ffff;
+  box-shadow: 0 2px 8px rgba(0, 255, 255, 0.4);
+}
+
+.toggle-label input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+.toggle-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: #bbb;
+}
+
 /* Hamburger menu button */
 .hamburger-btn {
   display: none;
