@@ -49,11 +49,109 @@
     </div>
     
     <div class="sidebar-content">
-      <!-- Dataset Selection -->
-      <div class="control-section" role="group" aria-labelledby="dataSourceTitle">
-        <div class="section-title" id="dataSourceTitle">Data Source</div>
+      <!-- QUICK START - Primary Actions -->
+      <div class="control-section quick-start" role="group" aria-labelledby="quickStartTitle">
+        <div class="section-title" id="quickStartTitle">Quick Start</div>
+        <div class="primary-actions">
+          <button id="randomBtn" class="primary-btn">🎲 Random</button>
+          <button id="exportBtn" class="primary-btn">📷 Export</button>
+        </div>
         <div class="control-group">
-          <label for="datasetSelect" class="sr-only">Select data source</label>
+          <label for="presetSelect" class="sr-only">Select a preset configuration</label>
+          <select id="presetSelect">
+            <option value="">⚡ Load Preset...</option>
+            <optgroup label="Lorenz Family">
+              <option value="lorenz-classic">Lorenz Classic (σ=10, ρ=28)</option>
+              <option value="lorenz-periodic">Lorenz Periodic (ρ=24.74)</option>
+              <option value="lorenz-transient">Lorenz Transient (ρ=21)</option>
+              <option value="chen-hyperchaos">Chen Hyperchaos (α=40)</option>
+              <option value="lu-bridge">Lü Bridge (a=36)</option>
+            </optgroup>
+            <optgroup label="Rössler Family">
+              <option value="rossler-funnel">Rössler Funnel (c=4)</option>
+              <option value="rossler-screw">Rössler Screw (c=18)</option>
+            </optgroup>
+            <optgroup label="Circuit Attractors">
+              <option value="chua-doublescroll">Chua Double Scroll</option>
+              <option value="chua-spiral">Chua Spiral</option>
+            </optgroup>
+            <optgroup label="Multi-Wing">
+              <option value="fourwing-symmetric">Four-Wing Symmetric</option>
+              <option value="dadras-triscroll">Dadras Tri-Scroll</option>
+              <option value="dequan-complex">Dequan-Li Complex</option>
+            </optgroup>
+            <optgroup label="Geometric">
+              <option value="thomas-slow">Thomas Slow (b=0.18)</option>
+              <option value="aizawa-spiral">Aizawa Spiral</option>
+              <option value="halvorsen-symmetric">Halvorsen Symmetric</option>
+            </optgroup>
+            <optgroup label="Physics">
+              <option value="nose-thermostat">Nosé-Hoover Thermostat</option>
+              <option value="shimizu-laser">Shimizu-Morioka Laser</option>
+              <option value="rabinovich-plasma">Rabinovich-Fabrikant</option>
+            </optgroup>
+            <optgroup label="Simple">
+              <option value="sprott-minimal">Sprott Minimal</option>
+              <option value="genesio-quadratic">Genesio-Tesi</option>
+              <option value="arneodo-simple">Arneodo</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+
+      <!-- STYLE - Visual Controls -->
+      <div class="control-section" role="group" aria-labelledby="styleTitle">
+        <div class="section-title" id="styleTitle">Style</div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <span id="colorSchemeLabel">Color Scheme</span>
+          </div>
+          <div class="color-grid" role="radiogroup" aria-labelledby="colorSchemeLabel">
+            <button type="button" class="color-option active" data-scheme="bioluminescent" role="radio" aria-checked="true" aria-label="Bioluminescent (cyan to magenta)" style="background: linear-gradient(135deg, #00ffff, #ff00ff);" tabindex="0"></button>
+            <button type="button" class="color-option" data-scheme="fire" role="radio" aria-checked="false" aria-label="Fire (orange to gold)" style="background: linear-gradient(135deg, #ff4500, #ffd700);" tabindex="-1"></button>
+            <button type="button" class="color-option" data-scheme="ocean" role="radio" aria-checked="false" aria-label="Ocean (blue to teal)" style="background: linear-gradient(135deg, #0066ff, #00ffaa);" tabindex="-1"></button>
+            <button type="button" class="color-option" data-scheme="sunset" role="radio" aria-checked="false" aria-label="Sunset (orange to amber)" style="background: linear-gradient(135deg, #ff6b35, #f7931e);" tabindex="-1"></button>
+            <button type="button" class="color-option" data-scheme="forest" role="radio" aria-checked="false" aria-label="Forest (green to dark green)" style="background: linear-gradient(135deg, #00ff88, #004422);" tabindex="-1"></button>
+            <button type="button" class="color-option" data-scheme="cosmic" role="radio" aria-checked="false" aria-label="Cosmic (purple to pink)" style="background: linear-gradient(135deg, #9900ff, #ff0099);" tabindex="-1"></button>
+            <button type="button" class="color-option" data-scheme="aurora" role="radio" aria-checked="false" aria-label="Aurora (green to purple)" style="background: linear-gradient(135deg, #00ff88, #9900ff);" tabindex="-1"></button>
+            <button type="button" class="color-option" data-scheme="lava" role="radio" aria-checked="false" aria-label="Lava (red to yellow)" style="background: linear-gradient(135deg, #ff0044, #ffcc00);" tabindex="-1"></button>
+            <button type="button" class="color-option" data-scheme="ice" role="radio" aria-checked="false" aria-label="Ice (white to blue)" style="background: linear-gradient(135deg, #ffffff, #0088ff);" tabindex="-1"></button>
+
+            <button type="button" class="color-option" data-scheme="neon" role="radio" aria-checked="false" aria-label="Neon (green to pink)" style="background: linear-gradient(135deg, #39ff14, #ff1493);" tabindex="-1"></button>
+            <button type="button" class="color-option" data-scheme="matrix" role="radio" aria-checked="false" aria-label="Matrix (green)" style="background: linear-gradient(135deg, #00ff00, #003200);" tabindex="-1"></button>
+            <button type="button" class="color-option" data-scheme="cyberpunk" role="radio" aria-checked="false" aria-label="Cyberpunk (yellow to cyan)" style="background: linear-gradient(135deg, #ffff00, #00ffff);" tabindex="-1"></button>
+            <button type="button" class="color-option" data-scheme="pastel" role="radio" aria-checked="false" aria-label="Pastel (pink to powder blue)" style="background: linear-gradient(135deg, #ffb6c1, #b0e0e6);" tabindex="-1"></button>
+            <button type="button" class="color-option" data-scheme="monochrome" role="radio" aria-checked="false" aria-label="Monochrome (white to gray)" style="background: linear-gradient(135deg, #ffffff, #505050);" tabindex="-1"></button>
+            <button type="button" class="color-option" data-scheme="ember" role="radio" aria-checked="false" aria-label="Ember (orange to dark red)" style="background: linear-gradient(135deg, #ff5722, #8b0000);" tabindex="-1"></button>
+            <button type="button" class="color-option" data-scheme="electric" role="radio" aria-checked="false" aria-label="Electric (blue to yellow)" style="background: linear-gradient(135deg, #00bfff, #ffff00);" tabindex="-1"></button>
+            <button type="button" class="color-option" data-scheme="bloodmoon" role="radio" aria-checked="false" aria-label="Blood Moon (dark red to orange)" style="background: linear-gradient(135deg, #8b0000, #ff8c00);" tabindex="-1"></button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <label for="particleSlider">Particle Count</label>
+            <span class="control-value" id="particleValue" aria-live="polite">60</span>
+          </div>
+          <input type="range" id="particleSlider" min="20" max="150" step="10" value="60" aria-valuemin="20" aria-valuemax="150" aria-valuenow="60">
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <label for="speedSlider">Animation Speed</label>
+            <span class="control-value" id="speedValue" aria-live="polite">3.0×</span>
+          </div>
+          <input type="range" id="speedSlider" min="0.1" max="5" step="0.1" value="3" aria-valuemin="0.1" aria-valuemax="5" aria-valuenow="3">
+        </div>
+      </div>
+
+      <!-- CONTENT - Data & Attractor Selection -->
+      <div class="control-section" role="group" aria-labelledby="contentTitle">
+        <div class="section-title" id="contentTitle">Content</div>
+
+        <div class="control-group">
+          <label for="datasetSelect">Data Source</label>
           <select id="datasetSelect" aria-describedby="datasetInfo">
             <optgroup label="Environmental">
               <option value="climate">Climate Data (1960-2024)</option>
@@ -87,13 +185,9 @@
             <strong>Climate:</strong> Temperature anomalies and CO₂ levels drive the chaos parameters
           </div>
         </div>
-      </div>
-      
-      <!-- Attractor Type -->
-      <div class="control-section" role="group" aria-labelledby="attractorTitle">
-        <div class="section-title" id="attractorTitle">Attractor System</div>
+
         <div class="control-group">
-          <label for="attractorSelect" class="sr-only">Select attractor type</label>
+          <label for="attractorSelect">Attractor System</label>
           <select id="attractorSelect">
             <optgroup label="Classic">
               <option value="lorenz">Lorenz (Butterfly)</option>
@@ -137,159 +231,79 @@
           </select>
         </div>
       </div>
-      
-      <!-- Dynamic Parameters -->
-      <div class="control-section">
-        <div class="section-title">Chaos Parameters</div>
-        <div id="parametersContainer">
-          <!-- Parameters will be dynamically generated -->
-        </div>
-      </div>
-      
-      <!-- Visualization Controls -->
-      <div class="control-section" role="group" aria-labelledby="vizTitle">
-        <div class="section-title" id="vizTitle">Visualization</div>
 
-        <div class="control-group">
-          <div class="control-label">
-            <label for="particleSlider">Particle Count</label>
-            <span class="control-value" id="particleValue" aria-live="polite">60</span>
-          </div>
-          <input type="range" id="particleSlider" min="20" max="150" step="10" value="60" aria-valuemin="20" aria-valuemax="150" aria-valuenow="60">
-        </div>
+      <!-- ADVANCED - Collapsible Section -->
+      <details class="control-section advanced-section">
+        <summary class="section-title collapsible">Advanced Controls</summary>
 
-        <div class="control-group">
-          <div class="control-label">
-            <label for="speedSlider">Animation Speed</label>
-            <span class="control-value" id="speedValue" aria-live="polite">3.0×</span>
-          </div>
-          <input type="range" id="speedSlider" min="0.1" max="5" step="0.1" value="3" aria-valuemin="0.1" aria-valuemax="5" aria-valuenow="3">
-        </div>
-
-        <div class="control-group">
-          <div class="control-label">
-            <span id="colorSchemeLabel">Color Scheme</span>
-          </div>
-          <div class="color-grid" role="radiogroup" aria-labelledby="colorSchemeLabel">
-            <button type="button" class="color-option active" data-scheme="bioluminescent" role="radio" aria-checked="true" aria-label="Bioluminescent (cyan to magenta)" style="background: linear-gradient(135deg, #00ffff, #ff00ff);" tabindex="0"></button>
-            <button type="button" class="color-option" data-scheme="fire" role="radio" aria-checked="false" aria-label="Fire (orange to gold)" style="background: linear-gradient(135deg, #ff4500, #ffd700);" tabindex="-1"></button>
-            <button type="button" class="color-option" data-scheme="ocean" role="radio" aria-checked="false" aria-label="Ocean (blue to teal)" style="background: linear-gradient(135deg, #0066ff, #00ffaa);" tabindex="-1"></button>
-            <button type="button" class="color-option" data-scheme="sunset" role="radio" aria-checked="false" aria-label="Sunset (orange to amber)" style="background: linear-gradient(135deg, #ff6b35, #f7931e);" tabindex="-1"></button>
-            <button type="button" class="color-option" data-scheme="forest" role="radio" aria-checked="false" aria-label="Forest (green to dark green)" style="background: linear-gradient(135deg, #00ff88, #004422);" tabindex="-1"></button>
-            <button type="button" class="color-option" data-scheme="cosmic" role="radio" aria-checked="false" aria-label="Cosmic (purple to pink)" style="background: linear-gradient(135deg, #9900ff, #ff0099);" tabindex="-1"></button>
-            <button type="button" class="color-option" data-scheme="aurora" role="radio" aria-checked="false" aria-label="Aurora (green to purple)" style="background: linear-gradient(135deg, #00ff88, #9900ff);" tabindex="-1"></button>
-            <button type="button" class="color-option" data-scheme="lava" role="radio" aria-checked="false" aria-label="Lava (red to yellow)" style="background: linear-gradient(135deg, #ff0044, #ffcc00);" tabindex="-1"></button>
-            <button type="button" class="color-option" data-scheme="ice" role="radio" aria-checked="false" aria-label="Ice (white to blue)" style="background: linear-gradient(135deg, #ffffff, #0088ff);" tabindex="-1"></button>
-            
-            <button type="button" class="color-option" data-scheme="neon" role="radio" aria-checked="false" aria-label="Neon (green to pink)" style="background: linear-gradient(135deg, #39ff14, #ff1493);" tabindex="-1"></button>
-            <button type="button" class="color-option" data-scheme="matrix" role="radio" aria-checked="false" aria-label="Matrix (green)" style="background: linear-gradient(135deg, #00ff00, #003200);" tabindex="-1"></button>
-            <button type="button" class="color-option" data-scheme="cyberpunk" role="radio" aria-checked="false" aria-label="Cyberpunk (yellow to cyan)" style="background: linear-gradient(135deg, #ffff00, #00ffff);" tabindex="-1"></button>
-            <button type="button" class="color-option" data-scheme="pastel" role="radio" aria-checked="false" aria-label="Pastel (pink to powder blue)" style="background: linear-gradient(135deg, #ffb6c1, #b0e0e6);" tabindex="-1"></button>
-            <button type="button" class="color-option" data-scheme="monochrome" role="radio" aria-checked="false" aria-label="Monochrome (white to gray)" style="background: linear-gradient(135deg, #ffffff, #505050);" tabindex="-1"></button>
-            <button type="button" class="color-option" data-scheme="ember" role="radio" aria-checked="false" aria-label="Ember (orange to dark red)" style="background: linear-gradient(135deg, #ff5722, #8b0000);" tabindex="-1"></button>
-            <button type="button" class="color-option" data-scheme="electric" role="radio" aria-checked="false" aria-label="Electric (blue to yellow)" style="background: linear-gradient(135deg, #00bfff, #ffff00);" tabindex="-1"></button>
-            <button type="button" class="color-option" data-scheme="bloodmoon" role="radio" aria-checked="false" aria-label="Blood Moon (dark red to orange)" style="background: linear-gradient(135deg, #8b0000, #ff8c00);" tabindex="-1"></button>
+        <!-- Chaos Parameters -->
+        <div class="subsection">
+          <div class="subsection-title">Chaos Parameters</div>
+          <div id="parametersContainer">
+            <!-- Parameters will be dynamically generated -->
           </div>
         </div>
 
-        <div class="control-group">
-          <div class="control-label">
-            <label for="trailSlider">Trail Length</label>
-            <span class="control-value" id="trailValue" aria-live="polite">25</span>
+        <!-- Visual Tuning -->
+        <div class="subsection">
+          <div class="subsection-title">Visual Tuning</div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <label for="trailSlider">Trail Length</label>
+              <span class="control-value" id="trailValue" aria-live="polite">25</span>
+            </div>
+            <input type="range" id="trailSlider" min="5" max="100" step="5" value="25" aria-valuemin="5" aria-valuemax="100" aria-valuenow="25">
           </div>
-          <input type="range" id="trailSlider" min="5" max="100" step="5" value="25" aria-valuemin="5" aria-valuemax="100" aria-valuenow="25">
-        </div>
 
-        <div class="control-group">
-          <div class="control-label">
-            <label for="glowSlider">Glow Intensity</label>
-            <span class="control-value" id="glowValue" aria-live="polite">0</span>
+          <div class="control-group">
+            <div class="control-label">
+              <label for="glowSlider">Glow Intensity</label>
+              <span class="control-value" id="glowValue" aria-live="polite">0</span>
+            </div>
+            <input type="range" id="glowSlider" min="0" max="20" step="1" value="0" aria-valuemin="0" aria-valuemax="20" aria-valuenow="0">
           </div>
-          <input type="range" id="glowSlider" min="0" max="20" step="1" value="0" aria-valuemin="0" aria-valuemax="20" aria-valuenow="0">
-        </div>
 
-        <div class="control-group">
-          <div class="control-label">
-            <label for="lineWidthSlider">Line Width</label>
-            <span class="control-value" id="lineWidthValue" aria-live="polite">1.5</span>
+          <div class="control-group">
+            <div class="control-label">
+              <label for="lineWidthSlider">Line Width</label>
+              <span class="control-value" id="lineWidthValue" aria-live="polite">1.5</span>
+            </div>
+            <input type="range" id="lineWidthSlider" min="0.5" max="4" step="0.5" value="1.5" aria-valuemin="0.5" aria-valuemax="4" aria-valuenow="1.5">
           </div>
-          <input type="range" id="lineWidthSlider" min="0.5" max="4" step="0.5" value="1.5" aria-valuemin="0.5" aria-valuemax="4" aria-valuenow="1.5">
-        </div>
 
-        <div class="control-group toggle-group">
-          <label class="toggle-label">
-            <input type="checkbox" id="trailFadeToggle" checked>
-            <span class="toggle-text">Trail Fade Effect</span>
-          </label>
-        </div>
+          <div class="control-group toggle-group">
+            <label class="toggle-label">
+              <input type="checkbox" id="trailFadeToggle" checked>
+              <span class="toggle-text">Trail Fade Effect</span>
+            </label>
+          </div>
 
-        <div class="control-group toggle-group">
-          <label class="toggle-label">
-            <input type="checkbox" id="depthBrightnessToggle">
-            <span class="toggle-text">Depth-Based Brightness</span>
-          </label>
+          <div class="control-group toggle-group">
+            <label class="toggle-label">
+              <input type="checkbox" id="depthBrightnessToggle">
+              <span class="toggle-text">Depth-Based Brightness</span>
+            </label>
+          </div>
         </div>
-      </div>
-      
-      <!-- Presets -->
-      <div class="control-section" role="group" aria-labelledby="presetsTitle">
-        <div class="section-title" id="presetsTitle">Famous Bifurcations</div>
-        <div class="control-group">
-          <label for="presetSelect" class="sr-only">Select a preset configuration</label>
-          <select id="presetSelect">
-            <option value="">Select a preset...</option>
-            <optgroup label="Lorenz Family">
-              <option value="lorenz-classic">Lorenz Classic (σ=10, ρ=28)</option>
-              <option value="lorenz-periodic">Lorenz Periodic (ρ=24.74)</option>
-              <option value="lorenz-transient">Lorenz Transient (ρ=21)</option>
-              <option value="chen-hyperchaos">Chen Hyperchaos (α=40)</option>
-              <option value="lu-bridge">Lü Bridge (a=36)</option>
-            </optgroup>
-            <optgroup label="Rössler Family">
-              <option value="rossler-funnel">Rössler Funnel (c=4)</option>
-              <option value="rossler-screw">Rössler Screw (c=18)</option>
-            </optgroup>
-            <optgroup label="Circuit Attractors">
-              <option value="chua-doublescroll">Chua Double Scroll</option>
-              <option value="chua-spiral">Chua Spiral</option>
-            </optgroup>
-            <optgroup label="Multi-Wing">
-              <option value="fourwing-symmetric">Four-Wing Symmetric</option>
-              <option value="dadras-triscroll">Dadras Tri-Scroll</option>
-              <option value="dequan-complex">Dequan-Li Complex</option>
-            </optgroup>
-            <optgroup label="Geometric">
-              <option value="thomas-slow">Thomas Slow (b=0.18)</option>
-              <option value="aizawa-spiral">Aizawa Spiral</option>
-              <option value="halvorsen-symmetric">Halvorsen Symmetric</option>
-            </optgroup>
-            <optgroup label="Physics">
-              <option value="nose-thermostat">Nosé-Hoover Thermostat</option>
-              <option value="shimizu-laser">Shimizu-Morioka Laser</option>
-              <option value="rabinovich-plasma">Rabinovich-Fabrikant</option>
-            </optgroup>
-            <optgroup label="Simple">
-              <option value="sprott-minimal">Sprott Minimal</option>
-              <option value="genesio-quadratic">Genesio-Tesi</option>
-              <option value="arneodo-simple">Arneodo</option>
-            </optgroup>
-          </select>
-        </div>
-      </div>
+      </details>
 
-      <!-- Action Buttons -->
-      <div class="control-section" role="group" aria-label="Actions">
-        <button id="playPauseBtn" aria-pressed="true">⏸ Pause</button>
-        <button id="autoRotateBtn" aria-pressed="false">Auto Rotate</button>
-        <button id="autoAnimateBtn" aria-pressed="false">🎬 Auto-Animate Parameter</button>
-        <button id="randomBtn">🎲 Random Combination</button>
-        <button id="exportBtn" class="secondary">📷 Export PNG</button>
-        <button id="resetBtn" class="secondary">↺ Reset View</button>
-        <button id="fullscreenBtn" class="secondary">⛶ Fullscreen</button>
+      <!-- PLAYBACK - Animation Controls -->
+      <div class="control-section" role="group" aria-labelledby="playbackTitle">
+        <div class="section-title" id="playbackTitle">Playback</div>
+        <div class="playback-controls">
+          <button id="playPauseBtn" aria-pressed="true">⏸ Pause</button>
+          <button id="autoRotateBtn" aria-pressed="false">🔄 Auto Rotate</button>
+          <button id="autoAnimateBtn" aria-pressed="false">🎬 Auto-Animate</button>
+        </div>
+        <div class="utility-controls">
+          <button id="resetBtn" class="secondary">↺ Reset View</button>
+          <button id="fullscreenBtn" class="secondary">⛶ Fullscreen</button>
+        </div>
       </div>
 
       <!-- Controls Hint -->
-      <div class="control-section">
+      <div class="control-section hint-section">
         <div class="dataset-info" role="note">
           <strong>Controls:</strong> Drag to rotate • Shift+drag or right-click to pan • Scroll to zoom • Touch: 1-finger rotate, 2-finger pan/zoom
         </div>
