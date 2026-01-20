@@ -1708,11 +1708,6 @@
     document.getElementById('randomBtn').addEventListener('click', () => {
       applyCombo(getNextCombo());
     });
-
-    // Dice button - same as random
-    document.getElementById('diceBtn').addEventListener('click', () => {
-      applyCombo(getNextCombo());
-    });
     
     // Export PNG with watermark
     document.getElementById('exportBtn').addEventListener('click', () => {
@@ -1735,7 +1730,7 @@
       exportCtx.font = '14px Inter, sans-serif';
       exportCtx.fillStyle = watermarkColor;
       exportCtx.textAlign = 'right';
-      exportCtx.fillText('dr.eamer.dev', exportCanvas.width - 20, exportCanvas.height - 20);
+      exportCtx.fillText('dr.eamer.dev/datavis', exportCanvas.width - 20, exportCanvas.height - 20);
 
       // Add attractor info
       exportCtx.textAlign = 'left';
