@@ -1754,43 +1754,25 @@
     // Initialize speed display
     updateSpeedDisplay();
     
-    // Color scheme selection with keyboard support
-    const colorOptions = document.querySelectorAll('.color-option');
-    colorOptions.forEach((option, index) => {
-      option.addEventListener('click', () => selectColorScheme(option));
-      option.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          selectColorScheme(option);
-        } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-          e.preventDefault();
-          const next = colorOptions[(index + 1) % colorOptions.length];
-          next.focus();
-          selectColorScheme(next);
-        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-          e.preventDefault();
-          const prev = colorOptions[(index - 1 + colorOptions.length) % colorOptions.length];
-          prev.focus();
-          selectColorScheme(prev);
-        }
-      });
-    });
-
-    function selectColorScheme(option) {
+    // Color scheme helper (for keyboard shortcuts and theme bar)
+    function setColorScheme(schemeId) {
+      if (!colorSchemes[schemeId]) return;
       pushState();
-      colorOptions.forEach(o => {
-        o.classList.remove('active');
-        o.setAttribute('aria-checked', 'false');
-        o.setAttribute('tabindex', '-1');
-      });
-      option.classList.add('active');
-      option.setAttribute('aria-checked', 'true');
-      option.setAttribute('tabindex', '0');
-      currentColorScheme = option.dataset.scheme;
+      currentColorScheme = schemeId;
+
+      // Update dropdown if exists
+      const select = document.getElementById('colorSchemeSelect');
+      if (select) select.value = schemeId;
+
+      // Update preview swatch
+      const preview = document.getElementById('colorPreview');
+      if (preview) {
+        const c = colorSchemes[schemeId];
+        preview.style.background = `linear-gradient(135deg, rgb(${c.start.join(',')}), rgb(${c.end.join(',')}))`;
+      }
 
       // Announce to screen readers
-      const schemeName = colorSchemes[currentColorScheme]?.name || currentColorScheme;
-      announce(`Color scheme changed to ${schemeName}`);
+      announce(`Color scheme changed to ${colorSchemes[schemeId].name}`);
     }
 
     // Trail length slider
@@ -2399,38 +2381,6 @@
           }
           break;
       }
-    });
-
-    // Mood filter functionality
-    let currentMoodFilter = 'all';
-    const moodButtons = document.querySelectorAll('.mood-btn');
-    const sidebarColorCategories = document.querySelectorAll('.color-category');
-
-    moodButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        currentMoodFilter = btn.dataset.mood;
-
-        // Update active state
-        moodButtons.forEach(b => {
-          b.classList.remove('active');
-          b.setAttribute('aria-pressed', 'false');
-        });
-        btn.classList.add('active');
-        btn.setAttribute('aria-pressed', 'true');
-
-        // Filter color categories in sidebar
-        if (currentMoodFilter === 'all') {
-          sidebarColorCategories.forEach(cat => cat.classList.remove('hidden'));
-        } else {
-          sidebarColorCategories.forEach(cat => {
-            if (cat.dataset.category === currentMoodFilter) {
-              cat.classList.remove('hidden');
-            } else {
-              cat.classList.add('hidden');
-            }
-          });
-        }
-      });
     });
 
     // ================================
