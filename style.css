@@ -1759,6 +1759,36 @@ button.secondary:hover {
     min-width: 28px;
   }
 
+  /* Theme bar - very compact */
+  .theme-bar {
+    bottom: 60px;
+    padding: 5px;
+    gap: 5px;
+    border-radius: 10px;
+  }
+
+  .theme-bar-toggle {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+  }
+
+  .theme-divider {
+    height: 24px;
+  }
+
+  .style-strip .style-option {
+    width: 36px;
+    height: 26px;
+    font-size: 7px;
+  }
+
+  .color-strip .color-swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 5px;
+  }
+
   .hamburger-btn {
     top: 12px;
     left: 12px;
