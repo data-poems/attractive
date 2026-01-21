@@ -425,6 +425,43 @@
     <span class="speed-indicator" id="speedIndicator" aria-live="polite">1.0x</span>
   </div>
 
+  <!-- Floating Theme Bar -->
+  <div class="theme-bar" id="themeBar" role="toolbar" aria-label="Visual theme selection">
+    <button class="theme-bar-toggle" id="themeBarToggle" aria-expanded="false" aria-controls="themeBarContent" title="Toggle theme bar">
+      <svg class="toggle-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+      </svg>
+    </button>
+
+    <div class="theme-bar-content" id="themeBarContent">
+      <!-- Style Strip -->
+      <div class="theme-section">
+        <span class="theme-section-label">Style</span>
+        <div class="theme-strip style-strip" id="styleStrip" role="listbox" aria-label="Visual style">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <div class="theme-divider"></div>
+
+      <!-- Color Strip -->
+      <div class="theme-section">
+        <span class="theme-section-label">Color</span>
+        <div class="color-filter-strip" id="colorFilterStrip" role="tablist" aria-label="Color category">
+          <button class="color-filter-chip active" data-category="all" role="tab" aria-selected="true">All</button>
+          <button class="color-filter-chip" data-category="vibrant" role="tab" aria-selected="false">Vibrant</button>
+          <button class="color-filter-chip" data-category="warm" role="tab" aria-selected="false">Warm</button>
+          <button class="color-filter-chip" data-category="cool" role="tab" aria-selected="false">Cool</button>
+          <button class="color-filter-chip" data-category="cosmic" role="tab" aria-selected="false">Cosmic</button>
+          <button class="color-filter-chip" data-category="neutral" role="tab" aria-selected="false">Neutral</button>
+          <button class="color-filter-chip" data-category="dark" role="tab" aria-selected="false">Dark</button>
+        </div>
+        <div class="theme-strip color-strip" id="colorStrip" role="listbox" aria-label="Color scheme">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="stats" role="status" aria-live="polite" aria-label="Current visualization stats">
     <div class="stats-row">
