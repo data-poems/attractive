@@ -164,21 +164,18 @@
       document.getElementById('trailFadeToggle').checked = trailFade;
       document.getElementById('depthBrightnessToggle').checked = depthBrightness;
 
-      // Update color selection
-      document.querySelectorAll('.color-option').forEach(o => {
-        const isActive = o.dataset.scheme === currentColorScheme;
-        o.classList.toggle('active', isActive);
-        o.setAttribute('aria-checked', isActive ? 'true' : 'false');
-        o.setAttribute('tabindex', isActive ? '0' : '-1');
-      });
+      // Update color scheme dropdown and preview
+      const colorSelect = document.getElementById('colorSchemeSelect');
+      if (colorSelect) colorSelect.value = currentColorScheme;
+      const colorPreview = document.getElementById('colorPreview');
+      if (colorPreview && colorSchemes[currentColorScheme]) {
+        const c = colorSchemes[currentColorScheme];
+        colorPreview.style.background = `linear-gradient(135deg, rgb(${c.start.join(',')}), rgb(${c.end.join(',')}))`;
+      }
 
-      // Update style selection
-      document.querySelectorAll('.style-card').forEach(c => {
-        const isActive = c.dataset.style === currentStyle;
-        c.classList.toggle('active', isActive);
-        c.setAttribute('aria-checked', isActive ? 'true' : 'false');
-        c.setAttribute('tabindex', isActive ? '0' : '-1');
-      });
+      // Update style dropdown and info
+      const styleSelect = document.getElementById('visualStyleSelect');
+      if (styleSelect) styleSelect.value = currentStyle;
       updateStyleInfo(currentStyle);
 
       // Initialize rough canvas if needed for restored style
