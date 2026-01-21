@@ -73,6 +73,16 @@
     let lastFpsUpdate = performance.now();
     let currentFps = 60;
 
+    // Announce changes to screen readers
+    function announce(message) {
+      const liveRegion = document.getElementById('liveAnnouncement');
+      if (liveRegion) {
+        liveRegion.textContent = message;
+        // Clear after a short delay so repeated announcements work
+        setTimeout(() => { liveRegion.textContent = ''; }, 1000);
+      }
+    }
+
     // History/Undo system
     const historyStack = [];
     const MAX_HISTORY = 20;
@@ -1777,6 +1787,10 @@
       option.setAttribute('aria-checked', 'true');
       option.setAttribute('tabindex', '0');
       currentColorScheme = option.dataset.scheme;
+
+      // Announce to screen readers
+      const schemeName = colorSchemes[currentColorScheme]?.name || currentColorScheme;
+      announce(`Color scheme changed to ${schemeName}`);
     }
 
     // Trail length slider
