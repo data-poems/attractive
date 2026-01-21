@@ -1344,32 +1344,42 @@ button.secondary:hover {
     gap: 12px;
   }
 
-  /* Floating controls - mobile optimized */
+  /* Floating controls - mobile (sidebar overlays, so controls at edge) */
   .floating-controls {
-    bottom: 12px;
-    left: 12px;
-    padding: 5px 8px;
-    gap: 3px;
+    bottom: 16px;
+    left: 16px;
+    padding: 6px 10px;
+    gap: 4px;
   }
 
   .ctrl-btn {
-    width: 28px;
-    height: 28px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .ctrl-btn svg {
+    width: 18px;
+    height: 18px;
   }
 
   .ctrl-btn.play-pause {
-    width: 32px;
-    height: 32px;
+    width: 42px;
+    height: 42px;
+  }
+
+  .ctrl-btn.play-pause svg {
+    width: 22px;
+    height: 22px;
   }
 
   .speed-indicator {
-    font-size: 10px;
-    min-width: 28px;
+    font-size: 12px;
+    min-width: 36px;
   }
 
   .ctrl-divider {
-    height: 16px;
-    margin: 0 4px;
+    height: 20px;
+    margin: 0 6px;
   }
 
   /* Modal - full width with less padding */
