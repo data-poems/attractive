@@ -2413,20 +2413,11 @@
       pushState();  // For undo
       currentStyle = styleId;
 
-      // Update sidebar UI
-      document.querySelectorAll('.style-card').forEach(c => {
-        const isActive = c.dataset.style === styleId;
-        c.classList.toggle('active', isActive);
-        c.setAttribute('aria-checked', isActive ? 'true' : 'false');
-        c.setAttribute('tabindex', isActive ? '0' : '-1');
-      });
+      // Update dropdown if exists
+      const select = document.getElementById('visualStyleSelect');
+      if (select) select.value = styleId;
 
-      // Update theme bar UI
-      document.querySelectorAll('#styleStrip .style-option').forEach(s => {
-        s.classList.toggle('active', s.dataset.style === styleId);
-        s.setAttribute('aria-selected', s.dataset.style === styleId);
-      });
-
+      // Update style info
       updateStyleInfo(styleId);
 
       // Initialize rough canvas if needed for this style
@@ -2444,7 +2435,7 @@
       const style = VISUAL_STYLES[styleId];
       const infoEl = document.getElementById('styleInfo');
       if (infoEl && style) {
-        infoEl.innerHTML = `<span class="style-name">${style.name}</span> — <span class="style-desc">${style.description}</span>`;
+        infoEl.textContent = style.description;
       }
     }
 
