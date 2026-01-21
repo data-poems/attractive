@@ -522,8 +522,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .color-option {
-  height: 48px;  /* Increased from 40px for better touch targets (WCAG 2.1) */
-  min-width: 48px;
+  height: 32px;
   border-radius: 6px;
   cursor: pointer;
   border: 2px solid transparent;
@@ -532,33 +531,8 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .color-option:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-}
-
-/* Show color name on hover for color-blind accessibility */
-.color-option::before {
-  content: attr(data-scheme);
-  position: absolute;
-  bottom: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--gray-800);
-  color: var(--gray-100);
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.15s;
-  z-index: 10;
-  text-transform: capitalize;
-}
-
-.color-option:hover::before,
-.color-option:focus::before {
-  opacity: 1;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .color-option.active {
