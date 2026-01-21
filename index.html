@@ -205,12 +205,15 @@
         </div>
       </div>
 
-      <!-- CONTENT - Data & Attractor Selection -->
-      <div class="control-section" role="group" aria-labelledby="contentTitle">
-        <div class="section-title" id="contentTitle">Content</div>
-
-        <div class="control-group">
-          <label for="datasetSelect">Data Source</label>
+      <!-- CONTENT - Data & Attractor Selection (Collapsible) -->
+      <div class="control-section collapsible" role="group" aria-labelledby="contentTitle">
+        <button class="section-header" id="contentTitle" aria-expanded="true" aria-controls="contentContent">
+          <span class="section-title-text">Content</span>
+          <svg class="collapse-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="section-content" id="contentContent">
+          <div class="control-group">
+            <label for="datasetSelect">Data Source</label>
           <select id="datasetSelect" aria-describedby="datasetInfo">
             <optgroup label="Environmental">
               <option value="climate">Climate Data (1960-2024)</option>
@@ -301,6 +304,7 @@
           </select>
           <div class="attractor-description" id="attractorDescription" style="display: none;">
           </div>
+        </div>
         </div>
       </div>
 
