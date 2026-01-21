@@ -101,137 +101,107 @@
         </div>
       </div>
 
-      <!-- STYLE - Visual Controls -->
-      <div class="control-section" role="group" aria-labelledby="styleTitle">
-        <div class="section-title" id="styleTitle">Style</div>
-
-        <div class="control-group">
-          <div class="control-label">
-            <span id="colorSchemeLabel">Color Scheme</span>
-          </div>
-
-          <!-- Mood Filter -->
-          <div class="mood-filter" role="group" aria-label="Filter by mood">
-            <button type="button" class="mood-btn active" data-mood="all" aria-pressed="true" title="Show all">All</button>
-            <button type="button" class="mood-btn" data-mood="vibrant" aria-pressed="false" title="Vibrant colors">🌈</button>
-            <button type="button" class="mood-btn" data-mood="warm" aria-pressed="false" title="Warm colors">🔥</button>
-            <button type="button" class="mood-btn" data-mood="cool" aria-pressed="false" title="Cool colors">❄️</button>
-            <button type="button" class="mood-btn" data-mood="neutral" aria-pressed="false" title="Neutral colors">⚪</button>
-            <button type="button" class="mood-btn" data-mood="dark" aria-pressed="false" title="Dark colors">🌑</button>
-            <button type="button" class="mood-btn" data-mood="cosmic" aria-pressed="false" title="Cosmic colors">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
-            </button>
-            <button type="button" class="mood-btn" data-mood="scientific" aria-pressed="false" title="Scientific palettes (colorblind-safe)">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v6l4 9H5l4-9V3z"/><line x1="9" y1="3" x2="15" y2="3"/><line x1="8" y1="13" x2="16" y2="13"/></svg>
-            </button>
-          </div>
-
-          <div class="color-grid" role="radiogroup" aria-labelledby="colorSchemeLabel">
-            <!-- Vibrant -->
-            <div class="color-category" data-category="vibrant">
-              <div class="category-label">Vibrant</div>
-              <button type="button" class="color-option active" data-scheme="bioluminescent" data-mood="vibrant" role="radio" aria-checked="true" aria-label="Bioluminescent (cyan to magenta)" style="background: linear-gradient(135deg, #00ffff, #ff00ff);" tabindex="0"></button>
-              <button type="button" class="color-option" data-scheme="neon" data-mood="vibrant" role="radio" aria-checked="false" aria-label="Neon (green to pink)" style="background: linear-gradient(135deg, #39ff14, #ff1493);" tabindex="-1"></button>
-              <button type="button" class="color-option" data-scheme="electric" data-mood="vibrant" role="radio" aria-checked="false" aria-label="Electric (blue to yellow)" style="background: linear-gradient(135deg, #00bfff, #ffff00);" tabindex="-1"></button>
-              <button type="button" class="color-option" data-scheme="cyberpunk" data-mood="vibrant" role="radio" aria-checked="false" aria-label="Cyberpunk (yellow to cyan)" style="background: linear-gradient(135deg, #ffff00, #00ffff);" tabindex="-1"></button>
-              <button type="button" class="color-option" data-scheme="acid" data-mood="vibrant" role="radio" aria-checked="false" aria-label="Acid (neon yellow-green to electric blue)" style="background: linear-gradient(135deg, #ccff00, #0088ff);" tabindex="-1"></button>
-            </div>
-
-            <!-- Warm -->
-            <div class="color-category" data-category="warm">
-              <div class="category-label">Warm</div>
-              <button type="button" class="color-option" data-scheme="fire" data-mood="warm" role="radio" aria-checked="false" aria-label="Fire (orange to gold)" style="background: linear-gradient(135deg, #ff4500, #ffd700);" tabindex="-1"></button>
-              <button type="button" class="color-option" data-scheme="sunset" data-mood="warm" role="radio" aria-checked="false" aria-label="Sunset (orange to amber)" style="background: linear-gradient(135deg, #ff6b35, #f7931e);" tabindex="-1"></button>
-              <button type="button" class="color-option" data-scheme="lava" data-mood="warm" role="radio" aria-checked="false" aria-label="Lava (red to yellow)" style="background: linear-gradient(135deg, #ff0044, #ffcc00);" tabindex="-1"></button>
-              <button type="button" class="color-option" data-scheme="ember" data-mood="warm" role="radio" aria-checked="false" aria-label="Ember (orange to dark red)" style="background: linear-gradient(135deg, #ff5722, #8b0000);" tabindex="-1"></button>
-              <button type="button" class="color-option" data-scheme="bloodmoon" data-mood="warm" role="radio" aria-checked="false" aria-label="Blood Moon (dark red to orange)" style="background: linear-gradient(135deg, #8b0000, #ff8c00);" tabindex="-1"></button>
-              <button type="button" class="color-option" data-scheme="solar" data-mood="warm" role="radio" aria-checked="false" aria-label="Solar (golden yellow to orange)" style="background: linear-gradient(135deg, #ffc832, #ff6400);" tabindex="-1"></button>
-              <button type="button" class="color-option" data-scheme="oxidation" data-mood="warm" role="radio" aria-checked="false" aria-label="Oxidation (verdigris green)" style="background: linear-gradient(135deg, #1a472a, #b7e4c7);" tabindex="-1"></button>
-            </div>
-
-            <!-- Cool -->
-            <div class="color-category" data-category="cool">
-              <div class="category-label">Cool</div>
-              <button type="button" class="color-option" data-scheme="ocean" data-mood="cool" role="radio" aria-checked="false" aria-label="Ocean (blue to teal)" style="background: linear-gradient(135deg, #0066ff, #00ffaa);" tabindex="-1"></button>
-              <button type="button" class="color-option" data-scheme="ice" data-mood="cool" role="radio" aria-checked="false" aria-label="Ice (white to blue)" style="background: linear-gradient(135deg, #ffffff, #0088ff);" tabindex="-1"></button>
-              <button type="button" class="color-option" data-scheme="aurora" data-mood="cool" role="radio" aria-checked="false" aria-label="Aurora (green to purple)" style="background: linear-gradient(135deg, #00ff88, #9900ff);" tabindex="-1"></button>
-              <button type="button" class="color-option" data-scheme="forest" data-mood="cool" role="radio" aria-checked="false" aria-label="Forest (green to dark green)" style="background: linear-gradient(135deg, #00ff88, #004422);" tabindex="-1"></button>
-              <button type="button" class="color-option" data-scheme="arctic" data-mood="cool" role="radio" aria-checked="false" aria-label="Arctic (pale blue)" style="background: linear-gradient(135deg, #c8e6ff, #64b4dc);" tabindex="-1"></button>
-              <button type="button" class="color-option" data-scheme="twilight" data-mood="cool" role="radio" aria-checked="false" aria-label="Twilight (dusk blue to red)" style="background: linear-gradient(135deg, #2b2d42, #ef233c);" tabindex="-1"></button>
-            </div>
-
-            <!-- Neutral -->
-            <div class="color-category" data-category="neutral">
-              <div class="category-label">Neutral</div>
-              <button type="button" class="color-option" data-scheme="monochrome" data-mood="neutral" role="radio" aria-checked="false" aria-label="Monochrome (white to gray)" style="background: linear-gradient(135deg, #ffffff, #505050);" tabindex="-1"></button>
-              <button type="button" class="color-option" data-scheme="pastel" data-mood="neutral" role="radio" aria-checked="false" aria-label="Pastel (pink to powder blue)" style="background: linear-gradient(135deg, #ffb6c1, #b0e0e6);" tabindex="-1"></button>
-              <button type="button" class="color-option" data-scheme="sepia" data-mood="neutral" role="radio" aria-checked="false" aria-label="Sepia (tan to brown)" style="background: linear-gradient(135deg, #d2b48c, #785028);" tabindex="-1"></button>
-            </div>
-
-            <!-- Dark -->
-            <div class="color-category" data-category="dark">
-              <div class="category-label">Dark</div>
-              <button type="button" class="color-option" data-scheme="matrix" data-mood="dark" role="radio" aria-checked="false" aria-label="Matrix (green)" style="background: linear-gradient(135deg, #00ff00, #003200);" tabindex="-1"></button>
-              <button type="button" class="color-option" data-scheme="midnight" data-mood="dark" role="radio" aria-checked="false" aria-label="Midnight (deep blue)" style="background: linear-gradient(135deg, #191970, #00001e);" tabindex="-1"></button>
-              <button type="button" class="color-option" data-scheme="obsidian" data-mood="dark" role="radio" aria-checked="false" aria-label="Obsidian (gray to black)" style="background: linear-gradient(135deg, #3c3c46, #0a0a0f);" tabindex="-1"></button>
-            </div>
-
-            <!-- Cosmic -->
-            <div class="color-category" data-category="cosmic">
-              <div class="category-label">Cosmic</div>
-              <button type="button" class="color-option" data-scheme="cosmic" data-mood="cosmic" role="radio" aria-checked="false" aria-label="Cosmic (purple to pink)" style="background: linear-gradient(135deg, #9900ff, #ff0099);" tabindex="-1"></button>
-              <button type="button" class="color-option" data-scheme="nebula" data-mood="cosmic" role="radio" aria-checked="false" aria-label="Nebula (indigo to hot pink)" style="background: linear-gradient(135deg, #4b0082, #ff69b4);" tabindex="-1"></button>
-              <button type="button" class="color-option" data-scheme="void" data-mood="cosmic" role="radio" aria-checked="false" aria-label="Void (deep purple)" style="background: linear-gradient(135deg, #140028, #640096);" tabindex="-1"></button>
-              <button type="button" class="color-option" data-scheme="supernova" data-mood="cosmic" role="radio" aria-checked="false" aria-label="Supernova (white to red)" style="background: linear-gradient(135deg, #ffffc8, #ff3232);" tabindex="-1"></button>
-            </div>
-
-            <!-- Scientific (perceptually uniform, colorblind-safe) -->
-            <div class="color-category" data-category="scientific">
-              <div class="category-label">Scientific</div>
-              <button type="button" class="color-option" data-scheme="viridis" data-mood="scientific" role="radio" aria-checked="false" aria-label="Viridis (purple to yellow)" style="background: linear-gradient(135deg, #440154, #fde724);" tabindex="-1"></button>
-              <button type="button" class="color-option" data-scheme="plasma" data-mood="scientific" role="radio" aria-checked="false" aria-label="Plasma (purple to yellow)" style="background: linear-gradient(135deg, #8e44ad, #f1c40f);" tabindex="-1"></button>
-              <button type="button" class="color-option" data-scheme="infrared" data-mood="scientific" role="radio" aria-checked="false" aria-label="Infrared (dark purple to lavender)" style="background: linear-gradient(135deg, #0d0221, #e0aaff);" tabindex="-1"></button>
-              <button type="button" class="color-option" data-scheme="stellar" data-mood="scientific" role="radio" aria-checked="false" aria-label="Stellar (deep space blue)" style="background: linear-gradient(135deg, #1a1a2e, #3282b8);" tabindex="-1"></button>
+      <!-- STYLE - Visual Controls (Collapsible) -->
+      <div class="control-section collapsible" role="group" aria-labelledby="styleTitle">
+        <button class="section-header" id="styleTitle" aria-expanded="true" aria-controls="styleContent">
+          <span class="section-title-text">Style</span>
+          <svg class="collapse-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="section-content" id="styleContent">
+          <!-- Color Scheme Dropdown -->
+          <div class="control-group">
+            <div class="select-with-preview">
+              <label for="colorSchemeSelect">Color Scheme</label>
+              <div class="select-row">
+                <span class="color-preview" id="colorPreview" style="background: linear-gradient(135deg, #00ffff, #ff00ff);"></span>
+                <select id="colorSchemeSelect">
+                  <optgroup label="Vibrant">
+                    <option value="bioluminescent" selected>Bioluminescent</option>
+                    <option value="neon">Neon</option>
+                    <option value="electric">Electric</option>
+                    <option value="cyberpunk">Cyberpunk</option>
+                    <option value="acid">Acid</option>
+                  </optgroup>
+                  <optgroup label="Warm">
+                    <option value="fire">Fire</option>
+                    <option value="sunset">Sunset</option>
+                    <option value="lava">Lava</option>
+                    <option value="ember">Ember</option>
+                    <option value="bloodmoon">Blood Moon</option>
+                    <option value="solar">Solar</option>
+                    <option value="oxidation">Oxidation</option>
+                  </optgroup>
+                  <optgroup label="Cool">
+                    <option value="ocean">Ocean</option>
+                    <option value="ice">Ice</option>
+                    <option value="aurora">Aurora</option>
+                    <option value="forest">Forest</option>
+                    <option value="arctic">Arctic</option>
+                    <option value="twilight">Twilight</option>
+                  </optgroup>
+                  <optgroup label="Cosmic">
+                    <option value="cosmic">Cosmic</option>
+                    <option value="nebula">Nebula</option>
+                    <option value="void">Void</option>
+                    <option value="supernova">Supernova</option>
+                  </optgroup>
+                  <optgroup label="Neutral">
+                    <option value="monochrome">Monochrome</option>
+                    <option value="pastel">Pastel</option>
+                    <option value="sepia">Sepia</option>
+                  </optgroup>
+                  <optgroup label="Dark">
+                    <option value="matrix">Matrix</option>
+                    <option value="midnight">Midnight</option>
+                    <option value="obsidian">Obsidian</option>
+                  </optgroup>
+                  <optgroup label="Scientific">
+                    <option value="viridis">Viridis</option>
+                    <option value="plasma">Plasma</option>
+                    <option value="infrared">Infrared</option>
+                    <option value="stellar">Stellar</option>
+                  </optgroup>
+                </select>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Visual Style Selector -->
-        <div class="control-group">
-          <div class="control-label">
-            <span id="visualStyleLabel">Visual Style</span>
+          <!-- Visual Style Dropdown -->
+          <div class="control-group">
+            <label for="visualStyleSelect">Visual Style</label>
+            <select id="visualStyleSelect">
+              <optgroup label="Modern">
+                <option value="clean" selected>Clean</option>
+                <option value="neon">Neon</option>
+              </optgroup>
+              <optgroup label="Artistic">
+                <option value="davinci">Da Vinci</option>
+                <option value="chalk">Chalk</option>
+                <option value="watercolor">Watercolor</option>
+              </optgroup>
+              <optgroup label="Technical">
+                <option value="blueprint">Blueprint</option>
+                <option value="oscilloscope">Oscilloscope</option>
+              </optgroup>
+            </select>
+            <div class="style-info" id="styleInfo">Crisp lines with subtle glow</div>
           </div>
 
-          <!-- Style Category Filter -->
-          <div class="style-filter" role="group" aria-label="Filter by style category">
-            <button type="button" class="style-filter-btn active" data-category="all" aria-pressed="true" title="Show all styles">All</button>
-            <button type="button" class="style-filter-btn" data-category="modern" aria-pressed="false" title="Modern styles">Modern</button>
-            <button type="button" class="style-filter-btn" data-category="artistic" aria-pressed="false" title="Artistic styles">Artistic</button>
-            <button type="button" class="style-filter-btn" data-category="technical" aria-pressed="false" title="Technical styles">Technical</button>
+          <div class="control-group">
+            <div class="control-label">
+              <label for="particleSlider">Particle Count</label>
+              <span class="control-value" id="particleValue" aria-live="polite">60</span>
+            </div>
+            <input type="range" id="particleSlider" min="20" max="150" step="10" value="60">
           </div>
 
-          <div class="style-grid" id="styleGrid" role="radiogroup" aria-labelledby="visualStyleLabel">
-            <!-- Styles will be dynamically generated -->
+          <div class="control-group">
+            <div class="control-label">
+              <label for="speedSlider">Animation Speed</label>
+              <span class="control-value" id="speedValue" aria-live="polite">3.0×</span>
+            </div>
+            <input type="range" id="speedSlider" min="0.1" max="5" step="0.1" value="3">
           </div>
-          <div class="style-info" id="styleInfo">
-            <span class="style-name">Clean</span> — <span class="style-desc">Crisp lines with subtle glow</span>
-          </div>
-        </div>
-
-        <div class="control-group">
-          <div class="control-label">
-            <label for="particleSlider">Particle Count</label>
-            <span class="control-value" id="particleValue" aria-live="polite">60</span>
-          </div>
-          <input type="range" id="particleSlider" min="20" max="150" step="10" value="60" aria-valuemin="20" aria-valuemax="150" aria-valuenow="60">
-        </div>
-
-        <div class="control-group">
-          <div class="control-label">
-            <label for="speedSlider">Animation Speed</label>
-            <span class="control-value" id="speedValue" aria-live="polite">3.0×</span>
-          </div>
-          <input type="range" id="speedSlider" min="0.1" max="5" step="0.1" value="3" aria-valuemin="0.1" aria-valuemax="5" aria-valuenow="3">
         </div>
       </div>
 
