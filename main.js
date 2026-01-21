@@ -2320,6 +2320,61 @@
             zoom = Math.max(0.3, zoom / 1.1);
           }
           break;
+        // Style shortcuts: 1-7 (when not in input)
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+          if (!e.shiftKey && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            const styleKeys = Object.keys(VISUAL_STYLES);
+            const styleIndex = parseInt(key) - 1;
+            if (styleIndex < styleKeys.length) {
+              selectStyle(styleKeys[styleIndex]);
+            }
+          }
+          break;
+        // Color shortcuts: Shift+1-9,0 for first 10 colors
+        case '!': // Shift+1
+        case '@': // Shift+2
+        case '#': // Shift+3
+        case '$': // Shift+4
+        case '%': // Shift+5
+        case '^': // Shift+6
+        case '&': // Shift+7
+        case '*': // Shift+8
+        case '(': // Shift+9
+        case ')': // Shift+0
+          if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            const shiftMap = {'!': 0, '@': 1, '#': 2, '$': 3, '%': 4, '^': 5, '&': 6, '*': 7, '(': 8, ')': 9};
+            const colorKeys = Object.keys(colorSchemes);
+            const colorIndex = shiftMap[key];
+            if (colorIndex < colorKeys.length) {
+              setColorScheme(colorKeys[colorIndex]);
+              // Update theme bar if open
+              document.querySelectorAll('.color-chip').forEach(chip => {
+                chip.classList.toggle('active', chip.dataset.color === colorKeys[colorIndex]);
+                chip.setAttribute('aria-selected', chip.dataset.color === colorKeys[colorIndex] ? 'true' : 'false');
+              });
+            }
+          }
+          break;
+        // Toggle theme bar: T key
+        case 't':
+          if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            const themeBar = document.getElementById('themeBar');
+            const toggle = document.getElementById('themeBarToggle');
+            if (themeBar && toggle) {
+              const isExpanded = themeBar.classList.toggle('expanded');
+              toggle.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+            }
+          }
+          break;
       }
     });
 
