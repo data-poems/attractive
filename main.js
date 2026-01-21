@@ -2409,52 +2409,6 @@
       }
     }
 
-    // Filter styles by category
-    function filterStylesByCategory(category) {
-      // Update filter button states
-      document.querySelectorAll('.style-filter-btn').forEach(btn => {
-        const isActive = btn.dataset.category === category;
-        btn.classList.toggle('active', isActive);
-        btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-      });
-
-      // Filter style cards
-      document.querySelectorAll('.style-card').forEach(card => {
-        if (category === 'all' || card.dataset.category === category) {
-          card.classList.remove('hidden');
-        } else {
-          card.classList.add('hidden');
-        }
-      });
-    }
-
-    // Keyboard navigation for style cards
-    function handleStyleKeyboard(e, styleId) {
-      const cards = Array.from(document.querySelectorAll('.style-card:not(.hidden)'));
-      const currentIndex = cards.findIndex(c => c.dataset.style === styleId);
-
-      let nextIndex;
-      switch (e.key) {
-        case 'ArrowRight':
-        case 'ArrowDown':
-          e.preventDefault();
-          nextIndex = (currentIndex + 1) % cards.length;
-          cards[nextIndex].focus();
-          break;
-        case 'ArrowLeft':
-        case 'ArrowUp':
-          e.preventDefault();
-          nextIndex = (currentIndex - 1 + cards.length) % cards.length;
-          cards[nextIndex].focus();
-          break;
-        case 'Enter':
-        case ' ':
-          e.preventDefault();
-          selectStyle(styleId);
-          break;
-      }
-    }
-
     // Initialize style UI
     initStyleUI();
 
