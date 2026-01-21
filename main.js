@@ -937,27 +937,48 @@
       'trending-bouali': { p1: 0.3, p2: 1.0, p3: 1.0 }
     };
     
-    // Color schemes
+    // Color schemes with categories for organization
     const colorSchemes = {
-      bioluminescent: { start: [0, 255, 255], end: [255, 0, 255] },
-      fire: { start: [255, 69, 0], end: [255, 215, 0] },
-      ocean: { start: [0, 102, 255], end: [0, 255, 170] },
-      sunset: { start: [255, 107, 53], end: [247, 147, 30] },
-      forest: { start: [0, 255, 136], end: [0, 68, 34] },
-      cosmic: { start: [153, 0, 255], end: [255, 0, 153] },
-      aurora: { start: [0, 255, 136], end: [153, 0, 255] },
-      lava: { start: [255, 0, 68], end: [255, 204, 0] },
-      ice: { start: [255, 255, 255], end: [0, 136, 255] },
-      neon: { start: [57, 255, 20], end: [255, 20, 147] },
-      matrix: { start: [0, 255, 0], end: [0, 50, 0] },
-      cyberpunk: { start: [255, 255, 0], end: [0, 255, 255] },
-      // New color schemes
-      pastel: { start: [255, 182, 193], end: [176, 224, 230] },
-      monochrome: { start: [255, 255, 255], end: [80, 80, 80] },
-      ember: { start: [255, 87, 34], end: [139, 0, 0] },
-      electric: { start: [0, 191, 255], end: [255, 255, 0] },
-      bloodmoon: { start: [139, 0, 0], end: [255, 140, 0] }
+      // Vibrant
+      bioluminescent: { start: [0, 255, 255], end: [255, 0, 255], category: 'vibrant', name: 'Bioluminescent' },
+      neon: { start: [57, 255, 20], end: [255, 20, 147], category: 'vibrant', name: 'Neon' },
+      cyberpunk: { start: [255, 255, 0], end: [0, 255, 255], category: 'vibrant', name: 'Cyberpunk' },
+      electric: { start: [0, 191, 255], end: [255, 255, 0], category: 'vibrant', name: 'Electric' },
+
+      // Warm
+      fire: { start: [255, 69, 0], end: [255, 215, 0], category: 'warm', name: 'Fire' },
+      sunset: { start: [255, 107, 53], end: [247, 147, 30], category: 'warm', name: 'Sunset' },
+      lava: { start: [255, 0, 68], end: [255, 204, 0], category: 'warm', name: 'Lava' },
+      ember: { start: [255, 87, 34], end: [139, 0, 0], category: 'warm', name: 'Ember' },
+      bloodmoon: { start: [139, 0, 0], end: [255, 140, 0], category: 'warm', name: 'Blood Moon' },
+      solar: { start: [255, 200, 50], end: [255, 100, 0], category: 'warm', name: 'Solar' },
+
+      // Cool
+      ocean: { start: [0, 102, 255], end: [0, 255, 170], category: 'cool', name: 'Ocean' },
+      ice: { start: [255, 255, 255], end: [0, 136, 255], category: 'cool', name: 'Ice' },
+      aurora: { start: [0, 255, 136], end: [153, 0, 255], category: 'cool', name: 'Aurora' },
+      forest: { start: [0, 255, 136], end: [0, 68, 34], category: 'cool', name: 'Forest' },
+      arctic: { start: [200, 230, 255], end: [100, 180, 220], category: 'cool', name: 'Arctic' },
+
+      // Cosmic
+      cosmic: { start: [153, 0, 255], end: [255, 0, 153], category: 'cosmic', name: 'Cosmic' },
+      nebula: { start: [75, 0, 130], end: [255, 105, 180], category: 'cosmic', name: 'Nebula' },
+      void: { start: [20, 0, 40], end: [100, 0, 150], category: 'cosmic', name: 'Void' },
+      supernova: { start: [255, 255, 200], end: [255, 50, 50], category: 'cosmic', name: 'Supernova' },
+
+      // Neutral
+      monochrome: { start: [255, 255, 255], end: [80, 80, 80], category: 'neutral', name: 'Monochrome' },
+      pastel: { start: [255, 182, 193], end: [176, 224, 230], category: 'neutral', name: 'Pastel' },
+      sepia: { start: [210, 180, 140], end: [120, 80, 40], category: 'neutral', name: 'Sepia' },
+
+      // Dark
+      matrix: { start: [0, 255, 0], end: [0, 50, 0], category: 'dark', name: 'Matrix' },
+      midnight: { start: [25, 25, 112], end: [0, 0, 30], category: 'dark', name: 'Midnight' },
+      obsidian: { start: [60, 60, 70], end: [10, 10, 15], category: 'dark', name: 'Obsidian' }
     };
+
+    // Color categories for filtering
+    const colorCategories = ['all', 'vibrant', 'warm', 'cool', 'cosmic', 'neutral', 'dark'];
 
     // Visual styles for different rendering aesthetics
     const VISUAL_STYLES = {
