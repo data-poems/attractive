@@ -974,11 +974,20 @@
       // Dark
       matrix: { start: [0, 255, 0], end: [0, 50, 0], category: 'dark', name: 'Matrix' },
       midnight: { start: [25, 25, 112], end: [0, 0, 30], category: 'dark', name: 'Midnight' },
-      obsidian: { start: [60, 60, 70], end: [10, 10, 15], category: 'dark', name: 'Obsidian' }
+      obsidian: { start: [60, 60, 70], end: [10, 10, 15], category: 'dark', name: 'Obsidian' },
+
+      // Scientific (perceptually uniform, colorblind-safe)
+      viridis: { start: [68, 1, 84], end: [253, 231, 36], category: 'scientific', name: 'Viridis' },
+      plasma: { start: [142, 68, 173], end: [241, 196, 15], category: 'scientific', name: 'Plasma' },
+      infrared: { start: [13, 2, 33], end: [224, 170, 255], category: 'scientific', name: 'Infrared' },
+      stellar: { start: [26, 26, 46], end: [50, 130, 184], category: 'scientific', name: 'Stellar' },
+      acid: { start: [204, 255, 0], end: [0, 136, 255], category: 'vibrant', name: 'Acid' },
+      oxidation: { start: [26, 71, 42], end: [183, 228, 199], category: 'warm', name: 'Oxidation' },
+      twilight: { start: [43, 45, 66], end: [239, 35, 60], category: 'cool', name: 'Twilight' }
     };
 
     // Color categories for filtering
-    const colorCategories = ['all', 'vibrant', 'warm', 'cool', 'cosmic', 'neutral', 'dark'];
+    const colorCategories = ['all', 'vibrant', 'warm', 'cool', 'cosmic', 'neutral', 'dark', 'scientific'];
 
     // Visual styles for different rendering aesthetics
     const VISUAL_STYLES = {
