@@ -2500,6 +2500,10 @@
       if (VISUAL_STYLES[styleId].line.renderer === 'rough') {
         initRoughCanvas();
       }
+
+      // Announce to screen readers
+      const styleName = VISUAL_STYLES[styleId].name;
+      announce(`Visual style changed to ${styleName}`);
     }
 
     // Update style info display
