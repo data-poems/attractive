@@ -1331,83 +1331,32 @@ button.secondary:hover {
     gap: 12px;
   }
 
-  /* Info and dice buttons - adjust position */
-  /* Floating actions - responsive positioning */
-  .floating-actions {
-    top: 16px;
-    right: 16px;
-    gap: 10px;
+  /* Floating controls - mobile optimized */
+  .floating-controls {
+    bottom: 12px;
+    left: 12px;
+    padding: 5px 8px;
+    gap: 3px;
   }
 
-  .action-btn {
-    width: 40px;
-    height: 40px;
-    font-size: 16px;
+  .ctrl-btn {
+    width: 28px;
+    height: 28px;
   }
 
-  /* Floating playback - mobile optimized */
-  .floating-playback {
-    bottom: 16px;
-    padding: 6px 12px;
-    gap: 6px;
-  }
-
-  .playback-btn {
-    width: 38px;
-    height: 38px;
-  }
-
-  .play-pause-btn {
-    width: 48px;
-    height: 48px;
+  .ctrl-btn.play-pause {
+    width: 32px;
+    height: 32px;
   }
 
   .speed-indicator {
-    font-size: 11px;
-    min-width: 32px;
+    font-size: 10px;
+    min-width: 28px;
   }
 
-  /* Theme bar - mobile optimized */
-  .theme-bar {
-    bottom: 72px;
-    padding: 6px;
-    gap: 6px;
-    border-radius: 12px;
-  }
-
-  .theme-bar-toggle {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-  }
-
-  .theme-section-label {
-    display: none;
-  }
-
-  .theme-divider {
-    height: 28px;
-  }
-
-  .theme-strip {
-    gap: 4px;
-  }
-
-  .style-strip .style-option {
-    width: 40px;
-    height: 30px;
-    font-size: 8px;
-    border-radius: 6px;
-  }
-
-  .color-strip .color-swatch {
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-  }
-
-  .color-filter-strip {
-    display: none;
+  .ctrl-divider {
+    height: 16px;
+    margin: 0 4px;
   }
 
   /* Modal - full width with less padding */
