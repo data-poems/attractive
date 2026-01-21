@@ -2565,6 +2565,53 @@
     initStyleUI();
 
     // ================================
+    // DROPDOWN SELECTORS & COLLAPSIBLE SECTIONS
+    // ================================
+
+    // Color scheme dropdown
+    const colorSchemeSelect = document.getElementById('colorSchemeSelect');
+    if (colorSchemeSelect) {
+      colorSchemeSelect.addEventListener('change', (e) => {
+        const scheme = e.target.value;
+        if (colorSchemes[scheme]) {
+          pushState();
+          currentColorScheme = scheme;
+          // Update color preview swatch
+          const preview = document.getElementById('colorPreview');
+          if (preview) {
+            const c = colorSchemes[scheme];
+            preview.style.background = `linear-gradient(135deg, rgb(${c.start.join(',')}), rgb(${c.end.join(',')}))`;
+          }
+          announce(`Color scheme changed to ${colorSchemes[scheme].name}`);
+        }
+      });
+    }
+
+    // Visual style dropdown
+    const visualStyleSelect = document.getElementById('visualStyleSelect');
+    if (visualStyleSelect) {
+      visualStyleSelect.addEventListener('change', (e) => {
+        const styleId = e.target.value;
+        if (VISUAL_STYLES[styleId]) {
+          selectStyle(styleId);
+          // Update style info text
+          const infoEl = document.getElementById('styleInfo');
+          if (infoEl) {
+            infoEl.textContent = VISUAL_STYLES[styleId].description;
+          }
+        }
+      });
+    }
+
+    // Collapsible sections
+    document.querySelectorAll('.section-header').forEach(header => {
+      header.addEventListener('click', () => {
+        const expanded = header.getAttribute('aria-expanded') === 'true';
+        header.setAttribute('aria-expanded', !expanded);
+      });
+    });
+
+    // ================================
     // FLOATING THEME BAR
     // ================================
 
