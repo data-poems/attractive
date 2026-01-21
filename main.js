@@ -2360,23 +2360,6 @@
             const colorIndex = shiftMap[key];
             if (colorIndex < colorKeys.length) {
               setColorScheme(colorKeys[colorIndex]);
-              // Update theme bar if open
-              document.querySelectorAll('.color-chip').forEach(chip => {
-                chip.classList.toggle('active', chip.dataset.color === colorKeys[colorIndex]);
-                chip.setAttribute('aria-selected', chip.dataset.color === colorKeys[colorIndex] ? 'true' : 'false');
-              });
-            }
-          }
-          break;
-        // Toggle theme bar: T key
-        case 't':
-          if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
-            e.preventDefault();
-            const themeBar = document.getElementById('themeBar');
-            const toggle = document.getElementById('themeBarToggle');
-            if (themeBar && toggle) {
-              const isExpanded = themeBar.classList.toggle('expanded');
-              toggle.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
             }
           }
           break;
