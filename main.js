@@ -2370,39 +2370,9 @@
     // VISUAL STYLE SYSTEM UI
     // ================================
 
-    // Initialize style grid with all styles
+    // Initialize style UI
     function initStyleUI() {
-      const grid = document.getElementById('styleGrid');
-      if (!grid) return;
-
-      // Clear existing content
-      grid.innerHTML = '';
-
-      // Create style cards
-      Object.values(VISUAL_STYLES).forEach(style => {
-        const card = document.createElement('button');
-        card.type = 'button';
-        card.className = 'style-card' + (style.id === currentStyle ? ' active' : '');
-        card.dataset.style = style.id;
-        card.dataset.category = style.category;
-        card.title = style.name;
-        card.setAttribute('role', 'radio');
-        card.setAttribute('aria-checked', style.id === currentStyle ? 'true' : 'false');
-        card.setAttribute('tabindex', style.id === currentStyle ? '0' : '-1');
-        card.innerHTML = `<span class="style-label">${style.name}</span>`;
-
-        card.addEventListener('click', () => selectStyle(style.id));
-        card.addEventListener('keydown', (e) => handleStyleKeyboard(e, style.id));
-
-        grid.appendChild(card);
-      });
-
-      // Set up category filter buttons
-      document.querySelectorAll('.style-filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => filterStylesByCategory(btn.dataset.category));
-      });
-
-      // Update info display
+      // Update info display for default style
       updateStyleInfo(currentStyle);
     }
 
