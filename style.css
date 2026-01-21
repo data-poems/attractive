@@ -1556,6 +1556,49 @@ button.secondary:hover {
     min-width: 32px;
   }
 
+  /* Theme bar - mobile optimized */
+  .theme-bar {
+    bottom: 72px;
+    padding: 6px;
+    gap: 6px;
+    border-radius: 12px;
+  }
+
+  .theme-bar-toggle {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+  }
+
+  .theme-section-label {
+    display: none;
+  }
+
+  .theme-divider {
+    height: 28px;
+  }
+
+  .theme-strip {
+    gap: 4px;
+  }
+
+  .style-strip .style-option {
+    width: 40px;
+    height: 30px;
+    font-size: 8px;
+    border-radius: 6px;
+  }
+
+  .color-strip .color-swatch {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+  }
+
+  .color-filter-strip {
+    display: none;
+  }
+
   /* Modal - full width with less padding */
   .modal-content {
     max-width: 95vw;
