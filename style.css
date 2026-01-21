@@ -860,22 +860,28 @@ button.secondary:hover {
    ================================ */
 .floating-controls {
   position: fixed;
-  bottom: 20px;
-  left: 20px;
+  bottom: 24px;
+  left: calc(var(--sidebar-width) + 24px);
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(12px);
-  border-radius: 8px;
-  padding: 6px 10px;
+  border-radius: 10px;
+  padding: 8px 12px;
   z-index: 60;
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* When sidebar is collapsed, move controls to edge */
+.sidebar.collapsed ~ .floating-controls {
+  left: 24px;
 }
 
 .ctrl-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -899,13 +905,20 @@ button.secondary:hover {
 
 .ctrl-btn svg {
   display: block;
+  width: 20px;
+  height: 20px;
 }
 
 /* Play/Pause button - slightly larger */
 .ctrl-btn.play-pause {
-  width: 36px;
-  height: 36px;
+  width: 48px;
+  height: 48px;
   color: rgba(255, 255, 255, 0.9);
+}
+
+.ctrl-btn.play-pause svg {
+  width: 24px;
+  height: 24px;
 }
 
 .ctrl-btn.play-pause:hover {
@@ -928,10 +941,10 @@ button.secondary:hover {
 
 /* Speed indicator */
 .speed-indicator {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.5);
-  min-width: 32px;
+  min-width: 40px;
   text-align: center;
   font-variant-numeric: tabular-nums;
 }
@@ -939,9 +952,9 @@ button.secondary:hover {
 /* Divider between playback and actions */
 .ctrl-divider {
   width: 1px;
-  height: 20px;
+  height: 24px;
   background: rgba(255, 255, 255, 0.15);
-  margin: 0 6px;
+  margin: 0 8px;
 }
 
 
