@@ -2402,12 +2402,18 @@
       pushState();  // For undo
       currentStyle = styleId;
 
-      // Update UI
+      // Update sidebar UI
       document.querySelectorAll('.style-card').forEach(c => {
         const isActive = c.dataset.style === styleId;
         c.classList.toggle('active', isActive);
         c.setAttribute('aria-checked', isActive ? 'true' : 'false');
         c.setAttribute('tabindex', isActive ? '0' : '-1');
+      });
+
+      // Update theme bar UI
+      document.querySelectorAll('#styleStrip .style-option').forEach(s => {
+        s.classList.toggle('active', s.dataset.style === styleId);
+        s.setAttribute('aria-selected', s.dataset.style === styleId);
       });
 
       updateStyleInfo(styleId);
