@@ -2326,7 +2326,7 @@
     // Mood filter functionality
     let currentMoodFilter = 'all';
     const moodButtons = document.querySelectorAll('.mood-btn');
-    const colorCategories = document.querySelectorAll('.color-category');
+    const sidebarColorCategories = document.querySelectorAll('.color-category');
 
     moodButtons.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -2340,11 +2340,11 @@
         btn.classList.add('active');
         btn.setAttribute('aria-pressed', 'true');
 
-        // Filter color categories
+        // Filter color categories in sidebar
         if (currentMoodFilter === 'all') {
-          colorCategories.forEach(cat => cat.classList.remove('hidden'));
+          sidebarColorCategories.forEach(cat => cat.classList.remove('hidden'));
         } else {
-          colorCategories.forEach(cat => {
+          sidebarColorCategories.forEach(cat => {
             if (cat.dataset.category === currentMoodFilter) {
               cat.classList.remove('hidden');
             } else {
