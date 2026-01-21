@@ -1905,14 +1905,8 @@
       // Apply style if included in combo
       if (combo.style) {
         currentStyle = combo.style;
-
-        // Update style UI
-        document.querySelectorAll('.style-card').forEach(c => {
-          const isActive = c.dataset.style === currentStyle;
-          c.classList.toggle('active', isActive);
-          c.setAttribute('aria-checked', isActive ? 'true' : 'false');
-          c.setAttribute('tabindex', isActive ? '0' : '-1');
-        });
+        const styleSelect = document.getElementById('visualStyleSelect');
+        if (styleSelect) styleSelect.value = currentStyle;
         updateStyleInfo(currentStyle);
 
         // Initialize rough canvas if needed
@@ -1924,13 +1918,14 @@
       document.getElementById('datasetSelect').value = currentDataset;
       document.getElementById('attractorSelect').value = currentAttractor;
 
-      // Update color selection
-      document.querySelectorAll('.color-option').forEach(o => {
-        const isActive = o.dataset.scheme === currentColorScheme;
-        o.classList.toggle('active', isActive);
-        o.setAttribute('aria-checked', isActive ? 'true' : 'false');
-        o.setAttribute('tabindex', isActive ? '0' : '-1');
-      });
+      // Update color scheme dropdown and preview
+      const colorSelect = document.getElementById('colorSchemeSelect');
+      if (colorSelect) colorSelect.value = currentColorScheme;
+      const colorPreview = document.getElementById('colorPreview');
+      if (colorPreview && colorSchemes[currentColorScheme]) {
+        const c = colorSchemes[currentColorScheme];
+        colorPreview.style.background = `linear-gradient(135deg, rgb(${c.start.join(',')}), rgb(${c.end.join(',')}))`;
+      }
 
       document.getElementById('attractorName').textContent = attractors[currentAttractor].name;
       document.getElementById('datasetName').textContent = datasets[currentDataset].name;
