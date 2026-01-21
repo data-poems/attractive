@@ -389,48 +389,33 @@
   
   <canvas id="canvas" role="img" aria-label="Interactive 3D attractor visualization. Use controls in sidebar to modify parameters." tabindex="0"></canvas>
 
-  <!-- Floating action buttons (top right) -->
-  <div class="floating-actions" role="toolbar" aria-label="Quick actions">
-    <button class="action-btn random-btn" id="randomBtn" aria-label="Random combination" title="Random">
-      <svg class="action-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="4" y="4" width="16" height="16" rx="2"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="9" r="1" fill="currentColor"/><circle cx="9" cy="15" r="1" fill="currentColor"/><circle cx="15" cy="15" r="1" fill="currentColor"/><circle cx="12" cy="12" r="1" fill="currentColor"/>
-      </svg>
+  <!-- Unified floating controls (bottom left) -->
+  <div class="floating-controls" role="toolbar" aria-label="Visualization controls">
+    <!-- Playback -->
+    <button class="ctrl-btn" id="speedDownBtn" aria-label="Decrease speed" title="Slower">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4"/><rect x="5" y="5" width="2" height="14"/></svg>
     </button>
-    <button class="action-btn export-btn" id="exportBtn" aria-label="Export as PNG" title="Export PNG">
-      <svg class="action-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-      </svg>
+    <button class="ctrl-btn play-pause" id="floatingPlayPauseBtn" aria-label="Pause animation" aria-pressed="true" title="Pause">
+      <svg class="play-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21"/></svg>
+      <svg class="pause-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
     </button>
-    <button class="action-btn info-btn" id="infoBtn" aria-label="About this visualization" aria-haspopup="dialog" title="About">
-      <svg class="action-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
-      </svg>
-    </button>
-  </div>
-
-  <!-- Floating playback controls (bottom center) -->
-  <div class="floating-playback" role="toolbar" aria-label="Playback controls">
-    <button class="playback-btn speed-down-btn" id="speedDownBtn" aria-label="Decrease speed" title="Slower">
-      <svg class="action-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="19 20 9 12 19 4 19 20"/>
-        <line x1="5" y1="19" x2="5" y2="5"/>
-      </svg>
-    </button>
-    <button class="playback-btn play-pause-btn" id="floatingPlayPauseBtn" aria-label="Pause animation" aria-pressed="true" title="Pause">
-      <svg class="action-icon play-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-        <polygon points="5 3 19 12 5 21 5 3"/>
-      </svg>
-      <svg class="action-icon pause-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-        <rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>
-      </svg>
-    </button>
-    <button class="playback-btn speed-up-btn" id="speedUpBtn" aria-label="Increase speed" title="Faster">
-      <svg class="action-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="5 4 15 12 5 20 5 4"/>
-        <line x1="19" y1="5" x2="19" y2="19"/>
-      </svg>
+    <button class="ctrl-btn" id="speedUpBtn" aria-label="Increase speed" title="Faster">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20"/><rect x="17" y="5" width="2" height="14"/></svg>
     </button>
     <span class="speed-indicator" id="speedIndicator" aria-live="polite">1.0x</span>
+
+    <span class="ctrl-divider"></span>
+
+    <!-- Actions -->
+    <button class="ctrl-btn" id="randomBtn" aria-label="Random combination" title="Random">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="9" r="1.5"/><circle cx="15" cy="9" r="1.5"/><circle cx="9" cy="15" r="1.5"/><circle cx="15" cy="15" r="1.5"/><circle cx="12" cy="12" r="1.5"/></svg>
+    </button>
+    <button class="ctrl-btn" id="exportBtn" aria-label="Export as PNG" title="Export">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    </button>
+    <button class="ctrl-btn" id="infoBtn" aria-label="About" aria-haspopup="dialog" title="About">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+    </button>
   </div>
 
   <div class="stats" role="status" aria-live="polite" aria-label="Current visualization stats">
