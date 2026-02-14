@@ -1,0 +1,16 @@
+# Agent-generated artifacts
+CRITIC.md
+ONBOARDING_IMPLEMENTATION.md
+TEST_ONBOARDING.md
+VISUAL_SELECTOR_MOCKUP.md
+UNDO_FEATURE.md
+ACCESSIBILITY_SUMMARY.md
+
+# Conversation history artifact
+prior.md
+
+# Backup files
+*.backup
+
+# Playwright screenshots
+.playwright-mcp/
