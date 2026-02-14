@@ -1,3 +1,8 @@
+# Claude/MCP infrastructure (not for public repos)
+.claude/
+.playwright-mcp/
+CLAUDE.md
+
 # Agent-generated artifacts
 CRITIC.md
 ONBOARDING_IMPLEMENTATION.md
@@ -5,12 +10,17 @@ TEST_ONBOARDING.md
 VISUAL_SELECTOR_MOCKUP.md
 UNDO_FEATURE.md
 ACCESSIBILITY_SUMMARY.md
+PROGRESS_STATUS.md
+IMPLEMENTATION_STATUS.md
+SESSION_LOG.md
+WORK_LOG.md
+AGENT_REPORT.md
+*_STATUS.md
+*_PROGRESS.md
+SUGGESTIONS.md
 
-# Conversation history artifact
+# Conversation history
 prior.md
 
 # Backup files
 *.backup
-
-# Playwright screenshots
-.playwright-mcp/
