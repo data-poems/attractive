@@ -6,7 +6,7 @@
 
 Strange attractor visualizer. Pick a chaotic system, feed it real-world data, adjust the rendering style, and see what it does.
 
-26 attractors, 17 data sources, 30+ color palettes, 7 visual styles. No build step — just a canvas and math.
+26 attractors, 17 data sources, 30+ color palettes, 7 visual styles. No build step, just a canvas and math.
 
 ![Attractive Preview](social-card.png)
 
@@ -45,13 +45,13 @@ Real-world data modulates the chaos parameters:
 
 ## 7 Visual Styles
 
-- **Clean** — Crisp lines with subtle glow (default)
-- **Da Vinci** — Ink on aged parchment, hand-drawn lines
-- **Blueprint** — Cyanotype (white-on-blue) technical drawing with grid
-- **Neon** — Glowing tubes with strong blur
-- **Chalk** — Rough strokes on blackboard texture
-- **Oscilloscope** — Green phosphor on CRT with scanlines
-- **Watercolor** — Pastel washes with bleeding pigments
+- **Clean** - Crisp lines with subtle glow (default)
+- **Da Vinci** - Ink on aged parchment, hand-drawn lines
+- **Blueprint** - Cyanotype (white-on-blue) technical drawing with grid
+- **Neon** - Glowing tubes with strong blur
+- **Chalk** - Rough strokes on blackboard texture
+- **Oscilloscope** - Green phosphor on CRT with scanlines
+- **Watercolor** - Pastel washes with bleeding pigments
 
 ## 21 Mathematical Presets
 
@@ -73,19 +73,19 @@ Famous bifurcation points and special parameter combinations:
 - **Touch**: 1-finger rotate, 2-finger pan/pinch zoom
 
 ### Keyboard
-- **Space** — Play/pause animation
-- **R** — Random combination
-- **Ctrl+Z** / **Cmd+Z** — Undo last change
-- **F** — Fullscreen
-- **Arrow keys** — Rotate view
-- **Escape** — Close modal
+- **Space** - Play/pause animation
+- **R** - Random combination
+- **Ctrl+Z** / **Cmd+Z** - Undo last change
+- **F** - Fullscreen
+- **Arrow keys** - Rotate view
+- **Escape** - Close modal
 
 ### Floating Toolbar
 Bottom-left buttons control speed, trigger a random combo, export to PNG, and show help.
 
 ## Other features
 
-Random button pulls from 40+ hand-picked combos. Ctrl+Z steps back through changes. Auto-rotate, parameter sweeping, PNG export. Guided tour on first visit. WCAG 2.1 AA — full keyboard nav and screen reader support. Works on mobile.
+Random button pulls from 40+ hand-picked combos. Ctrl+Z steps back through changes. Auto-rotate, parameter sweeping, PNG export. Guided tour on first visit. WCAG 2.1 AA, full keyboard nav and screen reader support. Works on mobile.
 
 ## Quick Start
 
@@ -96,7 +96,7 @@ python3 -m http.server 8000
 # Open http://localhost:8000/
 ```
 
-Or open `index.html` directly in a modern browser. Everything runs as a single top-level script — no modules, no bundler.
+Or open `index.html` directly in a modern browser. Everything runs as a single top-level script, no modules, no bundler.
 
 ## How It Works
 
@@ -162,7 +162,7 @@ Then add a corresponding `<option>` in `index.html` under `#attractorSelect`.
 
 ## License
 
-MIT — see [LICENSE](LICENSE) for details.
+MIT. See [LICENSE](LICENSE) for details.
 
 ## Author
 
