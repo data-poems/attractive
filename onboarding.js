@@ -9,13 +9,13 @@
 
   const onboardingSteps = [
     {
-      target: '.quick-start',
+      target: '#randomBtn',
       title: 'Welcome to Attractor Playground!',
       text: 'Start here! Click <strong>Random</strong> to explore beautiful combinations of attractors, colors, and data sources.',
       position: 'right'
     },
     {
-      target: '.color-grid',
+      target: '#colorSchemeSelect',
       title: 'Choose Your Colors',
       text: 'Pick your favorite color scheme. Each one creates a different mood for the visualization.',
       position: 'right'

@@ -83,6 +83,15 @@
       }
     }
 
+    // Update the color preview swatch to match a scheme
+    function updateColorPreview(schemeId) {
+      const preview = document.getElementById('colorPreview');
+      if (preview && colorSchemes[schemeId]) {
+        const c = colorSchemes[schemeId];
+        preview.style.background = `linear-gradient(135deg, rgb(${c.start.join(',')}), rgb(${c.end.join(',')}))`;
+      }
+    }
+
     // History/Undo system
     const historyStack = [];
     const MAX_HISTORY = 20;
@@ -167,11 +176,7 @@
       // Update color scheme dropdown and preview
       const colorSelect = document.getElementById('colorSchemeSelect');
       if (colorSelect) colorSelect.value = currentColorScheme;
-      const colorPreview = document.getElementById('colorPreview');
-      if (colorPreview && colorSchemes[currentColorScheme]) {
-        const c = colorSchemes[currentColorScheme];
-        colorPreview.style.background = `linear-gradient(135deg, rgb(${c.start.join(',')}), rgb(${c.end.join(',')}))`;
-      }
+      updateColorPreview(currentColorScheme);
 
       // Update style dropdown and info
       const styleSelect = document.getElementById('visualStyleSelect');
@@ -603,7 +608,7 @@
           const dz = params.p1 - y * y;
           return [x + dx * dt * params.p2, y + dy * dt * params.p2, z + dz * dt * params.p2];
         },
-        scale: 100 * 1,
+        scale: 100,
         initPos: [0, 0.1, 0],
         initSpread: 0.1
       },
@@ -742,7 +747,7 @@
         ],
         compute: (x, y, z, params, dt) => {
           // Dequan Li attractor - complex multi-scroll
-          const b = 11, e = 0.65, f = 20, k = 55;
+          const e = 0.65, f = 20, k = 55;
           const dx = params.p1 * (y - x) + params.p3 * x * z;
           const dy = k * x + f * y - x * z;
           const dz = params.p2 * z + x * y - e * x * x;
@@ -865,83 +870,10 @@
       }
     };
     
-    // Curated defaults for each dataset+attractor combination
-    // These are tested to produce clear, beautiful visualizations
+    // Dataset-specific parameter overrides (only entries that differ from attractor defaults).
+    // loadCuratedDefaults() falls back to attractor.params[i].default for unlisted combos.
     const curatedDefaults = {
-      // Climate data works best with these
-      'climate-lorenz': { p1: 10, p2: 28, p3: 2.667 },
-      'climate-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
-      'climate-chen': { p1: 35, p2: 3, p3: 28 },
-      'climate-aizawa': { p1: 0.95, p2: 0.7, p3: 0.6 },
-      'climate-thomas': { p1: 0.208186, p2: 10, p3: 1.0 },
-      'climate-halvorsen': { p1: 1.4, p2: 1, p3: 1 },
-      
-      // Economic data
-      'economic-lorenz': { p1: 10, p2: 28, p3: 2.667 },
-      'economic-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
-      'economic-chen': { p1: 35, p2: 3, p3: 28 },
-      'economic-aizawa': { p1: 0.95, p2: 0.7, p3: 0.6 },
-      'economic-thomas': { p1: 0.208186, p2: 10, p3: 1.0 },
-      'economic-halvorsen': { p1: 1.4, p2: 1, p3: 1 },
-      
-      // Seismic data
-      'seismic-lorenz': { p1: 10, p2: 28, p3: 2.667 },
-      'seismic-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
-      'seismic-chen': { p1: 35, p2: 3, p3: 28 },
-      'seismic-aizawa': { p1: 0.95, p2: 0.7, p3: 0.6 },
-      'seismic-thomas': { p1: 0.208186, p2: 10, p3: 1.0 },
-      'seismic-halvorsen': { p1: 1.4, p2: 1, p3: 1 },
-      
-      // Crypto data
-      'crypto-lorenz': { p1: 10, p2: 28, p3: 2.667 },
-      'crypto-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
-      'crypto-chen': { p1: 35, p2: 3, p3: 28 },
-      'crypto-aizawa': { p1: 0.95, p2: 0.7, p3: 0.6 },
-      'crypto-thomas': { p1: 0.208186, p2: 10, p3: 1.0 },
-      'crypto-halvorsen': { p1: 1.4, p2: 1, p3: 1 },
-      
-      // Trending data
-      'trending-lorenz': { p1: 10, p2: 28, p3: 2.667 },
-      'trending-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
-      'trending-chen': { p1: 35, p2: 3, p3: 28 },
-      'trending-aizawa': { p1: 0.95, p2: 0.7, p3: 0.6 },
-      'trending-thomas': { p1: 0.208186, p2: 10, p3: 1.0 },
-      'trending-halvorsen': { p1: 1.4, p2: 1, p3: 1 },
-      
-      // Audio data
-      'audio-lorenz': { p1: 10, p2: 28, p3: 2.667 },
-      'audio-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
-      'audio-chen': { p1: 35, p2: 3, p3: 28 },
-      'audio-aizawa': { p1: 0.95, p2: 0.7, p3: 0.6 },
-      'audio-thomas': { p1: 0.208186, p2: 10, p3: 1.0 },
-      'audio-halvorsen': { p1: 1.4, p2: 1, p3: 1 },
-      
-      // Orbital data
-      'orbital-lorenz': { p1: 10, p2: 28, p3: 2.667 },
-      'orbital-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
-      'orbital-chen': { p1: 35, p2: 3, p3: 28 },
-      'orbital-aizawa': { p1: 0.95, p2: 0.7, p3: 0.6 },
-      'orbital-thomas': { p1: 0.208186, p2: 10, p3: 1.0 },
-      'orbital-halvorsen': { p1: 1.4, p2: 1, p3: 1 },
-
-      // Solar data
-      'solar-lorenz': { p1: 10, p2: 28, p3: 2.667 },
-      'solar-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
-      'solar-halvorsen': { p1: 1.4, p2: 1, p3: 1 },
-
-      // Ocean data
-      'ocean-lorenz': { p1: 10, p2: 28, p3: 2.667 },
-      'ocean-rossler': { p1: 0.2, p2: 0.2, p3: 5.7 },
-      'ocean-thomas': { p1: 0.208186, p2: 10, p3: 1.0 },
-
-      // New attractors - defaults for all datasets
-      'climate-sprott': { p1: 2.07, p2: 1.79, p3: 1.0 },
-      'climate-dadras': { p1: 3.0, p2: 2.7, p3: 1.7 },
-      'climate-bouali': { p1: 0.3, p2: 1.0, p3: 1.0 },
-      'seismic-sprott': { p1: 2.07, p2: 1.79, p3: 1.0 },
-      'crypto-sprott': { p1: 2.07, p2: 1.79, p3: 1.2 },
-      'economic-dadras': { p1: 3.0, p2: 2.7, p3: 1.7 },
-      'trending-bouali': { p1: 0.3, p2: 1.0, p3: 1.0 }
+      'crypto-sprott': { p1: 2.07, p2: 1.79, p3: 1.2 }
     };
     
     // Color schemes with categories for organization
@@ -992,9 +924,6 @@
       oxidation: { start: [26, 71, 42], end: [183, 228, 199], category: 'warm', name: 'Oxidation' },
       twilight: { start: [43, 45, 66], end: [239, 35, 60], category: 'cool', name: 'Twilight' }
     };
-
-    // Color categories for filtering
-    const colorCategories = ['all', 'vibrant', 'warm', 'cool', 'cosmic', 'neutral', 'dark', 'scientific'];
 
     // Visual styles for different rendering aesthetics
     const VISUAL_STYLES = {
@@ -1499,6 +1428,16 @@
       return style.line.renderer === 'rough' ? 3 : 1;
     }
 
+    // Project a 3D point to 2D screen coordinates
+    function projectPoint(pt, centerX, centerY, scale) {
+      const rotX_pt = pt.y * Math.cos(rotationX) - pt.z * Math.sin(rotationX);
+      const rotZ_pt = pt.y * Math.sin(rotationX) + pt.z * Math.cos(rotationX);
+      return {
+        x: centerX + (pt.x * Math.cos(rotationY) - rotZ_pt * Math.sin(rotationY)) * scale + panX,
+        y: centerY + rotX_pt * scale + panY
+      };
+    }
+
     // Render loop - clean clear each frame with optional glow
     function render() {
       // FPS tracking
@@ -1583,62 +1522,12 @@
             brightnessMultiplier = 0.4 + 0.6 * (1 - Math.max(0, Math.min(1, (finalZ + 50) / 100)));
           }
 
-          if (trailFade) {
-            // Draw segmented trail with fading opacity using styled lines
-            for (let j = 1; j < p.trail.length; j += pointReduction) {
-              const prevJ = Math.max(0, j - pointReduction);
-              const prevPoint = p.trail[prevJ];
-              const point = p.trail[j];
-
-              // 3D rotation for previous point
-              const prevRotX = prevPoint.y * Math.cos(rotationX) - prevPoint.z * Math.sin(rotationX);
-              const prevRotZ = prevPoint.y * Math.sin(rotationX) + prevPoint.z * Math.cos(rotationX);
-              const prevFinalX = prevPoint.x * Math.cos(rotationY) - prevRotZ * Math.sin(rotationY);
-              const prevFinalY = prevRotX;
-              const prevScreenX = centerX + prevFinalX * scale + panX;
-              const prevScreenY = centerY + prevFinalY * scale + panY;
-
-              // 3D rotation for current point
-              const rotX_pt = point.y * Math.cos(rotationX) - point.z * Math.sin(rotationX);
-              const rotZ_pt = point.y * Math.sin(rotationX) + point.z * Math.cos(rotationX);
-              const finalX = point.x * Math.cos(rotationY) - rotZ_pt * Math.sin(rotationY);
-              const finalY = rotX_pt;
-              const screenX = centerX + finalX * scale + panX;
-              const screenY = centerY + finalY * scale + panY;
-
-              // Opacity fades from 0 at start of trail to 1 at end
-              const segmentProgress = j / p.trail.length;
-              const opacity = segmentProgress;
-
-              // Use the styled line drawing function
-              drawStyledLine(prevScreenX, prevScreenY, screenX, screenY, r, g, b, opacity, brightnessMultiplier);
-            }
-          } else {
-            // Solid trail rendering using styled lines
-            for (let j = 1; j < p.trail.length; j += pointReduction) {
-              const prevJ = Math.max(0, j - pointReduction);
-              const prevPoint = p.trail[prevJ];
-              const point = p.trail[j];
-
-              // 3D rotation for previous point
-              const prevRotX = prevPoint.y * Math.cos(rotationX) - prevPoint.z * Math.sin(rotationX);
-              const prevRotZ = prevPoint.y * Math.sin(rotationX) + prevPoint.z * Math.cos(rotationX);
-              const prevFinalX = prevPoint.x * Math.cos(rotationY) - prevRotZ * Math.sin(rotationY);
-              const prevFinalY = prevRotX;
-              const prevScreenX = centerX + prevFinalX * scale + panX;
-              const prevScreenY = centerY + prevFinalY * scale + panY;
-
-              // 3D rotation for current point
-              const rotX_pt = point.y * Math.cos(rotationX) - point.z * Math.sin(rotationX);
-              const rotZ_pt = point.y * Math.sin(rotationX) + point.z * Math.cos(rotationX);
-              const finalX = point.x * Math.cos(rotationY) - rotZ_pt * Math.sin(rotationY);
-              const finalY = rotX_pt;
-              const screenX = centerX + finalX * scale + panX;
-              const screenY = centerY + finalY * scale + panY;
-
-              // Use the styled line drawing function with full opacity
-              drawStyledLine(prevScreenX, prevScreenY, screenX, screenY, r, g, b, 1.0, brightnessMultiplier);
-            }
+          for (let j = 1; j < p.trail.length; j += pointReduction) {
+            const prevJ = Math.max(0, j - pointReduction);
+            const prev = projectPoint(p.trail[prevJ], centerX, centerY, scale);
+            const curr = projectPoint(p.trail[j], centerX, centerY, scale);
+            const opacity = trailFade ? (j / p.trail.length) : 1.0;
+            drawStyledLine(prev.x, prev.y, curr.x, curr.y, r, g, b, opacity, brightnessMultiplier);
           }
         }
       });
@@ -1715,7 +1604,8 @@
       const floatingBtn = document.getElementById('floatingPlayPauseBtn');
 
       if (sidebarBtn) {
-        sidebarBtn.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
+        sidebarBtn.textContent = isPlaying ? 'Pause' : 'Play';
+        sidebarBtn.setAttribute('aria-pressed', isPlaying);
       }
       if (floatingBtn) {
         floatingBtn.classList.toggle('paused', !isPlaying);
@@ -1725,14 +1615,15 @@
       }
     }
 
-    // Floating playback controls
-    document.getElementById('floatingPlayPauseBtn').addEventListener('click', () => {
+    // Toggle play/pause state
+    function togglePlayPause() {
       isPlaying = !isPlaying;
       updatePlayPauseState();
-      if (isPlaying) {
-        render();
-      }
-    });
+      if (isPlaying) render();
+    }
+
+    // Floating playback controls
+    document.getElementById('floatingPlayPauseBtn').addEventListener('click', togglePlayPause);
 
     document.getElementById('speedDownBtn').addEventListener('click', () => {
       pushState();
@@ -1761,12 +1652,7 @@
       const select = document.getElementById('colorSchemeSelect');
       if (select) select.value = schemeId;
 
-      // Update preview swatch
-      const preview = document.getElementById('colorPreview');
-      if (preview) {
-        const c = colorSchemes[schemeId];
-        preview.style.background = `linear-gradient(135deg, rgb(${c.start.join(',')}), rgb(${c.end.join(',')}))`;
-      }
+      updateColorPreview(schemeId);
 
       // Announce to screen readers
       announce(`Color scheme changed to ${colorSchemes[schemeId].name}`);
@@ -1857,13 +1743,7 @@
     });
     
     // Play/Pause toggle (sidebar button)
-    document.getElementById('playPauseBtn').addEventListener('click', () => {
-      isPlaying = !isPlaying;
-      updatePlayPauseState();
-      if (isPlaying) {
-        render();
-      }
-    });
+    document.getElementById('playPauseBtn').addEventListener('click', togglePlayPause);
 
     // Auto rotate toggle (New Feature)
     document.getElementById('autoRotateBtn').addEventListener('click', () => {
@@ -1877,7 +1757,7 @@
     document.getElementById('autoAnimateBtn').addEventListener('click', () => {
       isAutoAnimating = !isAutoAnimating;
       const btn = document.getElementById('autoAnimateBtn');
-      btn.textContent = isAutoAnimating ? '⏹ Stop Animation' : '🎬 Auto-Animate Parameter';
+      btn.textContent = isAutoAnimating ? 'Stop Animation' : 'Auto-Animate';
       
       // If starting animation, prompt for which parameter
       if (isAutoAnimating) {
@@ -1888,7 +1768,7 @@
           autoAnimateParam = 'p' + choice;
         } else {
           isAutoAnimating = false;
-          btn.textContent = '🎬 Auto-Animate Parameter';
+          btn.textContent = 'Auto-Animate';
         }
       }
     });
@@ -1921,11 +1801,7 @@
       // Update color scheme dropdown and preview
       const colorSelect = document.getElementById('colorSchemeSelect');
       if (colorSelect) colorSelect.value = currentColorScheme;
-      const colorPreview = document.getElementById('colorPreview');
-      if (colorPreview && colorSchemes[currentColorScheme]) {
-        const c = colorSchemes[currentColorScheme];
-        colorPreview.style.background = `linear-gradient(135deg, rgb(${c.start.join(',')}), rgb(${c.end.join(',')}))`;
-      }
+      updateColorPreview(currentColorScheme);
 
       document.getElementById('attractorName').textContent = attractors[currentAttractor].name;
       document.getElementById('datasetName').textContent = datasets[currentDataset].name;
@@ -2265,7 +2141,7 @@
       switch (e.key.toLowerCase()) {
         case ' ':
           e.preventDefault();
-          document.getElementById('playPauseBtn').click();
+          togglePlayPause();
           break;
         case 'r':
           document.getElementById('randomBtn').click();
@@ -2328,7 +2204,7 @@
           if (!e.shiftKey && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
             e.preventDefault();
             const styleKeys = Object.keys(VISUAL_STYLES);
-            const styleIndex = parseInt(key) - 1;
+            const styleIndex = parseInt(e.key) - 1;
             if (styleIndex < styleKeys.length) {
               selectStyle(styleKeys[styleIndex]);
             }
@@ -2349,7 +2225,7 @@
             e.preventDefault();
             const shiftMap = {'!': 0, '@': 1, '#': 2, '$': 3, '%': 4, '^': 5, '&': 6, '*': 7, '(': 8, ')': 9};
             const colorKeys = Object.keys(colorSchemes);
-            const colorIndex = shiftMap[key];
+            const colorIndex = shiftMap[e.key];
             if (colorIndex < colorKeys.length) {
               setColorScheme(colorKeys[colorIndex]);
             }
@@ -2416,12 +2292,7 @@
         if (colorSchemes[scheme]) {
           pushState();
           currentColorScheme = scheme;
-          // Update color preview swatch
-          const preview = document.getElementById('colorPreview');
-          if (preview) {
-            const c = colorSchemes[scheme];
-            preview.style.background = `linear-gradient(135deg, rgb(${c.start.join(',')}), rgb(${c.end.join(',')}))`;
-          }
+          updateColorPreview(scheme);
           announce(`Color scheme changed to ${colorSchemes[scheme].name}`);
         }
       });
