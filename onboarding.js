@@ -86,14 +86,14 @@
       </div>
     `;
 
-    // Position tooltip
-    if (targetElement) {
-      positionTooltip(tooltip, targetElement, step.position);
-    }
-
-    // Show with animation
+    // Show with animation, then position. Positioning happens after the
+    // tooltip is in the DOM with its final content and 'active' styles so
+    // getBoundingClientRect reports real dimensions.
     setTimeout(() => {
       tooltip.classList.add('active');
+      if (targetElement) {
+        positionTooltip(tooltip, targetElement, step.position);
+      }
     }, 50);
   }
 

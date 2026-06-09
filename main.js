@@ -24,6 +24,7 @@
       // Reset pan to center on resize/orientation change
       panX = 0;
       panY = 0;
+      refreshReducedMotionFrame();
     });
     // Also handle orientation changes on mobile
     window.addEventListener('orientationchange', () => {
@@ -31,6 +32,7 @@
         resizeCanvas();
         panX = 0;
         panY = 0;
+        refreshReducedMotionFrame();
       }, 100);
     });
     
@@ -72,6 +74,9 @@
     let frameCount = 0;
     let lastFpsUpdate = performance.now();
     let currentFps = 60;
+
+    // Reduced motion: render single static frames instead of a continuous loop
+    const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
     // Announce changes to screen readers
     function announce(message) {
@@ -197,6 +202,7 @@
       initParticles();
 
       isRestoringState = false;
+      refreshReducedMotionFrame();
     }
 
     // Undo last change
@@ -1053,10 +1059,12 @@
           labelText += ` ← ${dataset.params[index]}`;
         }
 
-        // Add tooltip if available
+        // Add tooltip if available: trigger references the popup via
+        // aria-describedby; the popup itself carries role="tooltip"
+        const tooltipId = `paramTooltip${index + 1}`;
         const tooltipHTML = param.tooltip ?
-          `<span class="param-info" tabindex="0" role="tooltip" aria-label="${param.tooltip}">
-            <span class="param-tooltip">${param.tooltip}</span>
+          `<span class="param-info" tabindex="0" aria-label="About ${param.name}" aria-describedby="${tooltipId}">
+            <span class="param-tooltip" id="${tooltipId}" role="tooltip">${param.tooltip}</span>
           </span>` : '';
 
         group.innerHTML = `
@@ -1079,6 +1087,7 @@
           valueDisplay.textContent = val.toFixed(3);
           // Update mapping display when parameter changes
           updateMappingDisplay();
+          refreshReducedMotionFrame();
         });
       });
     }
@@ -1126,13 +1135,75 @@
       loadCuratedDefaults();
       generateParameterControls();
       initParticles();
+      refreshReducedMotionFrame();
     }
-    
+
     // Initialize rough.js canvas when needed
     function initRoughCanvas() {
       if (typeof rough !== 'undefined' && canvas) {
         roughCanvas = rough.canvas(canvas);
       }
+    }
+
+    // Offscreen texture layer cache. Generating the random-noise textures
+    // (parchment, blackboard, paper) costs 1500-3000 fillRects, so they are
+    // pre-rendered once and only regenerated on resize or style change.
+    let textureLayerCache = { type: null, width: 0, height: 0, canvas: null };
+
+    function getTextureLayer(bgType) {
+      if (textureLayerCache.type === bgType &&
+          textureLayerCache.width === canvas.width &&
+          textureLayerCache.height === canvas.height) {
+        return textureLayerCache.canvas;
+      }
+
+      const layer = document.createElement('canvas');
+      layer.width = canvas.width;
+      layer.height = canvas.height;
+      const lctx = layer.getContext('2d');
+
+      if (bgType === 'parchment') {
+        lctx.globalAlpha = 0.08;
+        for (let i = 0; i < 3000; i++) {
+          const x = Math.random() * layer.width;
+          const y = Math.random() * layer.height;
+          const size = Math.random() * 2 + 0.5;
+          lctx.fillStyle = Math.random() > 0.5 ? '#8b7355' : '#a08060';
+          lctx.fillRect(x, y, size, size);
+        }
+        // Add some aging stains
+        lctx.globalAlpha = 0.03;
+        for (let i = 0; i < 5; i++) {
+          const x = Math.random() * layer.width;
+          const y = Math.random() * layer.height;
+          const r = Math.random() * 150 + 50;
+          const gradient = lctx.createRadialGradient(x, y, 0, x, y, r);
+          gradient.addColorStop(0, '#6b5344');
+          gradient.addColorStop(1, 'transparent');
+          lctx.fillStyle = gradient;
+          lctx.fillRect(x - r, y - r, r * 2, r * 2);
+        }
+      } else if (bgType === 'blackboard') {
+        lctx.globalAlpha = 0.15;
+        for (let i = 0; i < 2000; i++) {
+          const x = Math.random() * layer.width;
+          const y = Math.random() * layer.height;
+          lctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.1})`;
+          lctx.fillRect(x, y, Math.random() * 3, 1);
+        }
+      } else if (bgType === 'paper') {
+        lctx.globalAlpha = 0.04;
+        for (let i = 0; i < 1500; i++) {
+          const x = Math.random() * layer.width;
+          const y = Math.random() * layer.height;
+          lctx.fillStyle = Math.random() > 0.5 ? '#d0d0c8' : '#e8e8e0';
+          lctx.fillRect(x, y, Math.random() * 4 + 1, Math.random() * 4 + 1);
+        }
+      }
+      lctx.globalAlpha = 1.0;
+
+      textureLayerCache = { type: bgType, width: layer.width, height: layer.height, canvas: layer };
+      return layer;
     }
 
     // Render background based on current visual style
@@ -1167,41 +1238,14 @@
         ctx.globalAlpha = 1.0;
       }
 
-      // Parchment texture (Da Vinci style)
+      // Parchment texture (Da Vinci style): pre-rendered offscreen layer
       if (bg.type === 'parchment' && bg.texture) {
-        ctx.globalAlpha = 0.08;
-        for (let i = 0; i < 3000; i++) {
-          const x = Math.random() * canvas.width;
-          const y = Math.random() * canvas.height;
-          const size = Math.random() * 2 + 0.5;
-          ctx.fillStyle = Math.random() > 0.5 ? '#8b7355' : '#a08060';
-          ctx.fillRect(x, y, size, size);
-        }
-        // Add some aging stains
-        ctx.globalAlpha = 0.03;
-        for (let i = 0; i < 5; i++) {
-          const x = Math.random() * canvas.width;
-          const y = Math.random() * canvas.height;
-          const r = Math.random() * 150 + 50;
-          const gradient = ctx.createRadialGradient(x, y, 0, x, y, r);
-          gradient.addColorStop(0, '#6b5344');
-          gradient.addColorStop(1, 'transparent');
-          ctx.fillStyle = gradient;
-          ctx.fillRect(x - r, y - r, r * 2, r * 2);
-        }
-        ctx.globalAlpha = 1.0;
+        ctx.drawImage(getTextureLayer('parchment'), 0, 0);
       }
 
-      // Blackboard texture (Chalk style)
+      // Blackboard texture (Chalk style): pre-rendered offscreen layer
       if (bg.type === 'blackboard' && bg.texture) {
-        ctx.globalAlpha = 0.15;
-        for (let i = 0; i < 2000; i++) {
-          const x = Math.random() * canvas.width;
-          const y = Math.random() * canvas.height;
-          ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.1})`;
-          ctx.fillRect(x, y, Math.random() * 3, 1);
-        }
-        ctx.globalAlpha = 1.0;
+        ctx.drawImage(getTextureLayer('blackboard'), 0, 0);
       }
 
       // CRT scanlines (Oscilloscope style)
@@ -1223,16 +1267,9 @@
         ctx.globalAlpha = 1.0;
       }
 
-      // Paper texture (Watercolor style)
+      // Paper texture (Watercolor style): pre-rendered offscreen layer
       if (bg.type === 'paper' && bg.texture) {
-        ctx.globalAlpha = 0.04;
-        for (let i = 0; i < 1500; i++) {
-          const x = Math.random() * canvas.width;
-          const y = Math.random() * canvas.height;
-          ctx.fillStyle = Math.random() > 0.5 ? '#d0d0c8' : '#e8e8e0';
-          ctx.fillRect(x, y, Math.random() * 4 + 1, Math.random() * 4 + 1);
-        }
-        ctx.globalAlpha = 1.0;
+        ctx.drawImage(getTextureLayer('paper'), 0, 0);
       }
     }
 
@@ -1560,11 +1597,72 @@
         }
       }
       
-      if (isPlaying) {
+      if (isPlaying && !reducedMotionQuery.matches) {
         animationId = requestAnimationFrame(render);
       }
     }
-    
+
+    // Render one complete static frame: advance the simulation enough to fill
+    // the trails, then draw once. Used when prefers-reduced-motion is set, so
+    // the attractor is still visible without continuous animation.
+    function renderStaticFrame() {
+      const attractor = attractors[currentAttractor];
+      const dt = 0.005 * speed;
+      const warmupSteps = Math.max(trailLength, 25);
+
+      for (let s = 0; s < warmupSteps; s++) {
+        particles.forEach(p => {
+          const [nx, ny, nz] = attractor.compute(p.x, p.y, p.z, currentParams, dt);
+          if (!isFinite(nx) || !isFinite(ny) || !isFinite(nz)) {
+            const [x0, y0, z0] = attractor.initPos;
+            const spread = attractor.initSpread;
+            p.x = x0 + (Math.random() - 0.5) * spread;
+            p.y = y0 + (Math.random() - 0.5) * spread;
+            p.z = z0 + (Math.random() - 0.5) * spread;
+            p.trail = [];
+            return;
+          }
+          p.x = nx;
+          p.y = ny;
+          p.z = nz;
+          p.trail.push({ x: nx, y: ny, z: nz });
+          while (p.trail.length > trailLength) p.trail.shift();
+        });
+      }
+
+      // Draws once; render() will not schedule rAF while reduced motion matches
+      render();
+    }
+
+    // After an interaction changes parameters under reduced motion, re-render
+    // a static frame instead of restarting continuous animation
+    function refreshReducedMotionFrame() {
+      if (!reducedMotionQuery.matches) return;
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+      }
+      renderStaticFrame();
+    }
+
+    // Start/stop the continuous loop when the OS preference changes
+    function onReducedMotionChange() {
+      if (reducedMotionQuery.matches) {
+        if (animationId) {
+          cancelAnimationFrame(animationId);
+          animationId = null;
+        }
+        renderStaticFrame();
+      } else if (isPlaying) {
+        render();
+      }
+    }
+    if (typeof reducedMotionQuery.addEventListener === 'function') {
+      reducedMotionQuery.addEventListener('change', onReducedMotionChange);
+    } else if (typeof reducedMotionQuery.addListener === 'function') {
+      reducedMotionQuery.addListener(onReducedMotionChange); // Older Safari
+    }
+
     // Event listeners
     document.getElementById('datasetSelect').addEventListener('change', (e) => {
       pushState();
@@ -1584,12 +1682,14 @@
       document.getElementById('particleValue').textContent = val;
       document.getElementById('particleCount').textContent = val;
       initParticles();
+      refreshReducedMotionFrame();
     });
 
     document.getElementById('speedSlider').addEventListener('input', (e) => {
       pushState();
       speed = parseFloat(e.target.value);
       updateSpeedDisplay();
+      refreshReducedMotionFrame();
     });
 
     // Update all speed displays
@@ -1619,7 +1719,13 @@
     function togglePlayPause() {
       isPlaying = !isPlaying;
       updatePlayPauseState();
-      if (isPlaying) render();
+      if (isPlaying) {
+        if (reducedMotionQuery.matches) {
+          renderStaticFrame();
+        } else {
+          render();
+        }
+      }
     }
 
     // Floating playback controls
@@ -1630,6 +1736,7 @@
       speed = Math.max(0.1, speed - 0.5);
       document.getElementById('speedSlider').value = speed;
       updateSpeedDisplay();
+      refreshReducedMotionFrame();
     });
 
     document.getElementById('speedUpBtn').addEventListener('click', () => {
@@ -1637,6 +1744,7 @@
       speed = Math.min(5, speed + 0.5);
       document.getElementById('speedSlider').value = speed;
       updateSpeedDisplay();
+      refreshReducedMotionFrame();
     });
 
     // Initialize speed display
@@ -1653,6 +1761,7 @@
       if (select) select.value = schemeId;
 
       updateColorPreview(schemeId);
+      refreshReducedMotionFrame();
 
       // Announce to screen readers
       announce(`Color scheme changed to ${colorSchemes[schemeId].name}`);
@@ -1663,6 +1772,7 @@
       pushState();
       trailLength = parseInt(e.target.value);
       document.getElementById('trailValue').textContent = trailLength;
+      refreshReducedMotionFrame();
     });
 
     // Glow intensity slider
@@ -1670,6 +1780,7 @@
       pushState();
       glowIntensity = parseInt(e.target.value);
       document.getElementById('glowValue').textContent = glowIntensity;
+      refreshReducedMotionFrame();
     });
 
     // Line width slider
@@ -1677,18 +1788,21 @@
       pushState();
       lineWidth = parseFloat(e.target.value);
       document.getElementById('lineWidthValue').textContent = lineWidth.toFixed(1);
+      refreshReducedMotionFrame();
     });
 
     // Trail fade toggle
     document.getElementById('trailFadeToggle').addEventListener('change', (e) => {
       pushState();
       trailFade = e.target.checked;
+      refreshReducedMotionFrame();
     });
 
     // Depth brightness toggle
     document.getElementById('depthBrightnessToggle').addEventListener('change', (e) => {
       pushState();
       depthBrightness = e.target.checked;
+      refreshReducedMotionFrame();
     });
     
     // Famous bifurcation presets
@@ -1737,6 +1851,7 @@
       document.getElementById('attractorName').textContent = attractors[currentAttractor].name;
       generateParameterControls();
       initParticles();
+      refreshReducedMotionFrame();
 
       // Reset select
       e.target.value = '';
@@ -1809,6 +1924,7 @@
 
       generateParameterControls();
       initParticles();
+      refreshReducedMotionFrame();
     }
 
     // Get next combo - curated first, then random
@@ -2263,6 +2379,8 @@
         initRoughCanvas();
       }
 
+      refreshReducedMotionFrame();
+
       // Announce to screen readers
       const styleName = VISUAL_STYLES[styleId].name;
       announce(`Visual style changed to ${styleName}`);
@@ -2293,6 +2411,7 @@
           pushState();
           currentColorScheme = scheme;
           updateColorPreview(scheme);
+          refreshReducedMotionFrame();
           announce(`Color scheme changed to ${colorSchemes[scheme].name}`);
         }
       });
@@ -2400,5 +2519,9 @@
       updateAttractor();
       updateHistoryIndicator();
       updateMappingDisplay();
-      render();
+      if (reducedMotionQuery.matches) {
+        renderStaticFrame();
+      } else {
+        render();
+      }
     }

@@ -566,6 +566,17 @@ button.secondary:hover {
   height: 20px;
 }
 
+/* Disabled control buttons (e.g. undo with empty history) */
+.ctrl-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.ctrl-btn:disabled:hover {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+}
+
 /* Play/Pause button - slightly larger */
 .ctrl-btn.play-pause {
   width: 48px;
@@ -604,6 +615,20 @@ button.secondary:hover {
   min-width: 40px;
   text-align: center;
   font-variant-numeric: tabular-nums;
+}
+
+/* History depth indicator (next to undo button) */
+.history-indicator {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.history-indicator:empty {
+  display: none;
 }
 
 /* Divider between playback and actions */
@@ -1221,6 +1246,7 @@ button.secondary:hover {
 /* Focus visible for keyboard navigation */
 button:focus-visible,
 select:focus-visible,
+input[type="range"]:focus-visible,
 .color-option:focus-visible,
 .hamburger-btn:focus-visible,
 .sidebar-close-btn:focus-visible,
