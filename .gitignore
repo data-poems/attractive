@@ -24,3 +24,6 @@ prior.md
 
 # Backup files
 *.backup
+
+# Finder metadata
+.DS_Store

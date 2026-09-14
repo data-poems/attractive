@@ -34,6 +34,10 @@
 
   <!-- Rough.js for hand-drawn style rendering -->
   <script src="https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.min.js"></script>
+  <link rel="stylesheet" href="vendor/katex/katex.min.css">
+  <script defer src="vendor/katex/katex.min.js"></script>
+  <script src="vendor/three/three.min.js"></script>
+  <link rel="stylesheet" href="analysis-tools.css">
 </head>
 <body>
   <!-- Skip link for keyboard users -->
@@ -390,6 +394,8 @@
   
   <canvas id="canvas" role="img" aria-label="Interactive 3D attractor visualization. Use controls in sidebar to modify parameters." tabindex="0"></canvas>
 
+  <canvas id="canvas3d" role="img" aria-label="Attractor in 3D. Drag or use arrow keys to rotate, plus and minus to zoom, Enter to inspect the center." tabindex="0" aria-hidden="true" style="position:fixed;inset:0;display:none;"></canvas>
+
   <!-- Unified floating controls (bottom left, offset for sidebar on desktop) -->
   <div class="floating-controls" role="toolbar" aria-label="Visualization controls">
     <!-- Playback -->
@@ -423,6 +429,24 @@
     </button>
   </div>
 
+  <div class="analysis-controls" role="toolbar" aria-label="Explore the mathematics">
+    <button class="ctrl-btn" id="equationsBtn" aria-label="Show equations" aria-expanded="false" aria-controls="equationsPanel" title="Equations">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h11L8 12l9 8H6"/></svg>
+    </button>
+    <button class="ctrl-btn" id="view3dBtn" aria-label="Toggle real 3D view" aria-pressed="false" title="3D view">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M12 12l9-5M12 12v10M12 12L3 7"/></svg>
+    </button>
+    <button class="ctrl-btn" id="particleModeBtn" aria-label="Toggle single or multiple trajectories" aria-pressed="false" title="Single / multiple trajectories" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="9" r="2"/><circle cx="9" cy="17" r="2"/><circle cx="17" cy="18" r="2"/></svg>
+    </button>
+    <button class="ctrl-btn" id="lyapunovBtn" aria-label="Toggle Lyapunov exponent" aria-pressed="false" title="Lyapunov exponent λ₁">
+      <span style="font-style:italic;font-weight:600;font-size:20px;line-height:1;">λ</span>
+    </button>
+    <button class="ctrl-btn" id="lessonsBtn" aria-label="Open guided lessons" aria-expanded="false" aria-controls="lessonsPanel" title="Guided lessons">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2z"/><path d="M9 3v18"/></svg>
+    </button>
+  </div>
+
   <div class="stats" role="status" aria-live="polite" aria-label="Current visualization stats">
     <div class="stats-row">
       <span>Dataset:</span>
@@ -439,6 +463,18 @@
     <div class="stats-row">
       <span>FPS:</span>
       <span id="fpsCount">60</span>
+    </div>
+    <div class="stats-row" id="lyapunovRow" style="display:none;">
+      <span>λ₁:</span>
+      <span id="lyapunovValue">—</span>
+    </div>
+    <div class="stats-row" id="lyapunovStatusRow" style="display:none;">
+      <span>Status:</span>
+      <span id="lyapunovStatus">warming…</span>
+    </div>
+    <div class="stats-row" id="modelTimeRow" style="display:none;">
+      <span>Model t:</span>
+      <span id="modelTime">0.0</span>
     </div>
   </div>
   
@@ -490,7 +526,39 @@
     </div>
   </div>
 
+  <!-- Equations panel -->
+  <aside class="equations-panel" id="equationsPanel" role="complementary" aria-label="Attractor equations" aria-hidden="true" inert>
+    <div class="eq-header">
+      <h2 id="eqTitle">Equations</h2>
+      <button class="eq-close" id="equationsCloseBtn" aria-label="Close equations">×</button>
+    </div>
+    <div class="eq-body" id="equationsBody"></div>
+  </aside>
+
+  <!-- Inspect readout -->
+  <div class="inspect-readout" id="inspectReadout" role="status" aria-live="polite" aria-hidden="true" style="display:none;">
+    <div class="inspect-title">Inspect</div>
+    <div>x: <span id="inspectX">—</span></div>
+    <div>y: <span id="inspectY">—</span></div>
+    <div>z: <span id="inspectZ">—</span></div>
+    <button id="inspectCloseBtn" aria-label="Close inspect">×</button>
+  </div>
+
+  <!-- Guided lessons panel -->
+  <aside class="lessons-panel" id="lessonsPanel" role="complementary" aria-label="Guided lessons" aria-hidden="true" inert>
+    <div class="lessons-header">
+      <h2 id="lessonsTitle">Guided Lessons</h2>
+      <button class="lessons-close" id="lessonsCloseBtn" aria-label="Close lessons">×</button>
+    </div>
+    <div class="lessons-body" id="lessonsBody"></div>
+  </aside>
+
   <script src="main.js"></script>
+  <script src="attractive-3d.js"></script>
+  <script src="attractive-lyapunov.js"></script>
+  <script src="attractive-equations.js"></script>
+  <script src="attractive-inspect.js"></script>
+  <script src="attractive-lessons.js"></script>
   <script src="onboarding.js"></script>
     <!-- GoatCounter Analytics -->
     <script data-goatcounter="https://stats.dr.eamer.dev/count"
