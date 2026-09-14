@@ -1,0 +1,12 @@
+/* Analysis tools share the existing type and color system. */
+.analysis-controls { position:fixed;left:364px;bottom:94px;display:flex;flex-wrap:wrap;gap:6px;max-width:calc(100vw - 388px);padding:8px;background:rgba(0,0,0,.85);border-radius:8px;z-index:60; }
+.analysis-controls .ctrl-btn { width:44px;height:44px;flex:none;margin:0; }
+.sidebar.collapsed ~ .analysis-controls { left:24px;max-width:calc(100vw - 48px); }
+.equations-panel[aria-hidden="true"],.lessons-panel[aria-hidden="true"] { visibility:hidden; }
+.eq-close,.lessons-close,#inspectCloseBtn { min-width:44px;min-height:44px; }
+.eq-param .pm,.lesson-meta .ls { font-size:13px; }
+.eq-prose,.lesson-prose { font-size:16px; }
+@media(max-width:768px) { .analysis-controls { left:12px;bottom:90px;max-width:calc(100vw - 24px); } }
+@media(prefers-reduced-motion:reduce) { .equations-panel,.lessons-panel,.lesson-pill { transition:none!important; } }
+
+@media(max-width:768px) { .stats { top:64px;bottom:auto;left:auto;right:12px;max-width:calc(100vw - 24px); } }

@@ -85,7 +85,17 @@ Bottom-left buttons control speed, trigger a random combo, export to PNG, and sh
 
 ## Other features
 
-Random button pulls from 40+ hand-picked combos. Ctrl+Z steps back through changes. Auto-rotate, parameter sweeping, PNG export. Guided tour on first visit. WCAG 2.1 AA, full keyboard nav and screen reader support. Works on mobile.
+Random button pulls from 40+ hand-picked combos. Ctrl+Z steps back through changes. Auto-rotate, parameter sweeping, PNG export. Guided tour on first visit. Controls include keyboard shortcuts, named buttons, and screen reader announcements. Responsive layouts support mobile screens.
+
+## Explore the mathematics
+
+A second toolbar opens equations, a WebGL 3D view, a numerical Lyapunov estimate, and five guided lessons. Tap a trajectory to inspect a point; hold to restart from it. With either canvas focused, Enter inspects the center. Arrow keys rotate the 3D camera and plus/minus zoom it.
+
+The 3D view supports single or multiple trajectories, color, speed, glow, pause, rotation, and PNG export. Its line renderer is separate from the artistic Canvas 2D styles. Reduced motion produces a static view. Equations and lessons remain available if WebGL cannot start.
+
+Lessons apply standard model parameters, overriding the current dataset defaults. Completion is stored in this browser. The twin-trajectory sensitive-dependence demonstration is not included; the lessons do not claim to show it.
+
+The largest Lyapunov exponent uses an independent fixed-step RK4 trajectory. It is an evolving numerical estimate for the current parameters, not a convergence guarantee. Display speed does not set its integration step. Discrete maps (Clifford, De Jong and Pickover) report that the estimate is unavailable. The view's Euler integration and the measurement's RK4 integration serve different purposes.
 
 ## Quick Start
 
@@ -96,7 +106,7 @@ python3 -m http.server 8000
 # Open http://localhost:8000/
 ```
 
-Or open `index.html` directly in a modern browser. Everything runs as a single top-level script, no modules, no bundler.
+Or open `index.html` directly in a modern browser. Classic scripts share the application state; no bundler is required. Three.js and KaTeX are bundled locally. Optional sketch styles, fonts, and analytics retain their existing external sources.
 
 ## How It Works
 
@@ -113,7 +123,7 @@ The rendering loop:
 
 ## Tech Stack
 
-Vanilla JavaScript with zero dependencies (except Rough.js for hand-drawn styles). No framework, no build step.
+Vanilla JavaScript, with Three.js for the optional WebGL view, KaTeX for equations, and Rough.js for hand-drawn styles. See [third-party notices](THIRD_PARTY_NOTICES.md). No framework or build step.
 
 - **Rendering**: HTML5 Canvas 2D API
 - **Math**: Euler integration of differential equations at 60fps
@@ -128,10 +138,24 @@ attractive/
 ├── index.html       # Layout, controls, modal (490 lines)
 ├── main.js          # All logic: attractors, datasets, rendering (2530 lines)
 ├── style.css        # Dark theme, responsive layout (1850 lines)
+├── attractive-*.js  # 3D, equations, inspection, lessons and exponent estimate
+├── analysis-tools.css # Responsive analysis controls
+├── vendor/          # Bundled Three.js and KaTeX with licenses
+├── tests/           # Browser integration checks
 ├── onboarding.js    # First-visit guided tour (165 lines)
 ├── social-card.png  # Open Graph preview image
 └── README.md        # This file
 ```
+
+## Verification
+
+`node --check attractive-3d.js` checks script syntax; repeat for the other `attractive-*.js` files. Serve the repository locally, start a separate Chromium instance with a remote debugging port, then run:
+
+```bash
+node tests/browser.mjs 9439 http://127.0.0.1:5059/
+```
+
+The browser check covers bundled dependency loading with external requests blocked, panels and focus, lesson parameter consistency, 3D pause/resume, reduced motion, keyboard inspection, a standard Lorenz estimate, map exclusion, and a 390px toolbar. It does not establish assistive-technology conformance or physical-device performance.
 
 ## Adding Your Own Attractor
 
